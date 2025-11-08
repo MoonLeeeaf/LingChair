@@ -60,7 +60,11 @@ export default class MessagesManager {
         })
     }
     getMessages(limit: number = 15, offset: number = 0) {
-        return MessagesManager.database.prepare(`SELECT * FROM ${this.getTableName()} ORDER BY id DESC LIMIT ? OFFSET ?;`).all(limit, offset) as unknown as MessageBean[]
+        const ls = MessagesManager.database.prepare(`SELECT * FROM ${this.getTableName()} ORDER BY id DESC LIMIT ? OFFSET ?;`).all(limit, offset) as unknown as MessageBean[]
+        return ls.map((v) => ({
+            ...v,
+            chat_id: this.chat.bean.id,
+        }))
     }
     getMessagesWithPage(limit: number = 15, page: number = 0) {
         return this.getMessages(limit, limit * page)

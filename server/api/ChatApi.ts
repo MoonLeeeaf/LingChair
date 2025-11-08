@@ -62,17 +62,22 @@ export default class ChatApi extends BaseApi {
                 const userInst = User.findById(id)
                 userInst?.updateRecentChat(chat.bean.id, args.text as string)
             })
+            const m = {
+                ...msg,
+                id,
+                chat_id: chat.bean.id,
+            }
             this.boardcastToUsers(users, 'Client.onMessage', {
                 chat: chat.bean.id,
-                msg: {
-                    ...msg,
-                    id
-                }
+                msg: m
             })
 
             return {
                 code: 200,
                 msg: "成功",
+                data: {
+                    msg: m,
+                }
             }
         })
         /**

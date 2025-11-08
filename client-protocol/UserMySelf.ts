@@ -42,7 +42,7 @@ export default class UserMySelf extends User {
     async resetPasswordOrThrow(old_password: string, new_password: string) {
         const re = await this.client.invoke("User.resetPassword", {
             token: this.client.access_token,
-            old_password, 
+            old_password,
             new_password,
         })
         if (re.code != 200) throw new CallbackError(re)
@@ -66,6 +66,7 @@ export default class UserMySelf extends User {
             file_hash,
         })
         if (re.code != 200) throw new CallbackError(re)
+        this.bean.avatar_file_hash = file_hash
     }
     async setUserName(user_name: string) {
         return await this.updateProfile({ username: user_name })
@@ -103,6 +104,8 @@ export default class UserMySelf extends User {
             username,
         })
         if (re.code != 200) throw new CallbackError(re)
+        nickname && (this.bean.nickname = nickname)
+        username && (this.bean.username = username)
     }
     /*
      * ================================================

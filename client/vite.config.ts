@@ -9,5 +9,35 @@ export default defineConfig({
     build: {
         sourcemap: true,
         outDir: "." + config.data_path + '/page_compiled',
+        minify: 'terser',
+        cssMinify: 'lightningcss',
+        terserOptions:{
+            compress:{
+                drop_console:true,
+                drop_debugger:true
+            }
+        },
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('mdui')) {
+                            return 'mdui'
+                        }
+                        if (id.includes('crypto-js')) {
+                            return 'cryptojs'
+                        }
+                        if (id.includes('split.js')) {
+                            return 'splitjs'
+                        }
+                        if (id.includes('marked')) {
+                            return 'marked'
+                        }
+                        return 'vendor'
+                    }
+                    return 'main'
+                },
+            }
+        }
     },
 })

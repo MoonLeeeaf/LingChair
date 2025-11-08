@@ -152,7 +152,7 @@ export default class UserApi extends BaseApi {
                 msg: "成功",
                 code: 200,
                 data: {
-                    userid: user.bean.id
+                    user_id: user.bean.id
                 },
             }
         })

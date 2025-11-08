@@ -80,6 +80,19 @@ export default class LingChairClient {
         account?: string,
         password?: string,
     }) {
+        try {
+            this.authOrThrow(args)
+            return true
+        } catch (_) {
+            return false
+        }
+    }
+    async authOrThrow(args: {
+        refresh_token?: string,
+        access_token?: string,
+        account?: string,
+        password?: string,
+    }) {
         if ((!args.access_token && !args.refresh_token) && (!args.account && !args.password))
             throw new Error('Access/Refresh token or account & password required')
 
@@ -90,9 +103,10 @@ export default class LingChairClient {
             const re = await this.invoke('User.refreshAccessToken', {
                 refresh_token: args.refresh_token,
             })
-            if (re.code == 200) {
+            if (re.code == 200) 
                 access_token = re.data!.access_token as string | undefined
-            } else return re
+            else 
+                throw new CallbackError(re)
         }
 
         if (!access_token && (args.account && args.password)) {
@@ -100,15 +114,47 @@ export default class LingChairClient {
                 account: args.account,
                 password: crypto.createHash('sha256').update(args.password).digest('hex'),
             })
-            if (re.code == 200) {
+            if (re.code == 200) 
                 access_token = re.data!.access_token as string | undefined
-            } else return re
+            else 
+                throw new CallbackError(re)
         }
 
         const re = await this.invoke('User.auth', {
             access_token: access_token
         })
-        if (re.code == 200) this.access_token = access_token as string
-        return re
+        if (re.code == 200) 
+            this.access_token = access_token as string
+        else 
+            throw new CallbackError(re)
+    }
+    async register(args: {
+        nickname: string,
+        username?: string,
+        password: string,
+    }) {
+        try {
+            this.registerOrThrow(args)
+            return true
+        } catch (_) {
+            return false
+        }
+    }
+    async registerOrThrow({
+        nickname,
+        username,
+        password,
+    }: {
+        nickname: string,
+        username?: string,
+        password: string,
+    }) {
+        const re = await this.invoke('User.register', {
+            nickname,
+            username,
+            password,
+        })
+        if (re.code != 200)
+            throw new CallbackError(re)
     }
 }

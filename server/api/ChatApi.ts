@@ -76,7 +76,7 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: "成功",
                 data: {
-                    msg: m,
+                    message: m,
                 }
             }
         })
@@ -196,6 +196,8 @@ export default class ChatApi extends BaseApi {
                         return {
                             user_id: user?.bean.id,
                             reason: v.reason,
+                            nickname: user!.getNickName(),
+                            // TODO: 这个得删掉, 应该用 nickname
                             title: user!.getNickName(),
                             avatar_file_hash: user!.getAvatarFileHash() ? user!.getAvatarFileHash() : null,
                         }
@@ -342,7 +344,18 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: '成功',
                 data: {
+                    // TODO: 移除这个, 将本方法重命名为 getOrCreatePrivateChat
+                    // 并重构原 Web 客户端所引用的内容
                     chat_id: chat.bean.id,
+
+                    id: chat.bean.id,
+                    name: chat.bean.name,
+                    type: chat.bean.type,
+                    title: chat.getTitle(user),
+                    avatar_file_hash: chat.getAvatarFileHash(user) ? chat.getAvatarFileHash(user) : undefined,
+                    settings: JSON.parse(chat.bean.settings),
+                    is_member: true,
+                    is_admin: true,
                 }
             }
         })
@@ -384,7 +397,23 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: '成功',
                 data: {
+                    // TODO: 移除这个
+                    // 并重构原 Web 客户端所引用的内容
                     chat_id: chat.bean.id,
+
+                    id: chat.bean.id,
+                    name: chat.bean.name,
+                    type: chat.bean.type,
+                    title: chat.getTitle(),
+                    avatar_file_hash: chat.getAvatarFileHash() ? chat.getAvatarFileHash() : undefined,
+                    settings: {
+                        ...JSON.parse(chat.bean.settings),
+                        // 下面两个比较特殊, 用于群设置
+                        group_name: chat.bean.name,
+                        group_title: chat.getTitle(),
+                    },
+                    is_member: UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id),
+                    is_admin: chat.checkUserIsAdmin(token.author),
                 }
             }
         })

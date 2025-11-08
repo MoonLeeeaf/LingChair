@@ -6,9 +6,11 @@ import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./User.ts"
 import UserMySelf from "./UserMySelf.ts"
 import CallbackError from "./CallbackError.ts"
+import Chat from "./Chat.ts"
 
 export { 
     User,
+    Chat,
     UserMySelf,
 }
 

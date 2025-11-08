@@ -1,5 +1,5 @@
 import BaseChatSettingsBean from "./BaseChatSettingsBean.ts"
-import ChatType from "./ChatType.ts"
+import ChatType from "../type/ChatType.ts"
 
 export default class ChatBean {
     declare type: ChatType

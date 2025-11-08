@@ -82,7 +82,7 @@ export default class LingChairClient {
         password?: string,
     }) {
         try {
-            this.authOrThrow(args)
+            await this.authOrThrow(args)
             return true
         } catch (_) {
             return false

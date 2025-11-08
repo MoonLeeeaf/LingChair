@@ -146,7 +146,7 @@ export default class UserMySelf extends User {
         try {
             return await this.getMyFavouriteChatBeansOrThrow()
         } catch (_) {
-            return null
+            return []
         }
     }
     async getMyFavouriteChatBeansOrThrow() {
@@ -166,7 +166,7 @@ export default class UserMySelf extends User {
         try {
             return await this.getMyRecentChatBeansOrThrow()
         } catch (_) {
-            return null
+            return []
         }
     }
     async getMyRecentChatBeansOrThrow() {

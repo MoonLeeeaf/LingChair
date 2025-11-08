@@ -5,6 +5,7 @@ import { CallMethod, ClientEvent } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./User.ts"
 import UserMySelf from "./UserMySelf.ts"
+import CallbackError from "./CallbackError.ts"
 
 export { 
     User,

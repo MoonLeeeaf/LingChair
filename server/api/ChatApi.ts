@@ -463,7 +463,7 @@ export default class ChatApi extends BaseApi {
         })
         // 更新頭像
         this.registerEvent("Chat.setAvatar", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['file_hash', 'token'])) return {
+            if (this.checkArgsMissing(args, ['file_hash', 'token', 'target'])) return {
                 msg: "参数缺失",
                 code: 400,
             }

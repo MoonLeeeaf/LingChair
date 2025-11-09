@@ -11,12 +11,6 @@ export default defineConfig({
         outDir: "." + config.data_path + '/page_compiled',
         minify: 'terser',
         cssMinify: 'lightningcss',
-        terserOptions:{
-            compress:{
-                drop_console:true,
-                drop_debugger:true
-            }
-        },
         rollupOptions: {
             output: {
                 manualChunks(id) {

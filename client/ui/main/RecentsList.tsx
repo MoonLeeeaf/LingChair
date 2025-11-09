@@ -35,9 +35,11 @@ export default function RecentsList({
             const re = await Client.invoke("User.getMyRecentChats", {
                 token: data.access_token,
             })
-            if (re.code != 200)
-                return checkApiSuccessOrSncakbar(re, "获取最近对话列表失败")
-    
+            if (re.code != 200) {
+                if (re.code != 401) checkApiSuccessOrSncakbar(re, "获取最近对话列表失败")
+                return
+            }
+
             setRecentsList(re.data!.recent_chats as RecentChat[])
         }
         updateRecents()

@@ -39,9 +39,10 @@ export default function ContactsList({
             const re = await Client.invoke("User.getMyContacts", {
                 token: data.access_token,
             })
-            if (re.code != 200)
-                return checkApiSuccessOrSncakbar(re, "获取所有对话列表失败")
-
+            if (re.code != 200) {
+                            if (re.code != 401) checkApiSuccessOrSncakbar(re, "获取收藏对话列表失败")
+                            return
+                        }
             const ls = re.data!.contacts_list as Chat[]
             setContactsList(ls)
             setSharedFavouriteChats(ls)

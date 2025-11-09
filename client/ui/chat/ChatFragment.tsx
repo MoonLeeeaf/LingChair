@@ -148,7 +148,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
 
         const oldest = messagesList[0]
         setMessagesList(returnMsgs.concat(messagesList))
-        setTimeout(() => chatPanelRef.current!.scrollTo({ top: $(`#chat_${target}_message_${oldest.id}`).get(0).offsetTop }), 200)
+        oldest && setTimeout(() => chatPanelRef.current!.scrollTo({ top: $(`#chat_${target}_message_${oldest.id}`).get(0).offsetTop }), 200)
     }
 
     React.useEffect(() => {

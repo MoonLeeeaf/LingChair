@@ -22,6 +22,8 @@ customElements.define('chat-text', class extends HTMLElement {
         this.update()
     }
     update() {
+        if (this.span == null) return
+        
         this.span.textContent = this.textContent
         this.span.style.textDecoration = $(this).attr('underline') ? 'underline' : ''
         this.span.style.fontStyle = $(this).attr('em') ? 'italic' : ''

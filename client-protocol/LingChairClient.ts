@@ -137,7 +137,7 @@ export default class LingChairClient {
         password: string,
     }) {
         try {
-            this.registerOrThrow(args)
+            await this.registerOrThrow(args)
             return true
         } catch (_) {
             return false

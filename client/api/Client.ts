@@ -24,11 +24,39 @@ class Client {
                 session_id: this.sessionId,
             },
         })
-        this.socket!.on("connect", async () => {
-            this.connected = true
-            const re = await this.auth(data.access_token as string)
-            if (re.code != 200)
-                checkApiSuccessOrSncakbar(re, "重连失败")
+        this.socket!.on("connect", () => {
+            const auth = async () => {
+                this.connected = true
+                const s = snackbar({
+                    message: '重新验证中...',
+                    placement: 'top',
+                    autoCloseDelay: 0,
+                })
+                let i = 1
+                const id = setInterval(() => {
+                    s.textContent = `重新验证中... (${i}s)`
+                    i++
+                }, 1000)
+                const re = await this.auth(data.access_token as string, 6000)
+                if (re.code != 200) {
+                    if (re.code == -1) {
+                        auth()
+                    } else if (re.code != 401) {
+                        const s2 = checkApiSuccessOrSncakbar(re, "重新验证失败")
+                        s2!.autoCloseDelay = 0
+                        s2!.action = "重试"
+                        s2!.addEventListener('action-click', () => {
+                            auth()
+                        })
+                        this.socket!.once("disconnect", () => {
+                            s2!.open = false
+                        })
+                    }
+                }
+                s.open = false
+                clearTimeout(id)
+            }
+            auth()
         })
         this.socket!.on("disconnect", () => {
             this.connected = false
@@ -100,7 +128,7 @@ class Client {
     }
     static async refreshAccessToken() {
         const re = await this.invoke("User.refreshAccessToken", {
-            refresh_token: data.refresh_token 
+            refresh_token: data.refresh_token
         })
         return re.data?.access_token as string
     }
@@ -118,13 +146,13 @@ class Client {
     }
     static async uploadFileLikeApi(fileName: string, fileData: ArrayBuffer | Blob | Response, chatId?: string) {
         const form = new FormData()
-        form.append("file", 
-            fileData instanceof ArrayBuffer 
-            ? new File([fileData], fileName, { type: 'application/octet-stream' })
-            : (
-                fileData instanceof Blob ? fileData : 
-                new File([await fileData.arrayBuffer()], fileName, { type: 'application/octet-stream' })
-            )
+        form.append("file",
+            fileData instanceof ArrayBuffer
+                ? new File([fileData], fileName, { type: 'application/octet-stream' })
+                : (
+                    fileData instanceof Blob ? fileData :
+                        new File([await fileData.arrayBuffer()], fileName, { type: 'application/octet-stream' })
+                )
         )
         form.append('file_name', fileName)
         chatId && form.append('chat_id', chatId)

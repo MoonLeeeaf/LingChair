@@ -61,11 +61,9 @@ const sanitizeConfig = {
 const markedInstance = new marked.Marked({
     renderer: {
         text({ text }) {
-            console.log('普通文字', text)
             return `<chat-text>${escapeHTML(text)}</chat-text>`
         },
         em({ text }) {
-            console.log('斜体', text)
             return `<chat-text em="true">${escapeHTML(text)}</chat-text>`
         },
         heading({ tokens, depth: _depth }) {

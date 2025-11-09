@@ -37,7 +37,6 @@ function prettyFlatParsedMessage(html: string) {
         }
     }
     for (const e of elements) {
-        console.log(e)
         // 当出现非文本元素时, 将文本聚合在一起
         // 如果是其他类型, 虽然也执行聚合, 但是不会有外层包裹
         checkContinuousElement(e.nodeName.toLowerCase())

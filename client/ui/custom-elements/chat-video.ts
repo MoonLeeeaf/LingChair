@@ -27,5 +27,6 @@ customElements.define('chat-video', class extends HTMLElement {
        
         this.video.onclick = (e) => e.stopPropagation()
         this.shadowRoot!.appendChild(this.video)
+        this.update()
     }
 })

@@ -124,7 +124,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 top: 10000000000,
                 behavior: "smooth",
             })
-        }, 300)
+        }, 500)
     }
     useAsyncEffect(getChatInfoAndInit, [target])
 
@@ -148,7 +148,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
 
         const oldest = messagesList[0]
         setMessagesList(returnMsgs.concat(messagesList))
-        setTimeout(() => chatPanelRef.current!.scrollTo({ top: $(`#chat_${target}_message_${oldest.id}`).get(0).offsetTop, behavior: 'smooth' }), 100)
+        setTimeout(() => chatPanelRef.current!.scrollTo({ top: $(`#chat_${target}_message_${oldest.id}`).get(0).offsetTop }), 200)
     }
 
     React.useEffect(() => {

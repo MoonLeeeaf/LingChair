@@ -9,6 +9,8 @@ import ReactDOM from 'react-dom/client'
 import './ui/custom-elements/chat-image.ts'
 import './ui/custom-elements/chat-video.ts'
 import './ui/custom-elements/chat-file.ts'
+import './ui/custom-elements/chat-text.ts'
+import './ui/custom-elements/chat-text-container.ts'
 
 import App from './ui/App.tsx'
 import AppMobile from './ui/AppMobile.tsx'

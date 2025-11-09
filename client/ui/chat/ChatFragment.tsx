@@ -29,6 +29,7 @@ import PreferenceUpdater from "../preference/PreferenceUpdater.ts"
 import SystemMessage from "./SystemMessage.tsx"
 import JoinRequestsList from "./JoinRequestsList.tsx"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
+import escapeHTML from "../../escapeHtml.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -38,24 +39,47 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     openUserInfoDialog: (user: User | string) => void
 }
 
+const sanitizeConfig = {
+    ALLOWED_TAGS: [
+        "chat-image",
+        "chat-video",
+        "chat-file",
+        'chat-text',
+        "chat-link",
+    ],
+    ALLOWED_ATTR: [
+        'underline',
+        'em',
+
+        'src',
+        'alt',
+        'href',
+        'name',
+    ],
+}
+
 const markedInstance = new marked.Marked({
     renderer: {
+        text({ text }) {
+            console.log('普通文字', text)
+            return `<chat-text>${escapeHTML(text)}</chat-text>`
+        },
+        em({ text }) {
+            console.log('斜体', text)
+            return `<chat-text em="true">${escapeHTML(text)}</chat-text>`
+        },
         heading({ tokens, depth: _depth }) {
             const text = this.parser.parseInline(tokens)
-            return `<span>${text}</span>`
-        },
-        paragraph({ tokens }) {
-            const text = this.parser.parseInline(tokens)
-            return `<span>${text}</span>`
+            return `<chat-text>${escapeHTML(text)}</chat-text>`
         },
         image({ text, href }) {
             const type = /^(Video|File)=.*/.exec(text)?.[1] || 'Image'
             if (/tws:\/\/file\?hash=[A-Za-z0-9]+$/.test(href)) {
                 const url = getUrlForFileByHash(/^tws:\/\/file\?hash=(.*)/.exec(href)?.[1])
                 return ({
-                    Image: `<chat-image src="${url}" alt="${text}"></chat-image>`,
+                    Image: `<chat-image src="${url}" alt="${escapeHTML(text)}"></chat-image>`,
                     Video: `<chat-video src="${url}"></chat-video>`,
-                    File: `<chat-file href="${url}" name="${/^Video|File=(.*)/.exec(text)?.[1] || 'Unnamed file'}"></chat-file>`,
+                    File: `<chat-file href="${url}" name="${escapeHTML(/^Video|File=(.*)/.exec(text)?.[1] || 'Unnamed file')}"></chat-file>`,
                 })?.[type] || ``
             }
             return ``
@@ -377,21 +401,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             (() => {
                                 let date = new Date(0)
                                 return messagesList.map((msg) => {
-                                    const rendeText = DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
-                                        ALLOWED_TAGS: [
-                                            "chat-image",
-                                            "chat-video",
-                                            "chat-file",
-                                            "span",
-                                            "chat-link",
-                                        ],
-                                        ALLOWED_ATTR: [
-                                            'src',
-                                            'alt',
-                                            'href',
-                                            'name',
-                                        ],
-                                    }).replaceAll('\n', '<br>')
+                                    const rendeText = DOMPurify.sanitize(markedInstance.parse(msg.text) as string, sanitizeConfig)
                                     const lastDate = date
                                     date = new Date(msg.time)
 

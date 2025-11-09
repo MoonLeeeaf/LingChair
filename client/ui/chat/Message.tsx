@@ -21,6 +21,34 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     openUserInfoDialog: (user: User | string) => void
 }
 
+function prettyFlatParsedMessage(html: string) {
+    const elements = new DOMParser().parseFromString(html, 'text/html').body.children
+    let ls: Element[] = []
+    let ret = ''
+    // 第一个元素时, 不会被聚合在一起
+    let lastElementType = ''
+    function checkContinuousElement(tagName: string) {
+        if (lastElementType != tagName) {
+            if (lastElementType == 'chat-text')
+                ret += `<chat-text-container>${ls.map((v) => v.outerHTML).join('')}</chat-text-container>`
+            else
+                ret += ls.map((v) => v.outerHTML).join('')
+            ls = []
+        }
+    }
+    for (const e of elements) {
+        console.log(e)
+        // 当出现非文本元素时, 将文本聚合在一起
+        // 如果是其他类型, 虽然也执行聚合, 但是不会有外层包裹
+        checkContinuousElement(e.nodeName.toLowerCase())
+        ls.push(e)
+        lastElementType = e.nodeName.toLowerCase()
+    }
+    // 最后将剩余的转换
+    checkContinuousElement('')
+    return ret
+}
+
 export default function Message({ userId, rawData, renderHTML, message, openUserInfoDialog, ...props }: Args) {
     const isAtRight = Client.myUserProfile?.id == userId
 
@@ -44,15 +72,15 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
 
     const [isDropDownOpen, setDropDownOpen] = React.useState(false)
 
-    const [isUsingFullDisplay, setIsUsingFullDisplay] = React.useState(false)
+    /* const [isUsingFullDisplay, setIsUsingFullDisplay] = React.useState(false) */
 
-    React.useEffect(() => {
+    /* React.useEffect(() => {
         const text = $(dropDownRef.current as HTMLElement).find('#msg').text().trim()
         setIsUsingFullDisplay(text == '' || (
             rawData.split("tws:\/\/file\?hash=").length == 2
             && /\<\/chat\-(file|image|video)\>(\<\/span\>)?$/.test(renderHTML.trim())
         ))
-    }, [renderHTML])
+    }, [renderHTML]) */
 
     return (
         <div
@@ -122,10 +150,11 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                     minWidth: "0%",
                     [isAtRight ? "marginRight" : "marginLeft"]: "55px",
                     marginTop: "-5px",
-                    padding: isUsingFullDisplay ? undefined : "13px",
-                    paddingTop: isUsingFullDisplay ? undefined : "14px",
                     alignSelf: isAtRight ? "flex-end" : "flex-start",
-                    backgroundColor: isUsingFullDisplay ? "inherit" : undefined
+                    // boxShadow: isUsingFullDisplay ? 'inherit' : 'var(--mdui-elevation-level1)',
+                    // padding: isUsingFullDisplay ?  undefined : "13px",
+                    // paddingTop: isUsingFullDisplay ?  undefined : "14px",
+                    // backgroundColor: isUsingFullDisplay ? "inherit" : undefined
                 }}>
                 <mdui-dialog close-on-overlay-click close-on-esc ref={messageJsonDialogRef}>
                     {
@@ -138,10 +167,12 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                         slot="trigger"
                         id="msg"
                         style={{
-                            fontSize: "94%"
+                            fontSize: "94%",
+                            display: 'flex',
+                            flexDirection: 'column',
                         }}
                         dangerouslySetInnerHTML={{
-                            __html: renderHTML
+                            __html: prettyFlatParsedMessage(renderHTML)
                         }} />
                     <mdui-menu onClick={(e) => {
                         e.stopPropagation()

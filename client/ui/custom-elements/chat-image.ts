@@ -1,39 +1,59 @@
 import openImageViewer from "../openImageViewer.ts"
-import { snackbar } from "../snackbar.ts"
 
 import { $ } from 'mdui/jq'
 
 
 customElements.define('chat-image', class extends HTMLElement {
+    static observedAttributes = ['src', 'show-error']
+    declare img: HTMLImageElement
+    declare error: HTMLElement
     constructor() {
         super()
+
+        this.attachShadow({ mode: 'open' })
+    }
+    update() {
+        if (this.img == null) return
+
+        this.img.src = $(this).attr('src') as string
+
+        const error = $(this).attr('show-error') == 'true'
+        this.img.style.display = error ? 'none' : 'block'
+        this.error.style.display = error ? '' : 'none'
+    }
+    attributeChangedCallback(_name: string, _oldValue: unknown, _newValue: unknown) {
+        this.update()
     }
     connectedCallback() {
-        this.style.display = 'block'
-        const e = new Image()
-        e.style.maxWidth = "400px"
-        e.style.maxHeight = "300px"
-        e.style.marginTop = '5px'
-        e.style.marginBottom = '5px'
-        e.style.borderRadius = "var(--mdui-shape-corner-medium)"
-        e.alt = $(this).attr('alt') || ""
-        e.onerror = () => {
-            const src = $(this).attr('src')
-            $(this).html(`<mdui-icon name="broken_image" style="font-size: 2rem;"></mdui-icon>`)
-            $(this).attr('alt', '无法加载: ' + $(this).attr('alt'))
-            $(this).on('click', () => {
-                snackbar({
-                    message: `图片 (${src}) 无法加载!`,
-                    placement: 'top'
-                })
-            })
-        }
-        e.src = $(this).attr('src') as string
-        e.onclick = (event) => {
+        this.img = new Image()
+        this.img.style.width = '100%'
+        this.img.style.maxHeight = "300px"
+        this.img.style.objectFit = 'cover'
+        // this.img.style.borderRadius = "var(--mdui-shape-corner-medium)"
+        this.shadowRoot!.appendChild(this.img)
+
+        this.error = new DOMParser().parseFromString(`<mdui-icon name="broken_image" style="font-size: 2rem;"></mdui-icon>`, 'text/html').body.firstChild as HTMLElement
+        this.shadowRoot!.appendChild(this.error)
+
+        this.img.addEventListener('error', () => {
+            $(this).attr('show-error', 'true')
+        })
+        this.error.addEventListener('click', (event) => {
+            event.stopPropagation()
+            const img = this.img
+            this.img = new Image()
+            this.img.style.width = '100%'
+            this.img.style.maxHeight = "300px"
+            this.img.style.objectFit = 'cover'
+            this.shadowRoot!.replaceChild(img, this.img)
+            $(this).attr('show-error', undefined)
+        })
+        this.img.addEventListener('click', (event) => {
             event.stopPropagation()
             openImageViewer($(this).attr('src') as string)
-        }
-        this.appendChild(e)
+        })
+
+        this.update()
     }
 })
 

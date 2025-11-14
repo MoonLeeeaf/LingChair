@@ -191,7 +191,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         let i = 1
         let i2 = 0
         const sendingFilesSnackbarId = setInterval(() => {
-            sendingFilesSnackbar.textContent = `上传第 ${i2}/${Object.keys(cachedFiles.current).length} 文件到 [${chatInfo.title}]... ()`
+            sendingFilesSnackbar.textContent = `上传第 ${i2}/${Object.keys(cachedFiles.current).length} 文件到 [${chatInfo.title}]... (${i}s)`
             i++
         }, 1000)
         try {
@@ -212,6 +212,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     )
                     if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上传失败`)) return setIsMessageSending(false)
                     text = text.replaceAll('(' + fileName + ')', '(tws://file?hash=' + re.data!.file_hash as string + ')')
+                    i2++
                 }
             }
 
@@ -230,6 +231,8 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             })
         }
         setIsMessageSending(false)
+        clearTimeout(sendingFilesSnackbarId)
+        sendingFilesSnackbar.open = false
     }
 
     const attachFileInputRef = React.useRef<HTMLInputElement>(null)

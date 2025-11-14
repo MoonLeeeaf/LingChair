@@ -53,8 +53,8 @@ class Client {
                         })
                     }
                 }
-                s.open = false
                 clearTimeout(id)
+                s.open = false
             }
             auth()
         })

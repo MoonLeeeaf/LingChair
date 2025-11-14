@@ -183,6 +183,17 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     const cachedFiles = React.useRef({} as { [fileName: string]: ArrayBuffer })
     const cachedFileNamesCount = React.useRef({} as { [fileName: string]: number })
     async function sendMessage() {
+        const sendingFilesSnackbar = snackbar({
+            message: `上传文件到 [${chatInfo.title}]...`,
+            placement: 'top',
+            autoCloseDelay: 0,
+        })
+        let i = 1
+        let i2 = 0
+        const sendingFilesSnackbarId = setInterval(() => {
+            sendingFilesSnackbar.textContent = `上传第 ${i2}/${Object.keys(cachedFiles.current).length} 文件到 [${chatInfo.title}]... ()`
+            i++
+        }, 1000)
         try {
             let text = inputRef.current!.value
             if (text.trim() == '') return

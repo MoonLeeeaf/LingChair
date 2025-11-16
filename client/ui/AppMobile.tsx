@@ -112,7 +112,7 @@ export default function AppMobile() {
     }
 
     async function openUserInfoDialog(user: User | string) {
-        if (user instanceof User) {
+        if (typeof user == 'object') {
             setUserInfo(user)
         } else {
             setUserInfo(await DataCaches.getUserProfile(user))

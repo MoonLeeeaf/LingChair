@@ -85,9 +85,9 @@ const markedInstance = new marked.Marked({
             } else
                 switch (type) {
                     case "UserMention":
-                        return `<chat-mention user-id="${escapeHTML(/^tws:\/\/user\?id=(.*)/.exec(href)?.[1] || '')}" text="${escapeHTML(/^UserMention=(.*)/.exec(text)?.[1] || '')}"></chat-mention>`
+                        return `<chat-mention user-id="${escapeHTML(/^tws:\/\/user\?id=(.*)/.exec(href)?.[1] || '')}" text="${escapeHTML(/^UserMention=(.*)/.exec(text)?.[1] || '')}">PH</chat-mention>`
                     case "ChatMention":
-                        return `<chat-mention chat-id="${escapeHTML(/^tws:\/\/chat\?id=(.*)/.exec(href)?.[1] || '')}" text="${escapeHTML(/^ChatMention=(.*)/.exec(text)?.[1] || '')}"></chat-mention>`
+                        return `<chat-mention chat-id="${escapeHTML(/^tws:\/\/chat\?id=(.*)/.exec(href)?.[1] || '')}" text="${escapeHTML(/^ChatMention=(.*)/.exec(text)?.[1] || '')}">PH</chat-mention>`
                 }
             return `<chat-text em="true">(不支持的附件语法: ![${text}](${href}))</chat-text>`
         },

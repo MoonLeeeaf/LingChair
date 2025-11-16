@@ -33,8 +33,9 @@ function prettyFlatParsedMessage(html: string) {
     ]
     function checkContinuousElement(tagName: string) {
         if (lastElementType != tagName) {
-            console.log(lastElementType, ls.map((v) => v.innerHTML))
             if (textElementTags.indexOf(lastElementType) != -1) {
+                // 由于 chat-mention 不是用内部元素实现的, 因此在这个元素的生成中必须放置占位字符串
+                // 尽管显示上占位字符串不会显示, 但是在这里依然是会被处理的, 因为本身还是 innerHTML
                 if (ls.map((v) => v.innerHTML).join('').trim() != '')
                     ret += `<chat-text-container>${ls.map((v) => v.outerHTML).join('')}</chat-text-container>`
             } else

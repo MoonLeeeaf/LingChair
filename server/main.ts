@@ -71,10 +71,9 @@ ApiManager.initEvents()
 ApiManager.initAllApis()
 
 httpServer.listen(config.server.listen)
-console.log(chalk.green("API & Web 服务已启动"))
+console.log(chalk.green(`API & Web 服务已启动, 端口为 ${config.server.listen.port}`))
 function help() {
-    console.log(chalk.yellow("===== LingChair Server ====="))
-    console.log(chalk.yellow("b - 重新编译前端"))
+    console.log(chalk.yellow("输入 b 或者执行 deno task build 以编译前端"))
 }
 help()
 

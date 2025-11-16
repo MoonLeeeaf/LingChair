@@ -27,6 +27,10 @@ function prettyFlatParsedMessage(html: string) {
     let ret = ''
     // 第一个元素时, 不会被聚合在一起
     let lastElementType = ''
+    const textElementTags = [
+        'chat-text',
+        'chat-mention',
+    ]
     function checkContinuousElement(tagName: string) {
         if (lastElementType != tagName) {
             console.log(lastElementType, ls.map((v) => v.innerHTML))

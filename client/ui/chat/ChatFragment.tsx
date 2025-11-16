@@ -46,15 +46,17 @@ const sanitizeConfig = {
         "chat-file",
         'chat-text',
         "chat-link",
+        'chat-mention',
     ],
     ALLOWED_ATTR: [
         'underline',
         'em',
-
         'src',
         'alt',
         'href',
         'name',
+        'user-id',
+        'chat-id',
     ],
 }
 
@@ -71,16 +73,23 @@ const markedInstance = new marked.Marked({
             return `<chat-text>${escapeHTML(text)}</chat-text>`
         },
         image({ text, href }) {
-            const type = /^(Video|File)=.*/.exec(text)?.[1] || 'Image'
-            if (/tws:\/\/file\?hash=[A-Za-z0-9]+$/.test(href)) {
+            const type = /^(Video|File|UserMention|ChatMention)=.*/.exec(text)?.[1]
+            const fileType = /^(Video|File)=.*/.exec(text)?.[1] || 'Image'
+            if (fileType != null && /tws:\/\/file\?hash=[A-Za-z0-9]+$/.test(href)) {
                 const url = getUrlForFileByHash(/^tws:\/\/file\?hash=(.*)/.exec(href)?.[1])
                 return ({
                     Image: `<chat-image src="${url}" alt="${escapeHTML(text)}"></chat-image>`,
                     Video: `<chat-video src="${url}"></chat-video>`,
                     File: `<chat-file href="${url}" name="${escapeHTML(/^Video|File=(.*)/.exec(text)?.[1] || 'Unnamed file')}"></chat-file>`,
-                })?.[type] || ``
-            }
-            return ``
+                })?.[fileType] || ``
+            } else
+                switch (type) {
+                    case "UserMention":
+                        return `<chat-mention user-id="${escapeHTML(/^tws:\/\/user\?id=(.*)/.exec(href)?.[1] || '')}" text="${escapeHTML(/^UserMention=(.*)/.exec(text)?.[1] || '')}"></chat-mention>`
+                    case "ChatMention":
+                        return `<chat-mention chat-id="${escapeHTML(/^tws:\/\/chat\?id=(.*)/.exec(href)?.[1] || '')}" text="${escapeHTML(/^ChatMention=(.*)/.exec(text)?.[1] || '')}"></chat-mention>`
+                }
+            return `<chat-text em="true">(不支持的附件语法: ![${text}](${href}))</chat-text>`
         },
     }
 })
@@ -191,26 +200,28 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         let i = 1
         let i2 = 0
         const sendingFilesSnackbarId = setInterval(() => {
-            sendingFilesSnackbar.textContent = `上传第 ${i2}/${Object.keys(cachedFiles.current).length} 文件到 [${chatInfo.title}]... (${i}s)`
+            const len = Object.keys(cachedFiles.current).length
+            sendingFilesSnackbar.textContent = i2 == len ? `发送消息到 [${chatInfo.title}]... (${i}s)` : `上传第 ${i2}/${len} 文件到 [${chatInfo.title}]... (${i}s)`
             i++
         }, 1000)
+        function endSendingSnack() {
+            clearTimeout(sendingFilesSnackbarId)
+            sendingFilesSnackbar.open = false
+        }
         try {
             let text = inputRef.current!.value
             if (text.trim() == '') return
             setIsMessageSending(true)
             for (const fileName of Object.keys(cachedFiles.current)) {
                 if (text.indexOf(fileName) != -1) {
-                    /* const re = await Client.invoke("Chat.uploadFile", {
-                        token: data.access_token,
-                        file_name: fileName,
-                        target,
-                        data: cachedFiles.current[fileName],
-                    }, 5000) */
                     const re = await Client.uploadFileLikeApi(
                         fileName,
                         cachedFiles.current[fileName]
                     )
-                    if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上传失败`)) return setIsMessageSending(false)
+                    if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上传失败`)) {
+                        endSendingSnack()
+                        return setIsMessageSending(false)
+                    }
                     text = text.replaceAll('(' + fileName + ')', '(tws://file?hash=' + re.data!.file_hash as string + ')')
                     i2++
                 }
@@ -221,7 +232,10 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 target,
                 text,
             }, 5000)
-            if (checkApiSuccessOrSncakbar(re, "发送失败")) return setIsMessageSending(false)
+            if (checkApiSuccessOrSncakbar(re, "发送失败")) {
+                endSendingSnack()
+                return setIsMessageSending(false)
+            }
             inputRef.current!.value = ''
             cachedFiles.current = {}
         } catch (e) {
@@ -231,8 +245,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             })
         }
         setIsMessageSending(false)
-        clearTimeout(sendingFilesSnackbarId)
-        sendingFilesSnackbar.open = false
+        endSendingSnack()
     }
 
     const attachFileInputRef = React.useRef<HTMLInputElement>(null)
@@ -376,6 +389,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     if (!chatInfo.is_member) return
                     const scrollTop = (e.target as HTMLDivElement).scrollTop
                     if (scrollTop == 0 && !showLoadingMoreMessagesTip) {
+                        setShowNoMoreMessagesTip(false)
                         setShowLoadingMoreMessagesTip(true)
                         await loadMore()
                         setShowLoadingMoreMessagesTip(false)
@@ -413,13 +427,21 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             (() => {
                                 let date = new Date(0)
                                 return messagesList.map((msg) => {
-                                    const rendeText = DOMPurify.sanitize(markedInstance.parse(msg.text) as string, sanitizeConfig)
                                     const lastDate = date
                                     date = new Date(msg.time)
 
-                                    const msgElement = msg.user_id == null ? <SystemMessage>{msg.text}</SystemMessage> : <Element_Message
+                                    const msgElement = msg.user_id == null ? <SystemMessage><div dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
+                                            ALLOWED_ATTR: [
+                                                ...sanitizeConfig.ALLOWED_ATTR,
+                                            ],
+                                            ALLOWED_TAGS: [
+                                                ...sanitizeConfig.ALLOWED_TAGS,
+                                            ],
+                                        })
+                                    }} /></SystemMessage> : <Element_Message
                                         rawData={msg.text}
-                                        renderHTML={rendeText}
+                                        renderHTML={DOMPurify.sanitize(markedInstance.parse(msg.text) as string, sanitizeConfig)}
                                         message={msg}
                                         key={msg.id}
                                         slot="trigger"

@@ -14,7 +14,6 @@ customElements.define('chat-mention', class extends HTMLElement {
         const shadow = this.shadowRoot as ShadowRoot
 
         this.span = document.createElement('span')
-        this.span.style.whiteSpace = 'pre-wrap'
         this.span.style.fontSynthesis = 'style weight'
         this.span.style.color = 'rgb(var(--mdui-color-primary))'
         shadow.appendChild(this.span)

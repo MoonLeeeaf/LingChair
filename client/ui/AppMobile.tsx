@@ -120,6 +120,10 @@ export default function AppMobile() {
         }
         userProfileDialogRef.current!.open = true
     }
+    // deno-lint-ignore no-window
+    window.openUserInfoDialog = openUserInfoDialog
+    // deno-lint-ignore no-window
+    window.openChatInfoDialog = openChatInfoDialog
 
     return (
         <div style={{

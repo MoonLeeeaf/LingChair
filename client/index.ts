@@ -17,6 +17,16 @@ import AppMobile from './ui/AppMobile.tsx'
 import isMobileUI from "./ui/isMobileUI.ts"
 ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(isMobileUI() ? AppMobile : App, null))
 
+import User from "./api/client_data/User.ts"
+import Chat from "./api/client_data/Chat.ts"
+// TODO: 无奈之举 以后会找更好的办法
+declare global {
+    interface Window {
+        openUserInfoDialog: (user: User | string) => Promise<void>
+        openChatInfoDialog: (chat: Chat) => void
+    }
+}
+
 const onResize = () => {
     document.body.style.setProperty('--whitesilk-widget-message-maxwidth', breakpoint().down('md') ? "80%" : "70%")
     // deno-lint-ignore no-window

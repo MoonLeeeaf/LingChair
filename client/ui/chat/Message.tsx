@@ -29,9 +29,11 @@ function prettyFlatParsedMessage(html: string) {
     let lastElementType = ''
     function checkContinuousElement(tagName: string) {
         if (lastElementType != tagName) {
-            if (lastElementType == 'chat-text')
-                ret += `<chat-text-container>${ls.map((v) => v.outerHTML).join('')}</chat-text-container>`
-            else
+            console.log(lastElementType, ls.map((v) => v.innerHTML))
+            if (textElementTags.indexOf(lastElementType) != -1) {
+                if (ls.map((v) => v.innerHTML).join('').trim() != '')
+                    ret += `<chat-text-container>${ls.map((v) => v.outerHTML).join('')}</chat-text-container>`
+            } else
                 ret += ls.map((v) => v.outerHTML).join('')
             ls = []
         }

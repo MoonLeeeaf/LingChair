@@ -15,6 +15,8 @@ export default class UserChatLinker {
                 /* Chat ID */ chat_id TEXT NOT NULL
             );
        `)
+        db.exec(`CREATE INDEX IF NOT EXISTS idx_chat_id ON UserChatLinker(chat_id);`)
+        db.exec(`CREATE INDEX IF NOT EXISTS idx_user_id ON UserChatLinker(user_id);`)
         return db
     }
 

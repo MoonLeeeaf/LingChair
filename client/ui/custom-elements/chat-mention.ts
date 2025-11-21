@@ -3,7 +3,7 @@ import DataCaches from "../../api/DataCaches.ts"
 import { snackbar } from "../snackbar.ts"
 
 customElements.define('chat-mention', class extends HTMLElement {
-    declare span: HTMLSpanElement
+    declare link: HTMLAnchorElement
     static observedAttributes = ['user-id']
     constructor() {
         super()
@@ -13,10 +13,11 @@ customElements.define('chat-mention', class extends HTMLElement {
     connectedCallback() {
         const shadow = this.shadowRoot as ShadowRoot
 
-        this.span = document.createElement('span')
-        this.span.style.fontSynthesis = 'style weight'
-        this.span.style.color = 'rgb(var(--mdui-color-primary))'
-        shadow.appendChild(this.span)
+        this.link = document.createElement('a')
+        this.link.style.fontSynthesis = 'style weight'
+        this.link.style.color = 'rgb(var(--mdui-color-primary))'
+        this.link.href = 'javascript:void(0)'
+        shadow.appendChild(this.link)
 
         this.update()
     }
@@ -24,33 +25,33 @@ customElements.define('chat-mention', class extends HTMLElement {
         this.update()
     }
     async update() {
-        if (this.span == null) return
+        if (this.link == null) return
 
         const userId = $(this).attr('user-id')
         const chatId = $(this).attr('chat-id')
         const text = $(this).attr('text')
-        this.span.style.fontStyle = ''
+        this.link.style.fontStyle = ''
         if (chatId) {
             const chat = await DataCaches.getChatInfo(chatId)
-            this.span.textContent = chat?.title
-            this.span.onclick = () => {
+            this.link.textContent = chat?.title
+            this.link.onclick = () => {
                 // deno-lint-ignore no-window
                 window.openChatInfoDialog(chat)
             }
         } else if (userId) {
             const user = await DataCaches.getUserProfile(userId)
-            this.span.textContent = user?.nickname
-            this.span.onclick = () => {
+            this.link.textContent = user?.nickname
+            this.link.onclick = () => {
                 // deno-lint-ignore no-window
                 window.openUserInfoDialog(user)
             }
         }
         
-        text && (this.span.textContent = text)
+        text && (this.link.textContent = text)
         if (!(userId || chatId)) {
-            this.span.textContent = "无效的提及"
-            this.span.style.fontStyle = 'italic'
-            this.span.onclick = () => {
+            this.link.textContent = "无效的提及"
+            this.link.style.fontStyle = 'italic'
+            this.link.onclick = () => {
                 snackbar({
                     message: "该提及没有指定用户或者对话！",
                     placement: 'top',

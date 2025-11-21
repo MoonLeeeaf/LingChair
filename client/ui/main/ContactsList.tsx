@@ -40,9 +40,9 @@ export default function ContactsList({
                 token: data.access_token,
             })
             if (re.code != 200) {
-                            if (re.code != 401) checkApiSuccessOrSncakbar(re, "获取收藏对话列表失败")
-                            return
-                        }
+                if (re.code != 401 && re.code != 400) checkApiSuccessOrSncakbar(re, "获取收藏对话列表失败")
+                return
+            }
             const ls = re.data!.contacts_list as Chat[]
             setContactsList(ls)
             setSharedFavouriteChats(ls)
@@ -53,7 +53,7 @@ export default function ContactsList({
             EventBus.off('ContactsList.updateContacts')
         }
         // 警告: 不添加 deps 導致無限執行
-    }, []) 
+    }, [])
 
     return <mdui-list style={{
         overflowY: 'auto',

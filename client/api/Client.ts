@@ -41,7 +41,7 @@ class Client {
                 if (re.code != 200) {
                     if (re.code == -1) {
                         auth()
-                    } else if (re.code != 401) {
+                    } else if (re.code != 401 && re.code != 400) {
                         const s2 = checkApiSuccessOrSncakbar(re, "重新验证失败")
                         s2!.autoCloseDelay = 0
                         s2!.action = "重试"
@@ -98,7 +98,7 @@ class Client {
                 // 错误处理
                 if (err) return resolve({
                     code: -1,
-                    msg: err.message.indexOf("timed out") != -1 ? "請求超時" : err.message,
+                    msg: err.message.indexOf("timed out") != -1 ? "请求超时" : err.message,
                 })
                 // 在特殊的方法之中, 不予进行: 令牌刷新并重试
                 // 附带 retry 次数限制

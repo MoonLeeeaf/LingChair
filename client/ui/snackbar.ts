@@ -86,7 +86,7 @@ interface SnackbarOptions extends Options {
 export function checkApiSuccessOrSncakbar(re: ApiCallbackMessage, msg_ahead: string, opinions_override: Options = {}): Snackbar | null {
     return re.code != 200 ? snackbar(
         Object.assign({
-            message: `${msg_ahead}: ${re.msg.indexOf("Failed to fetch") != -1
+            message: `${msg_ahead}: ${re.msg.indexOf("fetch") != -1
                 ? "HTTP 请求失败"
                 : re.msg
                 } [${re.code}]`,

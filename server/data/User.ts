@@ -27,7 +27,7 @@ export default class User {
     static table_name: string = "Users"
     private static database: DatabaseSync = User.init()
     private static init() {
-        const db: DatabaseSync = new DatabaseSync(path.join(config.data_path, User.table_name + '.db'))
+        const db: DatabaseSync = new DatabaseSync(path.join(config.data_path, 'Users.db'))
         db.exec(`
             CREATE TABLE IF NOT EXISTS ${User.table_name} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,6 +42,9 @@ export default class User {
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
+        db.exec(`CREATE INDEX IF NOT EXISTS idx_id ON ${User.table_name}(id);`)
+        db.exec(`CREATE INDEX IF NOT EXISTS idx_username ON ${User.table_name}(username);`)
+        db.exec(`CREATE INDEX IF NOT EXISTS idx_nickname ON ${User.table_name}(nickname);`)
         return db
     }
 

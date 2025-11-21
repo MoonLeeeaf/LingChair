@@ -33,6 +33,7 @@ export default class Chat {
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
+        db.exec(`CREATE INDEX IF NOT EXISTS idx_id ON Chat(id);`)
         return db
     }
 
@@ -95,6 +96,7 @@ export default class Chat {
                 /* 管理权限 */ permissions TEXT NOT NULL
             );
        `)
+        Chat.database.exec(`CREATE INDEX IF NOT EXISTS idx_user_id ON ${this.getAdminsTableName()}(user_id);`)
         Chat.database.exec(`
             CREATE TABLE IF NOT EXISTS ${this.getJoinRequestsTableName()} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,6 +104,7 @@ export default class Chat {
                 /* 请求原因 */ reason TEXT
             );
        `)
+        Chat.database.exec(`CREATE INDEX IF NOT EXISTS idx_user_id ON ${this.getJoinRequestsTableName()}(user_id);`)
     }
     protected getAdminsTableName() {
         return 'admins_' + this.bean.id.replaceAll('-', '_')

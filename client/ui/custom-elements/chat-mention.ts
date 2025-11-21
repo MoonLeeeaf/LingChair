@@ -34,14 +34,16 @@ customElements.define('chat-mention', class extends HTMLElement {
         if (chatId) {
             const chat = await DataCaches.getChatInfo(chatId)
             this.link.textContent = chat?.title
-            this.link.onclick = () => {
+            this.link.onclick = (e) => {
+                e.stopPropagation()
                 // deno-lint-ignore no-window
                 window.openChatInfoDialog(chat)
             }
         } else if (userId) {
             const user = await DataCaches.getUserProfile(userId)
             this.link.textContent = user?.nickname
-            this.link.onclick = () => {
+            this.link.onclick = (e) => {
+                e.stopPropagation()
                 // deno-lint-ignore no-window
                 window.openUserInfoDialog(user)
             }
@@ -51,7 +53,8 @@ customElements.define('chat-mention', class extends HTMLElement {
         if (!(userId || chatId)) {
             this.link.textContent = "无效的提及"
             this.link.style.fontStyle = 'italic'
-            this.link.onclick = () => {
+            this.link.onclick = (e) => {
+                e.stopPropagation()
                 snackbar({
                     message: "该提及没有指定用户或者对话！",
                     placement: 'top',

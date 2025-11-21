@@ -165,8 +165,15 @@ class Client {
             body: form,
             credentials: 'omit',
         })
+        const text = await (await re.blob()).text()
+        let json
+        try {
+            json = JSON.parse(text)
+        } catch(_) {}
         return {
-            ...await re.json(),
+            ...(json == null ? {
+                msg: text
+            } : json),
             code: re.status,
         } as ApiCallbackMessage
     }

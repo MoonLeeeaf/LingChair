@@ -30,6 +30,7 @@ import SystemMessage from "./SystemMessage.tsx"
 import JoinRequestsList from "./JoinRequestsList.tsx"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 import escapeHTML from "../../escapeHtml.ts"
+import GroupMembersList from "./GroupMembersList.tsx"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -89,7 +90,7 @@ const markedInstance = new marked.Marked({
                     case "ChatMention":
                         return `<chat-mention chat-id="${escapeHTML(/^tws:\/\/chat\?id=(.*)/.exec(href)?.[1] || '')}" text="${escapeHTML(/^ChatMention=(.*)/.exec(text)?.[1] || '')}">PH</chat-mention>`
                 }
-            return `<chat-text em="true">${ escapeHTML(`[无效数据 (<${text}>=${href})]`) }</chat-text>`
+            return `<chat-text em="true">${escapeHTML(`[无效数据 (<${text}>=${href})]`)}</chat-text>`
         },
     }
 })
@@ -339,6 +340,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     chatInfo.is_member ? <>
                         <mdui-tab value="Chat">{chatInfo.title}</mdui-tab>
                         {chatInfo.type == 'group' && chatInfo.is_admin && <mdui-tab value="NewMemberRequests">加入请求</mdui-tab>}
+                        {chatInfo.type == 'group' && <mdui-tab value="GroupMembers">群组成员</mdui-tab>}
                     </>
                         : <mdui-tab value="RequestJoin">{chatInfo.title}</mdui-tab>
                 }
@@ -560,6 +562,15 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     </div>
                 </mdui-tab-panel>
                 {
+                    chatInfo.type == 'group' && <mdui-tab-panel slot="panel" value="GroupMembers" style={{
+                        display: tabItemSelected == "GroupMembers" ? "flex" : "none",
+                        flexDirection: "column",
+                        height: "100%",
+                    }}>
+                        {tabItemSelected == "GroupMembers" && <GroupMembersList target={target} />}
+                    </mdui-tab-panel>
+                }
+                {
                     chatInfo.type == 'group' && <mdui-tab-panel slot="panel" value="NewMemberRequests" style={{
                         display: tabItemSelected == "NewMemberRequests" ? "flex" : "none",
                         flexDirection: "column",
@@ -603,13 +614,6 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     description="以便于添加, 可留空"
                                     state={groupPreferenceStore.state.group_name || ''}
                                     disabled={!chatInfo.is_admin} />
-                                {/* <PreferenceHeader
-                                    title="群组管理" />
-                                <Preference
-                                    title="群组成员列表"
-                                    icon="group"
-                                    disabled={true || !chatInfo.is_admin}
-                                    description="别看了, 还没做" /> */}
                                 <PreferenceHeader
                                     title="入群设定" />
                                 <SwitchPreference

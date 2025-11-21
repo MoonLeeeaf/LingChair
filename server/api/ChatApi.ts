@@ -620,5 +620,48 @@ export default class ChatApi extends BaseApi {
                 msg: "非私聊对话",
             }
         })
+        /**
+         * 获取所有的加入对话申请
+         * @param token 令牌
+         * @param target ID
+         */
+        this.registerEvent("Chat.getMembers", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+            if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
+                code: 403,
+                msg: "用户无权访问此对话",
+            }
+
+            return {
+                code: 200,
+                msg: '成功',
+                data: {
+                    members: chat.getMembersList().map((v) => {
+                        const user = User.findById(v)
+                        return user && {
+                            id: user?.bean.id,
+                            nickname: user.getNickName(),
+                            username: user.getUserName(),
+                            avatar_file_hash: user.getAvatarFileHash(),
+                        }
+                    }),
+                }
+            }
+        })
     }
 }

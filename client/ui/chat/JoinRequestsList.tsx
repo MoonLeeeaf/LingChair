@@ -28,7 +28,7 @@ export default function JoinRequestsList({
         setSearchText((e.target as unknown as TextField).value)
     })
 
-    useAsyncEffect(async () => {
+    React.useEffect(() => {
         async function updateJoinRequests() {
             const re = await Client.invoke("Chat.getJoinRequests", {
                 token: data.access_token,
@@ -41,8 +41,11 @@ export default function JoinRequestsList({
         }
         updateJoinRequests()
         EventBus.on('JoinRequestsList.updateJoinRequests', () => updateJoinRequests())
-        setTimeout(() => updateJoinRequests(), 15 * 1000)
-    })
+        const id = setTimeout(() => updateJoinRequests(), 15 * 1000)
+        return () => {
+            clearTimeout(id)
+        }
+    }, [target])
 
     async function removeJoinRequest(userId: string) {
         const re = await Client.invoke("Chat.processJoinRequest", {

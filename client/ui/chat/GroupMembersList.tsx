@@ -25,7 +25,7 @@ export default function GroupMembersList({
         setSearchText((e.target as unknown as TextField).value)
     })
 
-    useAsyncEffect(async () => {
+    React.useEffect(() => {
         async function updateMembers() {
             const re = await Client.invoke("Chat.getMembers", {
                 token: data.access_token,
@@ -38,8 +38,11 @@ export default function GroupMembersList({
         }
         updateMembers()
         EventBus.on('GroupMembersList.updateMembers', () => updateMembers())
-        setTimeout(() => updateMembers(), 15 * 1000)
-    })
+        const id = setTimeout(() => updateMembers(), 15 * 1000)
+        return () => {
+            clearTimeout(id)
+        }
+    }, [target])
 
     return <mdui-list style={{
         overflowY: 'auto',

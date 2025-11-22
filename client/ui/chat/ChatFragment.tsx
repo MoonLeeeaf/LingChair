@@ -567,7 +567,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         flexDirection: "column",
                         height: "100%",
                     }}>
-                        {tabItemSelected == "GroupMembers" && <GroupMembersList target={target} />}
+                        <GroupMembersList target={target} />
                     </mdui-tab-panel>
                 }
                 {
@@ -576,7 +576,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         flexDirection: "column",
                         height: "100%",
                     }}>
-                        {tabItemSelected == "NewMemberRequests" && <JoinRequestsList target={target} />}
+                        <JoinRequestsList target={target} />
                     </mdui-tab-panel>
                 }
                 <mdui-tab-panel slot="panel" value="Settings" style={{

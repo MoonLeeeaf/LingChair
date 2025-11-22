@@ -1,5 +1,4 @@
 import { $ } from "mdui/jq"
-import RecentChat from "../../api/client_data/RecentChat.ts"
 import Avatar from "../Avatar.tsx"
 import React from 'react'
 import JoinRequest from "../../api/client_data/JoinRequest.ts"

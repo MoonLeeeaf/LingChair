@@ -73,6 +73,7 @@ export default function GroupMembersList({
             ).map((v) =>
                 <GroupMembersListItem
                     key={v.id}
+                    chat={chat}
                     user={v} />
             )
         }

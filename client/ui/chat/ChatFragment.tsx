@@ -576,7 +576,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         flexDirection: "column",
                         height: "100%",
                     }}>
-                        <JoinRequestsList chat={chatInfo} />
+                        {chatInfo.is_admin && <JoinRequestsList chat={chatInfo} />}
                     </mdui-tab-panel>
                 }
                 <mdui-tab-panel slot="panel" value="Settings" style={{

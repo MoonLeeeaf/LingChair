@@ -64,7 +64,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                         fontSize: '10.5px',
                         marginTop: '3px',
                         color: 'rgb(var(--mdui-color-secondary))',
-                    }}>ID: {chat?.type == 'private' ? userId : chat?.id}</span>
+                    }}>({chat?.type}) ID: {chat?.type == 'private' ? userId : chat?.id}</span>
                 </div>
             </div>
             <mdui-divider style={{

@@ -3,7 +3,6 @@ import data from "../Data.ts"
 import ChatFragment from "./chat/ChatFragment.tsx"
 import useEventListener from './useEventListener.ts'
 import User from "../api/client_data/User.ts"
-import RecentChat from "../api/client_data/RecentChat.ts"
 import Avatar from "./Avatar.tsx"
 
 import * as React from 'react'
@@ -22,7 +21,6 @@ import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx"
 import Chat from "../api/client_data/Chat.ts"
 import AddContactDialog from './dialog/AddContactDialog.tsx'
 import CreateGroupDialog from './dialog/CreateGroupDialog.tsx'
-import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import DataCaches from "../api/DataCaches.ts"
 import getUrlForFileByHash from "../getUrlForFileByHash.ts"
 import Message from "../api/client_data/Message.ts"
@@ -61,9 +59,6 @@ export default function App() {
     useEventListener(openMyProfileDialogButtonRef, 'click', (_event) => {
         myProfileDialogRef.current!.open = true
     })
-
-    const userProfileDialogRef = React.useRef<Dialog>(null)
-    const [userInfo, setUserInfo] = React.useState(null as unknown as User)
 
     const addContactDialogRef = React.useRef<Dialog>(null)
     const createGroupDialogRef = React.useRef<Dialog>(null)
@@ -112,13 +107,23 @@ export default function App() {
     }
 
     async function openUserInfoDialog(user: User | string) {
-        if (typeof user == 'object') {
+        const re = await Client.invoke("Chat.getIdForPrivate", {
+            token: data.access_token,
+            target: typeof user == 'object' ? user.id : user,
+        })
+        if (re.code != 200) {
+            checkApiSuccessOrSncakbar(re, '获取对话失败')
+            return
+        }
+
+        openChatInfoDialog(re.data as Chat)
+        /* if (typeof user == 'object') {
             setUserInfo(user)
         } else {
             setUserInfo(await DataCaches.getUserProfile(user))
 
         }
-        userProfileDialogRef.current!.open = true
+        userProfileDialogRef.current!.open = true */
     }
     // deno-lint-ignore no-window
     window.openUserInfoDialog = openUserInfoDialog
@@ -181,18 +186,12 @@ export default function App() {
             <ChatInfoDialog
                 chatInfoDialogRef={chatInfoDialogRef as any}
                 openChatFragment={openChatFragment}
-                openUserInfoDialog={openUserInfoDialog}
                 sharedFavouriteChats={sharedFavouriteChats}
                 chat={chatInfo} />
 
             <MyProfileDialog
                 myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
-            <UserProfileDialog
-                chatInfoDialogRef={chatInfoDialogRef as any}
-                userProfileDialogRef={userProfileDialogRef as any}
-                openChatFragment={openChatFragment}
-                user={userInfo} />
 
             <AddContactDialog
                 addContactDialogRef={addContactDialogRef} />

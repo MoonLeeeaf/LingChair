@@ -12,29 +12,32 @@ import openImageViewer from "../openImageViewer.ts"
 import EventBus from "../../EventBus.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
-    chat: Chat
+    chat?: Chat
     openChatFragment: (id: string) => void
     chatInfoDialogRef: React.MutableRefObject<Dialog>
-    openUserInfoDialog: (user: User | string) => void
     sharedFavouriteChats: Chat[]
 }
 
-export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragment, openUserInfoDialog, sharedFavouriteChats }: Args) {
-    const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
+export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragment, sharedFavouriteChats }: Args) {
     const [favourited, setIsFavourited] = React.useState(false)
 
-    useAsyncEffect(async () => {
-        if (chat == null) return
-        const re = await Client.invoke("Chat.getInfo", {
-            token: data.access_token,
-            target: chat.id,
-        })
-        if (re.code != 200)
-            return checkApiSuccessOrSncakbar(re, '获取对话信息失败')
+    React.useEffect(() => {
+        setIsFavourited(sharedFavouriteChats.map((v) => v.id).indexOf(chat?.id || '') != -1)
+    })
 
-        const info = re.data as Chat
-        setIsFavourited(sharedFavouriteChats.map((v) => v.id).indexOf(info.id) != -1)
+    let userId: string | null = null
+    useAsyncEffect(async () => {
+        if (chat?.type == 'private') {
+            const re = await Client.invoke("Chat.getAnotherUserIdFromPrivate", {
+                token: data.access_token,
+                target: chat.id,
+            })
+            if (re.code != 200)
+                return checkApiSuccessOrSncakbar(re, '获取用户失败')
+            userId = re.data!.user_id as string
+        }
     }, [chat, sharedFavouriteChats])
+
     const avatarUrl = getUrlForFileByHash(chat?.avatar_file_hash as string)
 
     return (
@@ -57,19 +60,6 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
             }}></mdui-divider>
 
             <mdui-list>
-                {
-                    chat?.type == 'private' &&
-                    <mdui-list-item icon="person" rounded onClick={async () => {
-                        const re = await Client.invoke("Chat.getAnotherUserIdFromPrivate", {
-                            token: data.access_token,
-                            target: chat.id,
-                        })
-                        if (re.code != 200)
-                            return checkApiSuccessOrSncakbar(re, '获取用户失败')
-
-                        openUserInfoDialog(re.data!.user_id as string)
-                    }}>用户详情</mdui-list-item>
-                }
                 <mdui-list-item icon={favourited ? "favorite_border" : "favorite"} rounded onClick={() => dialog({
                     headline: favourited ? "取消收藏对话" : "收藏对话",
                     description: favourited ? "确定从收藏对话列表中移除吗? (虽然这不会导致聊天记录丢失)" : "确定要添加到收藏对话列表吗?",
@@ -83,7 +73,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                         {
                             text: "确定",
                             onClick: () => {
-                                ;(async () => {
+                                ; (async () => {
                                     const re = await Client.invoke(favourited ? "User.removeContacts" : "User.addContacts", {
                                         token: data.access_token,
                                         targets: [

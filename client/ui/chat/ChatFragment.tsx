@@ -344,7 +344,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     </>
                         : <mdui-tab value="RequestJoin">{chatInfo.title}</mdui-tab>
                 }
-                <mdui-tab value="Settings">设置</mdui-tab>
+                {chatInfo.type == 'group' && <mdui-tab value="Settings">设置</mdui-tab>}
                 <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
                 <div style={{
                     flexGrow: '1',
@@ -567,7 +567,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         flexDirection: "column",
                         height: "100%",
                     }}>
-                        <GroupMembersList target={target} />
+                        <GroupMembersList chat={chatInfo} />
                     </mdui-tab-panel>
                 }
                 {
@@ -576,7 +576,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         flexDirection: "column",
                         height: "100%",
                     }}>
-                        <JoinRequestsList target={target} />
+                        <JoinRequestsList chat={chatInfo} />
                     </mdui-tab-panel>
                 }
                 <mdui-tab-panel slot="panel" value="Settings" style={{

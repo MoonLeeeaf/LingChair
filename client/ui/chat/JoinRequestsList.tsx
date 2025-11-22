@@ -11,15 +11,17 @@ import EventBus from "../../EventBus.ts"
 import isMobileUI from "../isMobileUI.ts"
 import JoinRequest from "../../api/client_data/JoinRequest.ts"
 import JoinRequestsListItem from "./JoinRequestsListItem.tsx";
+import Chat from "../../api/client_data/Chat.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
-    target: string
+    chat: Chat
 }
 
-export default function JoinRequestsList({
-    target,
+export default function GroupMembersList({
+    chat,
     ...props
 }: Args) {
+    const target = chat.id
     const searchRef = React.useRef<HTMLElement>(null)
     const [searchText, setSearchText] = React.useState('')
     const [updateJoinRequests, setUpdateJoinRequests] = React.useState<JoinRequest[]>([])
@@ -44,6 +46,7 @@ export default function JoinRequestsList({
         const id = setTimeout(() => updateJoinRequests(), 15 * 1000)
         return () => {
             clearTimeout(id)
+            EventBus.off('JoinRequestsList.updateJoinRequests')
         }
     }, [target])
 

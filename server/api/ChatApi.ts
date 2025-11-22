@@ -157,6 +157,75 @@ export default class ChatApi extends BaseApi {
         }) */
         /**
          * ======================================================
+         *                          对话成员
+         * ======================================================
+         */
+        this.registerEvent("Chat.quit", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'chat_id', 'user_ids'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+            const action = args.action as string
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            const chat = Chat.findById(args.chat_id as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+            if (!chat.checkUserIsAdmin(token.author)) return {
+                code: 403,
+                msg: "没有此权限",
+            }
+
+            const members = args.user_ids as string[]
+            members.splice(members.indexOf(token.author))
+            chat.removeMembers(members)
+
+            return {
+                code: 200,
+                msg: '成功',
+            }
+        })
+        this.registerEvent("Chat.removeMembers", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'chat_id', 'user_ids'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+            const action = args.action as string
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            const chat = Chat.findById(args.chat_id as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+            if (!chat.checkUserIsAdmin(token.author)) return {
+                code: 403,
+                msg: "没有此权限",
+            }
+
+            const members = args.user_ids as string[]
+            members.splice(members.indexOf(token.author))
+            chat.removeMembers(members)
+
+            return {
+                code: 200,
+                msg: '成功',
+            }
+        })
+        /**
+         * ======================================================
          *                       加入对话申请
          * ======================================================
          */

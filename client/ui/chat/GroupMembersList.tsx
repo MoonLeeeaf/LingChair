@@ -8,15 +8,17 @@ import data from "../../Data.ts"
 import EventBus from "../../EventBus.ts"
 import GroupMembersListItem from "./GroupMembersListItem.tsx"
 import User from "../../api/client_data/User.ts"
+import Chat from "../../api/client_data/Chat.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
-    target: string
+    chat: Chat
 }
 
 export default function GroupMembersList({
-    target,
+    chat,
     ...props
 }: Args) {
+    const target = chat.id
     const searchRef = React.useRef<HTMLElement>(null)
     const [searchText, setSearchText] = React.useState('')
     const [groupMembers, setGroupMembers] = React.useState<User[]>([])
@@ -41,6 +43,7 @@ export default function GroupMembersList({
         const id = setTimeout(() => updateMembers(), 15 * 1000)
         return () => {
             clearTimeout(id)
+            EventBus.off('GroupMembersList.updateMembers')
         }
     }, [target])
 

@@ -40,6 +40,10 @@ export type CallMethod =
     "Chat.sendJoinRequest" |
     "Chat.getJoinRequests" |
 
+    // 对话成员
+    "Chat.removeMembers" |
+    "Chat.quit" |
+
     // 对话消息
     "Chat.sendMessage" |
     "Chat.getMessageHistory"

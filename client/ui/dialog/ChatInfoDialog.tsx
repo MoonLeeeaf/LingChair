@@ -25,7 +25,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
         setIsFavourited(sharedFavouriteChats.map((v) => v.id).indexOf(chat?.id || '') != -1)
     })
 
-    let userId: string | null = null
+    const [userId, setUserId] = React.useState<string | null>(null)
     useAsyncEffect(async () => {
         if (chat?.type == 'private') {
             const re = await Client.invoke("Chat.getAnotherUserIdFromPrivate", {
@@ -34,7 +34,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
             })
             if (re.code != 200)
                 return checkApiSuccessOrSncakbar(re, '获取用户失败')
-            userId = re.data!.user_id as string
+            setUserId(re.data!.user_id as string)
         }
     }, [chat, sharedFavouriteChats])
 
@@ -50,10 +50,22 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                     width: '50px',
                     height: '50px',
                 }} onClick={() => avatarUrl && openImageViewer(avatarUrl)} />
-                <span style={{
-                    marginLeft: "15px",
+                <div style={{
+                    display: 'flex',
+                    marginLeft: '15px',
+                    marginRight: '15px',
                     fontSize: '16.5px',
-                }}>{chat?.title}</span>
+                    flexDirection: 'column',
+                }}>
+                    <span style={{
+                        fontSize: '16.5px'
+                    }}>{chat?.title}</span>
+                    <span style={{
+                        fontSize: '10.5px',
+                        marginTop: '3px',
+                        color: 'rgb(var(--mdui-color-secondary))',
+                    }}>ID: {chat?.type == 'private' ? userId : chat?.id}</span>
+                </div>
             </div>
             <mdui-divider style={{
                 marginTop: "10px",
@@ -77,7 +89,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                                     const re = await Client.invoke(favourited ? "User.removeContacts" : "User.addContacts", {
                                         token: data.access_token,
                                         targets: [
-                                            chat.id
+                                            chat!.id
                                         ],
                                     })
                                     if (re.code != 200)
@@ -91,7 +103,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                 })}>{favourited ? '取消收藏' : '收藏对话'}</mdui-list-item>
                 <mdui-list-item icon="chat" rounded onClick={() => {
                     chatInfoDialogRef.current!.open = false
-                    openChatFragment(chat.id)
+                    openChatFragment(chat!.id)
                 }}>打开对话</mdui-list-item>
             </mdui-list>
         </mdui-dialog>

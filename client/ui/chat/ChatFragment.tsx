@@ -323,7 +323,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             flexDirection: 'column',
             overflowY: 'auto',
         }} {...props}>
-            <mdui-tabs ref={tabRef} value={tabItemSelected} style={{
+            <mdui-tabs style={{
                 position: 'sticky',
                 display: "flex",
                 flexDirection: "column",
@@ -336,16 +336,23 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         marginRight: '5px',
                     }}></mdui-button-icon>
                 }
-                {
-                    chatInfo.is_member ? <>
-                        <mdui-tab value="Chat">{chatInfo.title}</mdui-tab>
-                        {chatInfo.type == 'group' && chatInfo.is_admin && <mdui-tab value="NewMemberRequests">加入请求</mdui-tab>}
-                        {chatInfo.type == 'group' && <mdui-tab value="GroupMembers">群组成员</mdui-tab>}
-                    </>
-                        : <mdui-tab value="RequestJoin">{chatInfo.title}</mdui-tab>
-                }
-                {chatInfo.type == 'group' && <mdui-tab value="Settings">设置</mdui-tab>}
-                <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
+                <mdui-tabs ref={tabRef} value={tabItemSelected} style={{
+                    position: 'sticky',
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                }}>
+                    {
+                        chatInfo.is_member ? <>
+                            <mdui-tab value="Chat">{chatInfo.title}</mdui-tab>
+                            {chatInfo.type == 'group' && chatInfo.is_admin && <mdui-tab value="NewMemberRequests">加入请求</mdui-tab>}
+                            {chatInfo.type == 'group' && <mdui-tab value="GroupMembers">群组成员</mdui-tab>}
+                        </>
+                            : <mdui-tab value="RequestJoin">{chatInfo.title}</mdui-tab>
+                    }
+                    {chatInfo.type == 'group' && <mdui-tab value="Settings">设置</mdui-tab>}
+                    <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
+                </mdui-tabs>
                 <div style={{
                     flexGrow: '1',
                 }}></div>

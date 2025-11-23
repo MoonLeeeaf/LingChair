@@ -9,10 +9,6 @@
     "jsxImportSource": "react",
     "jsxImportSourceTypes": "@types/react"
   },
-  "links": [
-    "./mdui_patched",
-  ],
-  "nodeModulesDir": "auto",
   "imports": {
     "@deno/vite-plugin": "npm:@deno/vite-plugin@1.0.5",
     "@types/react": "npm:@types/react@18.3.1",
@@ -34,6 +30,8 @@
     "socket.io-client": "npm:socket.io-client@4.8.1",
     "marked": "npm:marked@16.3.0",
     "dompurify": "npm:dompurify@3.2.7",
-    "pinch-zoom-element": "npm:pinch-zoom-element@1.1.1"
+    "pinch-zoom-element": "npm:pinch-zoom-element@1.1.1",
+
+    "lingchair-internal-shared": "../internal-shared/mod.ts"
   }
 }

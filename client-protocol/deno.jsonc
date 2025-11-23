@@ -1,5 +1,6 @@
 {
     "imports": {
-        "socket.io-client": "npm:socket.io-client@4.8.1"
+        "socket.io-client": "npm:socket.io-client@4.8.1",
+        "lingchair-internal-shared": "../internal-shared/mod.ts"
     }
 }

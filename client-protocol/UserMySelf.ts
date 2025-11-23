@@ -177,4 +177,24 @@ export default class UserMySelf extends User {
             return re.data!.recent_chats as RecentChatBean[]
         throw new CallbackError(re)
     }
+    /*
+     * ================================================
+     *                    所有对话
+     * ================================================
+     */
+    async getMyAllChatBeans() {
+        try {
+            return await this.getMyAllChatBeansOrThrow()
+        } catch (_) {
+            return []
+        }
+    }
+    async getMyAllChatBeansOrThrow() {
+        const re = await this.client.invoke("User.getMyAllChats", {
+            token: this.client.access_token
+        })
+        if (re.code == 200)
+            return re.data!.all_chats as ChatBean[]
+        throw new CallbackError(re)
+    }
 }

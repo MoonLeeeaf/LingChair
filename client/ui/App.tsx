@@ -25,6 +25,7 @@ import DataCaches from "../api/DataCaches.ts"
 import getUrlForFileByHash from "../getUrlForFileByHash.ts"
 import Message from "../api/client_data/Message.ts"
 import EventBus from "../EventBus.ts"
+import AllChatsList from "./main/AllChatsList.tsx";
 
 declare global {
     namespace React {
@@ -205,8 +206,21 @@ export default function App() {
                 </mdui-button-icon>
 
                 <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents"></mdui-navigation-rail-item>
-                <mdui-navigation-rail-item icon="chat--outlined" active-icon="chat--filled" value="Contacts"></mdui-navigation-rail-item>
+                <mdui-navigation-rail-item icon="favorite_border" active-icon="favorite" value="Contacts"></mdui-navigation-rail-item>
+                <mdui-navigation-rail-item icon="chat--outlined" active-icon="chat--filled" value="AllChats"></mdui-navigation-rail-item>
 
+                <mdui-button-icon icon="refresh" slot="bottom" onClick={() => {
+                    EventBus.emit('RecentsList.updateRecents')
+                    EventBus.emit('ContactsList.updateContacts')
+                    EventBus.emit('AllChatsList.updateAllChats')
+                }}></mdui-button-icon>
+                <mdui-dropdown trigger="hover" slot="bottom">
+                    <mdui-button-icon icon="add" slot="trigger"></mdui-button-icon>
+                    <mdui-menu>
+                        <mdui-menu-item icon="person_add" onClick={() => addContactDialogRef.current!.open = true}>添加收藏对话</mdui-menu-item>
+                        <mdui-menu-item icon="group_add" onClick={() => createGroupDialogRef.current!.open = true}>创建群组</mdui-menu-item>
+                    </mdui-menu>
+                </mdui-dropdown>
                 <mdui-button-icon icon="settings" slot="bottom"></mdui-button-icon>
             </mdui-navigation-rail>
             {
@@ -221,8 +235,16 @@ export default function App() {
                         currentChatId={currentChatId} />
                 }
                 {
+                    // 最近聊天
+                    <AllChatsList
+                        openChatInfoDialog={openChatInfoDialog}
+                        display={navigationItemSelected == "AllChats"}
+                        currentChatId={currentChatId} />
+                }
+                {
                     // 對話列表
                     <ContactsList
+                        currentChatId={currentChatId}
                         openChatInfoDialog={openChatInfoDialog}
                         setSharedFavouriteChats={setSharedFavouriteChats}
                         addContactDialogRef={addContactDialogRef as any}

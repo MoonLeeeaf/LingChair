@@ -15,6 +15,7 @@ import Chat from "./Chat.ts"
 import ChatBean from "./ChatBean.ts"
 import MapJson from "../MapJson.ts"
 import DataWrongError from '../api/DataWrongError.ts'
+import UserChatLinker from "./UserChatLinker.ts";
 
 type UserBeanKey = keyof UserBean
 
@@ -154,6 +155,9 @@ export default class User {
             console.log(chalk.yellow(`警告: 所有对话解析失败: ${(e as Error).message}`))
             return []
         }
+    }
+    getAllChatsList() {
+        return UserChatLinker.getUserChats(this.bean.id)
     }
     getNickName(): string {
         return this.bean.nickname

@@ -21,6 +21,8 @@ import Chat from "../api/client_data/Chat.ts"
 import AddContactDialog from './dialog/AddContactDialog.tsx'
 import CreateGroupDialog from './dialog/CreateGroupDialog.tsx'
 import getUrlForFileByHash from "../getUrlForFileByHash.ts"
+import AllChatsList from "./main/AllChatsList.tsx";
+import EventBus from "../EventBus.ts";
 
 declare global {
     namespace React {
@@ -198,12 +200,24 @@ export default function AppMobile() {
                 <mdui-top-app-bar-title>{
                     ({
                         Recents: "最近对话",
-                        Contacts: "所有对话"
+                        Contacts: "收藏对话"
                     })[navigationItemSelected]
                 }</mdui-top-app-bar-title>
                 <div style={{
                     flexGrow: 1,
                 }}></div>
+                <mdui-button-icon icon="refresh" onClick={() => {
+                    EventBus.emit('RecentsList.updateRecents')
+                    EventBus.emit('ContactsList.updateContacts')
+                    EventBus.emit('AllChatsList.updateAllChats')
+                }}></mdui-button-icon>
+                <mdui-dropdown trigger="hover">
+                    <mdui-button-icon icon="add" slot="trigger"></mdui-button-icon>
+                    <mdui-menu>
+                        <mdui-menu-item icon="person_add" onClick={() => addContactDialogRef.current!.open = true}>添加收藏对话</mdui-menu-item>
+                        <mdui-menu-item icon="group_add" onClick={() => createGroupDialogRef.current!.open = true}>创建群组</mdui-menu-item>
+                    </mdui-menu>
+                </mdui-dropdown>
                 <mdui-button-icon icon="settings"></mdui-button-icon>
                 <mdui-button-icon>
                     <Avatar src={getUrlForFileByHash(myUserProfileCache?.avatar_file_hash)} text={myUserProfileCache?.nickname} avatarRef={openMyProfileDialogButtonRef} />
@@ -228,8 +242,16 @@ export default function AppMobile() {
                         currentChatId={currentChatId} />
                 }
                 {
+                    // 最近聊天
+                    <AllChatsList
+                        openChatInfoDialog={openChatInfoDialog}
+                        display={navigationItemSelected == "AllChats"}
+                        currentChatId={currentChatId} />
+                }
+                {
                     // 對話列表
                     <ContactsList
+                        currentChatId={currentChatId}
                         openChatInfoDialog={openChatInfoDialog}
                         setSharedFavouriteChats={setSharedFavouriteChats}
                         addContactDialogRef={addContactDialogRef as any}
@@ -242,7 +264,8 @@ export default function AppMobile() {
                 bottom: '0',
             }}>
                 <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近对话</mdui-navigation-bar-item>
-                <mdui-navigation-bar-item icon="chat--outlined" active-icon="chat--filled" value="Contacts">所有对话</mdui-navigation-bar-item>
+                <mdui-navigation-bar-item icon="favorite_border" active-icon="favorite" value="Contacts">收藏对话</mdui-navigation-bar-item>
+                <mdui-navigation-bar-item icon="chat--outlined" active-icon="chat--filled" value="AllChats">全部对话</mdui-navigation-bar-item>
             </mdui-navigation-bar>
         </div>
     )

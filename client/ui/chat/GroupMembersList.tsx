@@ -40,9 +40,9 @@ export default function GroupMembersList({
         }
         updateMembers()
         EventBus.on('GroupMembersList.updateMembers', () => updateMembers())
-        const id = setTimeout(() => updateMembers(), 15 * 1000)
+        const id = setInterval(() => updateMembers(), 15 * 1000)
         return () => {
-            clearTimeout(id)
+            clearInterval(id)
             EventBus.off('GroupMembersList.updateMembers')
         }
     }, [target])

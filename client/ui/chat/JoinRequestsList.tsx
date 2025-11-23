@@ -39,9 +39,9 @@ export default function GroupMembersList({
         }
         updateJoinRequests()
         EventBus.on('JoinRequestsList.updateJoinRequests', () => updateJoinRequests())
-        const id = setTimeout(() => updateJoinRequests(), 15 * 1000)
+        const id = setInterval(() => updateJoinRequests(), 15 * 1000)
         return () => {
-            clearTimeout(id)
+            clearInterval(id)
             EventBus.off('JoinRequestsList.updateJoinRequests')
         }
     }, [target])

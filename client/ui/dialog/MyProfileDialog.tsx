@@ -106,6 +106,8 @@ export default function MyProfileDialog({
                             },
                         }
                     ],
+                    closeOnEsc: true,
+                    closeOnOverlayClick: true,
                 })}>退出登录</mdui-list-item>
             </mdui-list>
         </mdui-dialog>

@@ -13,7 +13,7 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
 
 export default function TextFieldPreference({ title, icon, description, id, state, disabled }: Args) {
     const updater = React.useContext(PreferenceUpdater)
-    
+
     return <mdui-list-item icon={icon} rounded disabled={disabled ? true : undefined} onClick={() => {
         prompt({
             headline: title,
@@ -22,11 +22,13 @@ export default function TextFieldPreference({ title, icon, description, id, stat
             onConfirm: (value) => {
                 updater(id, value)
             },
-            onCancel: () => {},
+            onCancel: () => { },
             textFieldOptions: {
                 label: description,
                 value: state,
             },
+            closeOnEsc: true,
+            closeOnOverlayClick: true,
         })
     }}>
         {title}

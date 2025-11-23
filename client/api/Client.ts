@@ -18,7 +18,7 @@ class Client {
         this.socket?.disconnect()
         this.socket && delete this.socket
         this.socket = io({
-            transports: ['websocket'],
+            transports: ['websocket', 'polling', 'webtransport'],
             auth: {
                 device_id: data.device_id,
                 session_id: this.sessionId,

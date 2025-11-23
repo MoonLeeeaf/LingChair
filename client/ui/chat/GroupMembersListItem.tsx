@@ -34,6 +34,8 @@ export default function GroupMembersListItem({ user, chat }: Args) {
                     dialog({
                         headline: "移除群组成员",
                         description: `确定要移除 ${nickname} 吗?`,
+                        closeOnEsc: true,
+                        closeOnOverlayClick: true,
                         actions: [
                             {
                                 text: "取消",

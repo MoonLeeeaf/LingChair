@@ -21,6 +21,9 @@ import FileUploadMiddleware from "./fileupload-middleware.ts"
 const app = express()
 app.use('/', express.static(config.data_path + '/page_compiled'))
 app.use(cookieParser())
+app.get('/config.json', (req, res) => {
+    res.send(config.client || {})
+})
 app.get('/uploaded_files/:hash', FileUploadMiddleware.checkAccessingUploadedFiles, (req, res) => {
     const file = FileManager.findByHash(req.params.hash as string)
 

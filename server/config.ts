@@ -17,9 +17,10 @@ let config = {
          */
         listen: {
             port: 3601,
-            host: "::",
+            host: null,
             /**
              * setting ipv6Only to true will disable dual-stack support, i.e., binding to host :: won't make 0.0.0.0 be bound.
+             * 然而这在 deno 上没什么用, 不如设定 host 为 null
              */
             ipv6Only: false,
         },
@@ -30,6 +31,9 @@ let config = {
             key: default_data_path + '/key.pem',
             cert: default_data_path + '/cert.pem',
         },
+    },
+    client: {
+        title: '铃之椅',
     },
 }
 

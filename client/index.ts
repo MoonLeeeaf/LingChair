@@ -48,3 +48,6 @@ if ("serviceWorker" in navigator)
     } catch (e) {
         console.error(e)
     }
+
+const config = await fetch('config.json').then((re) => re.json())
+config.title && (document.title = config.title)

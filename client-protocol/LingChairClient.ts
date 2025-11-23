@@ -9,7 +9,7 @@ import CallbackError from "./CallbackError.ts"
 import Chat from "./Chat.ts"
 import { CallableMethodBeforeAuth } from "lingchair-internal-shared"
 
-export { 
+export {
     User,
     Chat,
     UserMySelf,
@@ -18,6 +18,7 @@ export {
 export default class LingChairClient {
     declare client: Socket
     declare access_token: string
+    declare device_id: string
     declare refresh_token?: string
     declare auto_fresh_token: boolean
     declare auth_cache: {
@@ -30,15 +31,16 @@ export default class LingChairClient {
         server_url: string
         device_id: string,
         io?: Partial<ManagerOptions & SocketOptions>
-        auto_fresh_token: boolean
+        auto_fresh_token?: boolean
     }) {
         this.auto_fresh_token = args.auto_fresh_token || false
+        this.device_id = args.device_id
         this.client = io(args.server_url, {
             transports: ["polling", "websocket", "webtransport"],
             ...args.io,
             auth: {
                 ...args.io?.auth,
-                device_id: args.device_id,
+                device_id: this.device_id,
                 session_id: crypto.randomUUID(),
             },
         })
@@ -78,7 +80,7 @@ export default class LingChairClient {
                     else
                         resolve(res)
                 } else
-                resolve(res)
+                    resolve(res)
             })
         })
     }
@@ -127,9 +129,9 @@ export default class LingChairClient {
             const re = await this.invoke('User.refreshAccessToken', {
                 refresh_token: args.refresh_token,
             })
-            if (re.code == 200) 
+            if (re.code == 200)
                 access_token = re.data!.access_token as string | undefined
-            else 
+            else
                 throw new CallbackError(re)
         }
 
@@ -138,18 +140,18 @@ export default class LingChairClient {
                 account: args.account,
                 password: crypto.createHash('sha256').update(args.password).digest('hex'),
             })
-            if (re.code == 200) 
+            if (re.code == 200)
                 access_token = re.data!.access_token as string | undefined
-            else 
+            else
                 throw new CallbackError(re)
         }
 
         const re = await this.invoke('User.auth', {
             access_token: access_token
         })
-        if (re.code == 200) 
+        if (re.code == 200)
             this.access_token = access_token as string
-        else 
+        else
             throw new CallbackError(re)
     }
     async register(args: {
@@ -180,5 +182,43 @@ export default class LingChairClient {
         })
         if (re.code != 200)
             throw new CallbackError(re)
+    }
+    async uploadFile({
+        chatId,
+        fileData,
+        fileName,
+    }: { fileName: string, fileData: ArrayBuffer | Blob | Response, chatId?: string }) {
+        const form = new FormData()
+        form.append("file",
+            fileData instanceof ArrayBuffer
+                ? new File([fileData], fileName, { type: 'application/octet-stream' })
+                : (
+                    fileData instanceof Blob ? fileData :
+                        new File([await fileData.arrayBuffer()], fileName, { type: 'application/octet-stream' })
+                )
+        )
+        form.append('file_name', fileName)
+        chatId && form.append('chat_id', chatId)
+        const re = await fetch('./upload_file', {
+            method: 'POST',
+            headers: {
+                "Token": this.access_token,
+                "Device-Id": this.device_id,
+            } as HeadersInit,
+            body: form,
+            credentials: 'omit',
+        })
+        const text = await (await re.blob()).text()
+        let json
+        try {
+            json = JSON.parse(text)
+        // deno-lint-ignore no-empty
+        } catch (_) { }
+        return {
+            ...(json == null ? {
+                msg: text
+            } : json),
+            code: re.status,
+        } as ApiCallbackMessage
     }
 }

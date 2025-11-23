@@ -35,7 +35,10 @@ export default async function createLingChairServer() {
     })
 
     await fs.mkdir(config.data_path + '/upload_cache', { recursive: true })
-    await fs.unlink(config.data_path + '/upload_cache')
+    try {
+        await fs.rmdir(config.data_path + '/upload_cache')
+    // deno-lint-ignore no-empty
+    } catch (_) {}
     app.use(fileUpload({
         limits: { fileSize: 2 * 1024 * 1024 * 1024 },
         useTempFiles: true,

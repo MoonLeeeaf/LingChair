@@ -44,7 +44,11 @@ export default function RecentsList({
         }
         updateRecents()
         EventBus.on('RecentsList.updateRecents', () => updateRecents())
-        setTimeout(() => updateRecents(), 15 * 1000)
+        const id = setInterval(() => updateRecents(), 15 * 1000)
+        return () => {
+            EventBus.off('RecentsList.updateRecents')
+            clearInterval(id)
+        }
     })
 
     return <mdui-list style={{
@@ -58,6 +62,10 @@ export default function RecentsList({
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
             marginTop: '5px',
             marginBottom: '13px',
+            position: 'sticky',
+            top: '0',
+            backgroundColor: 'rgb(var(--mdui-color-background))',
+            zIndex: '10',
         }}></mdui-text-field>
         {
             recentsList.filter((chat) =>

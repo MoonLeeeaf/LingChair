@@ -181,6 +181,7 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                         id="msg"
                         style={{
                             fontSize: "94%",
+                            wordBreak: 'break-word',
                             display: 'flex',
                             flexDirection: 'column',
                         }}

@@ -34,7 +34,6 @@
     "socket.io-client": "npm:socket.io-client@4.8.1",
     "marked": "npm:marked@16.3.0",
     "dompurify": "npm:dompurify@3.2.7",
-    "pinch-zoom-element": "npm:pinch-zoom-element@1.1.1",
-    "react-json-view": "npm:react-json-view@1.21.3"
+    "pinch-zoom-element": "npm:pinch-zoom-element@1.1.1"
   }
 }

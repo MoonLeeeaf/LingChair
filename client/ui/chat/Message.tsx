@@ -9,7 +9,6 @@ import useAsyncEffect from "../useAsyncEffect.ts"
 import useEventListener from "../useEventListener.ts"
 import React from "react"
 import isMobileUI from "../isMobileUI.ts"
-import ReactJson from 'react-json-view'
 import User from "../../api/client_data/User.ts"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 import escapeHTML from "../../escapeHtml.ts"
@@ -86,11 +85,7 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
     }, [userId])
 
     const dropDownRef = React.useRef<Dropdown>(null)
-    const messageJsonDialogRef = React.useRef<Dialog>(null)
-    useEventListener(messageJsonDialogRef, 'click', (e) => {
-        e.stopPropagation()
-    })
-    useEventListener(dropDownRef, 'closed', (e) => {
+    useEventListener(dropDownRef, 'closed', () => {
         setDropDownOpen(false)
     })
 
@@ -180,12 +175,6 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                     // paddingTop: isUsingFullDisplay ?  undefined : "14px",
                     // backgroundColor: isUsingFullDisplay ? "inherit" : undefined
                 }}>
-                <mdui-dialog close-on-overlay-click close-on-esc ref={messageJsonDialogRef}>
-                    {
-                        // @ts-ignore 这是可以正常工作的
-                        <ReactJson src={message} />
-                    }
-                </mdui-dialog>
                 <mdui-dropdown trigger="manual" ref={dropDownRef} open={isDropDownOpen}>
                     <span
                         slot="trigger"
@@ -204,7 +193,23 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                     }}>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text().trim())}>复制文字</mdui-menu-item>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard(rawData)}>复制原文</mdui-menu-item>
-                        <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current!.open = true}>JSON</mdui-menu-item>
+                        <mdui-menu-item icon="info" onClick={() => dialog({
+                            headline: "原始数据",
+                            body: `<span style="word-break: break-word;">${Object.keys(message)
+                                // @ts-ignore 懒
+                                .map((k) => `${k} = ${message[k]}`)
+                                .join('<br><br>')}<span>`,
+                            closeOnEsc: true,
+                            closeOnOverlayClick: true,
+                            actions: [
+                                {
+                                    text: "关闭",
+                                    onClick: () => {
+                                        return true
+                                    },
+                                }
+                            ]
+                        }).addEventListener('click', (e) => e.stopPropagation())}>原始数据</mdui-menu-item>
                     </mdui-menu>
                 </mdui-dropdown>
             </mdui-card>

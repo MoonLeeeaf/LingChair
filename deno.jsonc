@@ -11,6 +11,8 @@
         "socket.io": "npm:socket.io@4.8.1",
         "cookie-parser": "npm:cookie-parser@1.4.7",
         "express-fileupload": "npm:express-fileupload@1.5.2",
-        "lingchair-internal-shared": "./internal-shared/mod.ts"
+        "lingchair-internal-shared": "./internal-shared/mod.ts",
+
+        "socket.io-client": "npm:socket.io-client@4.8.1"
     }
 }

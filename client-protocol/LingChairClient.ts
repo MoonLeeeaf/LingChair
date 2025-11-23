@@ -7,6 +7,7 @@ import User from "./User.ts"
 import UserMySelf from "./UserMySelf.ts"
 import CallbackError from "./CallbackError.ts"
 import Chat from "./Chat.ts"
+import { CallableMethodBeforeAuth } from "lingchair-internal-shared"
 
 export { 
     User,
@@ -18,11 +19,20 @@ export default class LingChairClient {
     declare client: Socket
     declare access_token: string
     declare refresh_token?: string
+    declare auto_fresh_token: boolean
+    declare auth_cache: {
+        refresh_token?: string,
+        access_token?: string,
+        account?: string,
+        password?: string,
+    }
     constructor(args: {
         server_url: string
         device_id: string,
         io?: Partial<ManagerOptions & SocketOptions>
+        auto_fresh_token: boolean
     }) {
+        this.auto_fresh_token = args.auto_fresh_token || false
         this.client = io(args.server_url, {
             transports: ["polling", "websocket", "webtransport"],
             ...args.io,
@@ -59,6 +69,15 @@ export default class LingChairClient {
                     code: -1,
                     msg: err.message,
                 })
+                if (CallableMethodBeforeAuth.indexOf(method) == -1 && res.code == 401 && this.auto_fresh_token) {
+                    if (this.auth_cache)
+                        this.auth(this.auth_cache).then((re) => {
+                            if (!re) resolve(res)
+                            this.invoke(method, args, timeout).then((re) => resolve(re))
+                        })
+                    else
+                        resolve(res)
+                } else
                 resolve(res)
             })
         })
@@ -98,6 +117,8 @@ export default class LingChairClient {
     }) {
         if ((!args.access_token && !args.refresh_token) && (!args.account && !args.password))
             throw new Error('Access/Refresh token or account & password required')
+
+        this.auth_cache = args
 
         this.refresh_token = args.refresh_token
 

@@ -110,6 +110,12 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         tabRef.current != null && setTabItemSelected(tabRef.current!.value as string)
     })
 
+    const containerTabRef = React.useRef<Tab>(null)
+    React.useEffect(() => {
+        $(containerTabRef.current!.shadowRoot).append(`<style>.container::after { height: 0 !important; }</style>`)
+        $(tabRef.current!.shadowRoot).append(`<style>.container::after { height: 0 !important; }</style>`)
+    }, [target])
+
     async function getChatInfoAndInit() {
         setMessagesList([])
         page.current = 0
@@ -323,7 +329,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             flexDirection: 'column',
             overflowY: 'auto',
         }} {...props}>
-            <mdui-tabs style={{
+            <mdui-tabs ref={containerTabRef} style={{
                 position: 'sticky',
                 display: "flex",
                 flexDirection: "column",

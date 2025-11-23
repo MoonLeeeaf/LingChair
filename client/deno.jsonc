@@ -9,6 +9,10 @@
     "jsxImportSource": "react",
     "jsxImportSourceTypes": "@types/react"
   },
+  "nodeModulesDir": "auto",
+  "links": [
+    "../mdui_patched"
+  ],
   "imports": {
     "@deno/vite-plugin": "npm:@deno/vite-plugin@1.0.5",
     "@types/react": "npm:@types/react@18.3.1",

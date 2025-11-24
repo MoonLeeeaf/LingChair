@@ -200,7 +200,8 @@ export default function AppMobile() {
                 <mdui-top-app-bar-title>{
                     ({
                         Recents: "最近对话",
-                        Contacts: "收藏对话"
+                        Contacts: "收藏对话",
+                        AllChats: "所有对话",
                     })[navigationItemSelected]
                 }</mdui-top-app-bar-title>
                 <div style={{

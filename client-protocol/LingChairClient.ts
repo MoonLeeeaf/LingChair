@@ -18,6 +18,7 @@ export {
 export default class LingChairClient {
     declare client: Socket
     declare access_token: string
+    declare server_url: string
     declare device_id: string
     declare refresh_token?: string
     declare auto_fresh_token: boolean
@@ -33,6 +34,7 @@ export default class LingChairClient {
         io?: Partial<ManagerOptions & SocketOptions>
         auto_fresh_token?: boolean
     }) {
+        this.server_url = args.server_url
         this.auto_fresh_token = args.auto_fresh_token || false
         this.device_id = args.device_id
         this.client = io(args.server_url, {
@@ -199,7 +201,13 @@ export default class LingChairClient {
         )
         form.append('file_name', fileName)
         chatId && form.append('chat_id', chatId)
-        const re = await fetch('./upload_file', {
+        const url = new URL(this.server_url)
+        const re = await fetch(({
+            'ws:': 'http:',
+            'wss:': 'https:',
+            'http:': 'http:',
+            'https:': 'https:',
+        })[url.protocol] || 'http:' + '//' + url.host + '/upload_file', {
             method: 'POST',
             headers: {
                 "Token": this.access_token,
@@ -214,11 +222,12 @@ export default class LingChairClient {
             json = JSON.parse(text)
         // deno-lint-ignore no-empty
         } catch (_) { }
-        return {
+        if (!re.ok) throw new CallbackError({
             ...(json == null ? {
                 msg: text
             } : json),
             code: re.status,
-        } as ApiCallbackMessage
+        } as ApiCallbackMessage)
+        return json.data.hash as string
     }
 }

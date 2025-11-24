@@ -228,6 +228,6 @@ export default class LingChairClient {
             } : json),
             code: re.status,
         } as ApiCallbackMessage)
-        return json.data.hash as string
+        return json.data.file_hash as string
     }
 }

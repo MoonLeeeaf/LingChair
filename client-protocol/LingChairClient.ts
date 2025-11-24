@@ -202,12 +202,12 @@ export default class LingChairClient {
         form.append('file_name', fileName)
         chatId && form.append('chat_id', chatId)
         const url = new URL(this.server_url)
-        const re = await fetch(({
+        const re = await fetch((({
             'ws:': 'http:',
             'wss:': 'https:',
             'http:': 'http:',
             'https:': 'https:',
-        })[url.protocol] || 'http:' + '//' + url.host + '/upload_file', {
+        })[url.protocol] || 'http:') + '//' + url.host + '/upload_file', {
             method: 'POST',
             headers: {
                 "Token": this.access_token,

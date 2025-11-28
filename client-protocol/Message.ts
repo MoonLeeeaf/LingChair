@@ -89,7 +89,7 @@ class ChatAttachment extends BaseClientObject {
         if (re.ok) {
             const t = re.headers.get('content-type')
             if (t)
-                return parseInt(t)
+                return t
             throw new Error("Unable to get Content-Type")
         }
         throw new CallbackError({

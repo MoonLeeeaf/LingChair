@@ -1,13 +1,14 @@
 // deno-lint-ignore-file no-explicit-any
 import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
 import crypto from 'node:crypto'
-import { CallMethod, ClientEvent } from './ApiDeclare.ts'
+import { CallMethod, ClientEvent, ClientEventCallback } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./User.ts"
 import UserMySelf from "./UserMySelf.ts"
 import CallbackError from "./CallbackError.ts"
 import Chat from "./Chat.ts"
 import { CallableMethodBeforeAuth } from "lingchair-internal-shared"
+import Message from "./Message.ts";
 
 export {
     User,
@@ -46,14 +47,33 @@ export default class LingChairClient {
                 session_id: crypto.randomUUID(),
             },
         })
-        this.client.on("The_White_Silk", (name: string, data: unknown, _callback: (ret: unknown) => void) => {
+        this.client.on("The_White_Silk", (name: ClientEvent, data: any, _callback: (ret: unknown) => void) => {
             try {
                 if (name == null || data == null) return
-                this.events[name]?.forEach((v) => v(data))
+                for (const v of (this.events[name] || []))
+                    v(({
+                        "Client.onMessage": {
+                            message: new Message(this, data)
+                        }
+                    })[name])
             } catch (e) {
                 console.error(e)
             }
         })
+    }
+    events: { [K in ClientEvent]?: ClientEventCallback<K>[] } = {}
+    on<K extends ClientEvent>(eventName: K, func: ClientEventCallback<K>) {
+        if (this.events[eventName] == null)
+            this.events[eventName] = []
+        if (this.events[eventName].indexOf(func) == -1)
+            this.events[eventName].push(func)
+    }
+    off<K extends ClientEvent>(eventName: K, func: ClientEventCallback<K>) {
+        if (this.events[eventName] == null)
+            this.events[eventName] = []
+        const index = this.events[eventName].indexOf(func)
+        if (index != -1)
+            this.events[eventName].splice(index, 1)
     }
     connect() {
         this.client.connect()
@@ -85,20 +105,6 @@ export default class LingChairClient {
                     resolve(res)
             })
         })
-    }
-    events: { [key: string]: ((data: any) => void)[] } = {}
-    on(eventName: ClientEvent, func: (data: any) => void) {
-        if (this.events[eventName] == null)
-            this.events[eventName] = []
-        if (this.events[eventName].indexOf(func) == -1)
-            this.events[eventName].push(func)
-    }
-    off(eventName: ClientEvent, func: (data: any) => void) {
-        if (this.events[eventName] == null)
-            this.events[eventName] = []
-        const index = this.events[eventName].indexOf(func)
-        if (index != -1)
-            this.events[eventName].splice(index, 1)
     }
     async auth(args: {
         refresh_token?: string,
@@ -213,7 +219,7 @@ export default class LingChairClient {
         )
         form.append('file_name', fileName)
         chatId && form.append('chat_id', chatId)
-        
+
         const re = await fetch(this.getBaseHttpUrl() + '/upload_file', {
             method: 'POST',
             headers: {
@@ -227,7 +233,7 @@ export default class LingChairClient {
         let json
         try {
             json = JSON.parse(text)
-        // deno-lint-ignore no-empty
+            // deno-lint-ignore no-empty
         } catch (_) { }
         if (!re.ok) throw new CallbackError({
             ...(json == null ? {

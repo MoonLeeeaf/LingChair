@@ -168,6 +168,18 @@ export default class LingChairClient {
             return false
         }
     }
+    getBaseHttpUrl() {
+        const url = new URL(this.server_url)
+        return (({
+            'ws:': 'http:',
+            'wss:': 'https:',
+            'http:': 'http:',
+            'https:': 'https:',
+        })[url.protocol] || 'http:') + '//' + url.host
+    }
+    getUrlForFileByHash(file_hash?: string, defaultUrl?: string) {
+        return file_hash ? (this.getBaseHttpUrl() + '/uploaded_files/' + file_hash) : defaultUrl
+    }
     async registerOrThrow({
         nickname,
         username,
@@ -201,13 +213,8 @@ export default class LingChairClient {
         )
         form.append('file_name', fileName)
         chatId && form.append('chat_id', chatId)
-        const url = new URL(this.server_url)
-        const re = await fetch((({
-            'ws:': 'http:',
-            'wss:': 'https:',
-            'http:': 'http:',
-            'https:': 'https:',
-        })[url.protocol] || 'http:') + '//' + url.host + '/upload_file', {
+        
+        const re = await fetch(this.getBaseHttpUrl() + '/upload_file', {
             method: 'POST',
             headers: {
                 "Token": this.access_token,

@@ -7,6 +7,7 @@ import CallbackError from "./CallbackError.ts"
 import ApiCallbackMessage from "./ApiCallbackMessage.ts"
 
 import * as marked from 'marked'
+import { text } from "node:stream/consumers";
 
 class ChatMention extends BaseClientObject {
     declare chat_id?: string
@@ -137,6 +138,22 @@ export default class Message extends BaseClientObject {
         return new marked.Marked({
             async: false,
             extensions: [
+                {
+                    name: 'text',
+                    renderer: ({ text }) => text,
+                },
+                {
+                    name: 'heading',
+                    renderer({ tokens }) {
+                        return this.parser.parseInline(tokens!)
+                    },
+                },
+                {
+                    name: 'paragraph',
+                    renderer({ tokens }) {
+                        return this.parser.parseInline(tokens!)
+                    },
+                },
                 {
                     name: 'image',
                     renderer: ({ text, href }) => {

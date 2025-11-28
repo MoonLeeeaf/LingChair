@@ -11,22 +11,29 @@ import marked from 'marked'
 class ChatMention extends BaseClientObject {
     declare chat_id?: string
     declare user_id?: string
+    declare text?: string
     constructor(client: LingChairClient, {
         user_id,
         chat_id,
+        text,
     }: {
         user_id?: string,
         chat_id?: string,
+        text: string,
     }) {
         super(client)
         this.user_id = user_id
         this.chat_id = chat_id
+        this.text = text
     }
     async getChat() {
         return await Chat.getById(this.client, this.chat_id as string)
     }
     async getUser() {
         return await User.getById(this.client, this.user_id as string)
+    }
+    getText() {
+        return this.text
     }
 }
 
@@ -35,8 +42,16 @@ type MentionType = 'ChatMention' | 'UserMention'
 
 class ChatAttachment extends BaseClientObject {
     declare file_hash: string
-    constructor(client: LingChairClient, file_hash: string) {
+    declare file_name: string
+    constructor(client: LingChairClient, {
+        file_hash,
+        file_name
+    }: {
+        file_hash: string,
+        file_name: string
+    }) {
         super(client)
+        this.file_name = file_name
         this.file_hash = file_hash
     }
     async blob() {
@@ -58,6 +73,9 @@ class ChatAttachment extends BaseClientObject {
     }
     getFileHash() {
         return this.file_hash
+    }
+    getFileName() {
+        return this.file_name
     }
 }
 
@@ -102,17 +120,21 @@ export default class Message extends BaseClientObject {
 
                         if (fileType != null && /tws:\/\/file\?hash=[A-Za-z0-9]+$/.test(href)) {
                             const file_hash = /^tws:\/\/file\?hash=(.*)/.exec(href)?.[1]!
-                            return attachment ? attachment({ text: text, attachment: new ChatAttachment(this.client, file_hash), fileType: fileType, }) : text
+                            let file_name: string = /^Video|File|Image=(.*)/.exec(text)?.[1] || text
+                            file_name.trim() == '' && (file_name = 'Unnamed File')
+                            return attachment ? attachment({ text: text, attachment: new ChatAttachment(this.client, { file_hash, file_name }), fileType: fileType, }) : text
                         }
                         if (mentionType != null && /^tws:\/\/chat\?id=[A-Za-z0-9]+/.test(href)) {
                             const id = /^tws:\/\/chat\?id=(.*)/.exec(href)?.[1]!
+                            const label = /^(User|Chat)Mention=(.*)/.exec(text)?.[2] || ''
                             return mention ? mention({
                                 text: text,
                                 mention: new ChatMention(this.client, {
                                     [({
                                         ChatMention: 'chat_id',
                                         UserMention: 'user_id',
-                                    })[mentionType]]: id
+                                    })[mentionType]]: id,
+                                    text: label,
                                 }),
                                 mentionType: mentionType,
                             }) : text

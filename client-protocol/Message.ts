@@ -6,7 +6,7 @@ import User from "./User.ts"
 import CallbackError from "./CallbackError.ts"
 import ApiCallbackMessage from "./ApiCallbackMessage.ts"
 
-import marked from 'marked'
+import * as marked from 'marked'
 
 class ChatMention extends BaseClientObject {
     declare chat_id?: string
@@ -61,15 +61,40 @@ class ChatAttachment extends BaseClientObject {
             return null
         }
     }
-    async blobOrThrow() {
+    fetch(init?: RequestInit) {
         const url = this.client.getUrlForFileByHash(this.file_hash)
-        const re = await fetch(url!)
+        return fetch(url!, init)
+    }
+    async blobOrThrow() {
+        const re = await this.fetch()
         const blob = await re.blob()
         if (!re.ok) throw new CallbackError({
             msg: await blob.text(),
             code: re.status,
         } as ApiCallbackMessage)
         return blob
+    }
+    async getLength() {
+        try {
+            return await this.getLengthOrThrow()
+        } catch (_) {
+            return null
+        }
+    }
+    async getLengthOrThrow() {
+        const re = await this.fetch({
+            method: 'HEAD'
+        })
+        if (re.ok) {
+            const contentLength = re.headers.get('content-length')
+            if (contentLength)
+                return parseInt(contentLength)
+            throw new Error("Unable to get Content-Length")
+        }
+        throw new CallbackError({
+            msg: await re.text(),
+            code: re.status,
+        } as ApiCallbackMessage)
     }
     getFileHash() {
         return this.file_hash

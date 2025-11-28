@@ -75,6 +75,28 @@ class ChatAttachment extends BaseClientObject {
         } as ApiCallbackMessage)
         return blob
     }
+    async getMimeType() {
+        try {
+            return await this.getMimeTypeOrThrow()
+        } catch (_) {
+            return null
+        }
+    }
+    async getMimeTypeOrThrow() {
+        const re = await this.fetch({
+            method: 'HEAD'
+        })
+        if (re.ok) {
+            const t = re.headers.get('content-type')
+            if (t)
+                return parseInt(t)
+            throw new Error("Unable to get Content-Type")
+        }
+        throw new CallbackError({
+            msg: await re.text(),
+            code: re.status,
+        } as ApiCallbackMessage)
+    }
     async getLength() {
         try {
             return await this.getLengthOrThrow()

@@ -8,7 +8,7 @@ import UserMySelf from "./UserMySelf.ts"
 import CallbackError from "./CallbackError.ts"
 import Chat from "./Chat.ts"
 import { CallableMethodBeforeAuth } from "lingchair-internal-shared"
-import Message from "./Message.ts";
+import Message from "./Message.ts"
 
 export {
     User,
@@ -53,7 +53,7 @@ export default class LingChairClient {
                 for (const v of (this.events[name] || []))
                     v(({
                         "Client.onMessage": {
-                            message: new Message(this, data)
+                            message: new Message(this, data.msg)
                         }
                     })[name])
             } catch (e) {

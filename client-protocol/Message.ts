@@ -91,7 +91,8 @@ export default class Message extends BaseClientObject {
         attachment?: ({ text, fileType, attachment }: { text: string, fileType: FileType, attachment: ChatAttachment }) => string,
         mention?: ({ text, mentionType, mention }: { text: string, mentionType: MentionType, mention: ChatMention }) => string,
     }) {
-        new marked.Marked({
+        return new marked.Marked({
+            async: false,
             extensions: [
                 {
                     name: 'image',
@@ -119,7 +120,7 @@ export default class Message extends BaseClientObject {
                     },
                 }
             ]
-        }).parse(this.getText())
+        }).parse(this.getText()) as string
     }
     getAttachments() {
         const attachments: ChatAttachment[] = []

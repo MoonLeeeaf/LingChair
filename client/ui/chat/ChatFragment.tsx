@@ -378,7 +378,10 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 <div style={{
                     flexGrow: '1',
                 }}></div>
-                <mdui-button-icon icon="refresh" onClick={() => getChatInfoAndInit()} style={{
+                <mdui-button-icon icon="refresh" onClick={() => {
+                    page.current = 0
+                    getChatInfoAndInit()
+                }} style={{
                     alignSelf: 'center',
                     marginLeft: '5px',
                     marginRight: '5px',

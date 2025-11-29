@@ -211,6 +211,8 @@ export default function AppMobile() {
                     EventBus.emit('RecentsList.updateRecents')
                     EventBus.emit('ContactsList.updateContacts')
                     EventBus.emit('AllChatsList.updateAllChats')
+                }} style={{
+                    margin: "0",
                 }}></mdui-button-icon>
                 <mdui-dropdown trigger="hover">
                     <mdui-button-icon icon="add" slot="trigger"></mdui-button-icon>

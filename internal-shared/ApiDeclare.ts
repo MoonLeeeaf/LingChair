@@ -22,6 +22,9 @@ export type CallMethod =
     // 最近对话列表
     "User.getMyRecentChats" | 
 
+    // 全部对话列表
+    "User.getMyAllChats" | 
+
     // 对话信息
     "Chat.getInfo" |
     "Chat.getAnotherUserIdFromPrivate" |

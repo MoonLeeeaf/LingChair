@@ -231,6 +231,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             clearTimeout(sendingFilesSnackbarId)
             sendingFilesSnackbar.open = false
         }
+        Client.socket?.once('disconnect', () => endSendingSnack())
         try {
             setIsMessageSending(true)
             for (const fileName of Object.keys(cachedFiles.current)) {

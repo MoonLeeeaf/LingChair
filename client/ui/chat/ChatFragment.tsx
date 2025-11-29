@@ -95,6 +95,18 @@ const markedInstance = new marked.Marked({
     }
 })
 
+interface MduiTabFitSizeArgs extends React.HTMLAttributes<HTMLElement & Tab> {
+    value: string
+}
+function MduiTabFitSize({ children, ...props }: MduiTabFitSizeArgs) {
+    return <mdui-tab {...props} style={{
+        ...props?.style,
+        minWidth: 'fit-content',
+    }}>
+        {children}
+    </mdui-tab>
+}
+
 export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, openChatInfoDialog, openUserInfoDialog, ...props }: Args) {
     const [messagesList, setMessagesList] = React.useState([] as Message[])
     const [chatInfo, setChatInfo] = React.useState({
@@ -114,6 +126,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     React.useEffect(() => {
         $(containerTabRef.current!.shadowRoot).append(`<style>.container::after { height: 0 !important; }</style>`)
         $(tabRef.current!.shadowRoot).append(`<style>.container::after { height: 0 !important; }</style>`)
+            ; (!isMobileUI()) && $(tabRef.current!.shadowRoot).append(`<style>.no-scroll-bar::-webkit-scrollbar{width:0px !important}*::-webkit-scrollbar{width:7px;height:10px}*::-webkit-scrollbar-track{width:6px;background:rgba(#101f1c,0.1);-webkit-border-radius:2em;-moz-border-radius:2em;border-radius:2em}*::-webkit-scrollbar-thumb{background-color:rgba(144,147,153,0.5);background-clip:padding-box;min-height:28px;-webkit-border-radius:2em;-moz-border-radius:2em;border-radius:2em;transition:background-color 0.3s;cursor:pointer}*::-webkit-scrollbar-thumb:hover{background-color:rgba(144,147,153,0.3)}</style>`)
     }, [target])
 
     async function getChatInfoAndInit() {
@@ -347,17 +360,18 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     display: "flex",
                     flexDirection: "column",
                     height: "100%",
+                    overflowX: 'auto',
                 }}>
                     {
                         chatInfo.is_member ? <>
-                            <mdui-tab value="Chat">{chatInfo.title}</mdui-tab>
-                            {chatInfo.type == 'group' && chatInfo.is_admin && <mdui-tab value="NewMemberRequests">加入请求</mdui-tab>}
-                            {chatInfo.type == 'group' && <mdui-tab value="GroupMembers">群组成员</mdui-tab>}
+                            <MduiTabFitSize value="Chat">{chatInfo.title}</MduiTabFitSize>
+                            {chatInfo.type == 'group' && chatInfo.is_admin && <MduiTabFitSize value="NewMemberRequests">加入请求</MduiTabFitSize>}
+                            {chatInfo.type == 'group' && <MduiTabFitSize value="GroupMembers">群组成员</MduiTabFitSize>}
                         </>
-                            : <mdui-tab value="RequestJoin">{chatInfo.title}</mdui-tab>
+                            : <MduiTabFitSize value="RequestJoin">{chatInfo.title}</MduiTabFitSize>
                     }
-                    {chatInfo.type == 'group' && <mdui-tab value="Settings">设置</mdui-tab>}
-                    <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
+                    {chatInfo.type == 'group' && <MduiTabFitSize value="Settings">设置</MduiTabFitSize>}
+                    <MduiTabFitSize value="None" style={{ display: 'none' }}></MduiTabFitSize>
                 </mdui-tabs>
                 <div style={{
                     flexGrow: '1',

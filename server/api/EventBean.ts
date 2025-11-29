@@ -1,4 +1,7 @@
+import { ClientEvent } from "./ApiDeclare.ts"
+
 export default class EventBean {
-    declare event_name: string
-    declare data: unknown
+    declare event_name: ClientEvent
+    declare data: { [key: string]: unknown }
+    declare device_session: string
 }

@@ -5,6 +5,8 @@ import User from "../data/User.ts"
 import Token from "./Token.ts"
 import TokenManager from './TokenManager.ts'
 import * as SocketIo from "socket.io"
+import EventStorer from "./EventStorer.ts"
+import chalk from "chalk"
 
 export default abstract class BaseApi {
     abstract getName(): string
@@ -31,18 +33,23 @@ export default abstract class BaseApi {
         if (!name.startsWith(this.getName() + ".")) throw Error("注冊的事件應該與接口集合命名空間相匹配: " + name)
         ApiManager.addEventListener(name, func)
     }
-    emitToClient(client: SocketIo.Socket, name: ClientEvent, args: { [key: string]: unknown }) {
-        client.emit("The_White_Silk", name, args)
+    emitToClient(client: SocketIo.Socket, name: ClientEvent, args: { [key: string]: unknown }, user: User | string, deviceSession: string) {
+        console.log(chalk.magenta('[发]') + ` ${client.handshake.address} <- ${chalk.yellow(name)} ${' <extras: ' + JSON.stringify(args) + '>'}`)
+        client.timeout(5000).emit("The_White_Silk", name, args, (err: Error) => {
+            if (err) EventStorer.getInstanceForUser(user).addEvent(name, args, deviceSession)
+        })
     }
     boardcastToUsers(users: string[], name: ClientEvent, args: { [key: string]: unknown }) {
         for (const user of users) {
             if (ApiManager.checkUserIsOnline(user)) {
                 const sockets = ApiManager.getUserClientSockets(user)
-                for (const socket of Object.keys(sockets))
-                    this.emitToClient(sockets[socket], name, args)
-            } else {
-                // TODO: EventStore
-            }
+                for (const deviceSession of Object.keys(sockets))
+                    if (sockets[deviceSession].connected)
+                        this.emitToClient(sockets[deviceSession], name, args, user, deviceSession)
+                    else
+                        EventStorer.getInstanceForUser(user).addEvent(name, args, deviceSession)
+            } else
+                EventStorer.getInstanceForUser(user).clearEvents()
         }
     }
 }

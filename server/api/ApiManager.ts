@@ -7,6 +7,7 @@ import EventCallbackFunction from "../typedef/EventCallbackFunction.ts"
 import BaseApi from "./BaseApi.ts"
 import DataWrongError from "./DataWrongError.ts"
 import chalk from "chalk"
+import EventStorer from "./EventStorer.ts";
 
 function stringifyNotIncludeArrayBuffer(value: any) {
     return JSON.stringify(value, (_k, v) => {
@@ -46,7 +47,7 @@ export default class ApiManager {
     }
     static clients: { [key: string]: { [key: string]: SocketIo.Socket<SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, any> } } = {}
     static checkUserIsOnline(userId: string) {
-        return this.getUserClientSockets(userId) != null
+        return this.getUserClientSockets(userId) != null && Object.keys(this.getUserClientSockets(userId)).length > 0
     }
     /**
      * 獲取用戶所有的客戶端表 (格式遵循 設備ID_當前Session)
@@ -79,13 +80,15 @@ export default class ApiManager {
                 else {
                     console.log(chalk.green('[断]') + ` ${ip} disconnected`)
                     delete this.clients[clientInfo.userId][deviceId + '_' + sessionId]
+                    if (Object.keys(this.clients[clientInfo.userId]).length == 0)
+                        EventStorer.getInstanceForUser(clientInfo.userId).clearEvents()
                 }
             })
             console.log(chalk.yellow('[连]') + ` ${ip} connected`)
 
             socket.on("The_White_Silk", async (name: string, args: { [key: string]: unknown }, callback_: (ret: ApiCallbackMessage) => void) => {
                 function callback(ret: ApiCallbackMessage) {
-                    console.log(chalk.blue('[发]') + ` ${ip} <- ${ret.code == 200 ? chalk.green(ret.msg) : chalk.red(ret.msg)} [${ret.code}]${ret.data ? (' <extras: ' + stringifyNotIncludeArrayBuffer(ret.data) + '>') : ''}`)
+                    console.log(chalk.blue('[回]') + ` ${ip} <- ${ret.code == 200 ? chalk.green(ret.msg) : chalk.red(ret.msg)} [${ret.code}]${ret.data ? (' <extras: ' + stringifyNotIncludeArrayBuffer(ret.data) + '>') : ''}`)
                     return callback_(ret)
                 }
                 async function checkIsPromiseAndAwait(value: Promise<unknown> | unknown) {

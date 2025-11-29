@@ -6,6 +6,7 @@ import ChatPrivate from "../data/ChatPrivate.ts"
 import Chat from "../data/Chat.ts"
 import chalk from "chalk"
 import ApiManager from "./ApiManager.ts"
+import EventStorer from "./EventStorer.ts";
 
 export default class UserApi extends BaseApi {
     override getName(): string {
@@ -37,10 +38,16 @@ export default class UserApi extends BaseApi {
 
                 clientInfo.userId = access_token.author
                 console.log(chalk.green('[验]') + ` ${access_token.author} authed on Client ${deviceId} (ip = ${ip})`)
+                const deviceSession = deviceId + '_' + sessionId
                 if (ApiManager.clients[clientInfo.userId] == null) ApiManager.clients[clientInfo.userId] = {
-                    [deviceId + '_' + sessionId]: socket
+                    [deviceSession]: socket
                 }
-                else ApiManager.clients[clientInfo.userId][deviceId + '_' + sessionId] = socket
+                else ApiManager.clients[clientInfo.userId][deviceSession] = socket
+
+                // 事件恢复
+                console.log(EventStorer.getInstanceForUser(access_token.author).getEvents(deviceSession))
+                for (const event of EventStorer.getInstanceForUser(access_token.author).getEvents(deviceSession))
+                        this.emitToClient(socket, event.event_name, event.data, access_token.author, deviceSession)
 
                 return {
                     msg: "成功",

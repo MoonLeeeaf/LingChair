@@ -184,8 +184,8 @@ export default class Message extends BaseClientObject {
 
                         if (fileType != null && /tws:\/\/file\?hash=[A-Za-z0-9]+$/.test(href)) {
                             const file_hash = /^tws:\/\/file\?hash=(.*)/.exec(href)?.[1]!
-                            let file_name: string = /^Video|File|Image=(.*)/.exec(text)?.[1] || text
-                            file_name.trim() == '' && (file_name = 'Unnamed File')
+                            let file_name: string = /^(Video|File|Image)=(.*)/.exec(text)?.[2] || text
+                            file_name.trim() == '' && (file_name = 'Unnamed_File')
                             return attachment ? attachment({ text: text, attachment: new ChatAttachment(this.client, { file_hash, file_name }), fileType: fileType, }) : text
                         }
                         if (mentionType != null && /^tws:\/\/chat\?id=[A-Za-z0-9]+/.test(href)) {

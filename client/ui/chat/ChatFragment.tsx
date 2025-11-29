@@ -1,4 +1,4 @@
-import { Tab, TextField } from "mdui"
+import { Tab, Tabs, TextField } from "mdui"
 import { $ } from "mdui/jq"
 import useEventListener from "../useEventListener.ts"
 import Element_Message from "./Message.tsx"
@@ -31,6 +31,7 @@ import JoinRequestsList from "./JoinRequestsList.tsx"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 import escapeHTML from "../../escapeHtml.ts"
 import GroupMembersList from "./GroupMembersList.tsx"
+import isMobileUI from "../isMobileUI.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -455,9 +456,20 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         {
                             (() => {
                                 let date = new Date(0)
+                                let user: string
+                                function timeAddZeroPrefix(t: number) {
+                                    if (t >= 0 && t < 10)
+                                        return '0' + t
+                                    return t + ''
+                                }
                                 return messagesList.map((msg) => {
                                     const lastDate = date
+                                    const lastUser = user
                                     date = new Date(msg.time)
+                                    user = msg.user_id
+
+                                    const shouldShowTime = msg.user_id != null &&
+                                        (date.getMinutes() != lastDate.getMinutes() || date.getDate() != lastDate.getDate() || date.getMonth() != lastDate.getMonth() || date.getFullYear() != lastDate.getFullYear())
 
                                     const msgElement = msg.user_id == null ? <SystemMessage><div dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
@@ -482,18 +494,18 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     return (
                                         <>
                                             {
-                                                msg.user_id != null &&
-                                                (date.getMinutes() != lastDate.getMinutes() || date.getDate() != lastDate.getDate() || date.getMonth() != lastDate.getMonth() || date.getFullYear() != lastDate.getFullYear())
+                                                shouldShowTime
                                                 && <mdui-tooltip content={`${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}>
                                                     <div style={{
                                                         fontSize: '87%',
-                                                        marginTop: '10px',
+                                                        marginTop: '13px',
+                                                        marginBottom: '10px',
                                                     }}>
                                                         {
                                                             (date.getFullYear() != lastDate.getFullYear() ? `${date.getFullYear()}年` : '')
                                                             + `${date.getMonth() + 1}月`
                                                             + `${date.getDate()}日`
-                                                            + `  ${date.getHours()}:${date.getMinutes()}`
+                                                            + `  ${timeAddZeroPrefix(date.getHours())}:${timeAddZeroPrefix(date.getMinutes())}`
                                                         }
                                                     </div>
                                                 </mdui-tooltip>

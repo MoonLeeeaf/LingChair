@@ -54,13 +54,14 @@ export default function AllChatsList({
         overflowY: 'auto',
         paddingRight: '10px',
         paddingLeft: '10px',
+        paddingTop: '0',
         display: display ? undefined : 'none',
         height: '100%',
         width: '100%',
     }} {...props}>
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
-            marginTop: '5px',
-            marginBottom: '13px',
+            paddingTop: '5px',
+            paddingBottom: '13px',
             position: 'sticky',
             top: '0',
             backgroundColor: 'rgb(var(--mdui-color-background))',

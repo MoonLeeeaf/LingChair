@@ -55,6 +55,7 @@ export default function RecentsList({
         overflowY: 'auto',
         paddingRight: '10px',
         paddingLeft: '10px',
+        paddingTop: '0',
         display: display ? undefined : 'none',
         height: '100%',
         width: '100%',

@@ -62,6 +62,7 @@ export default function ContactsList({
         overflowY: 'auto',
         paddingLeft: '10px',
         paddingRight: '10px',
+        paddingTop: '0',
         display: display ? undefined : 'none',
         height: '100%',
         width: '100%',
@@ -141,7 +142,7 @@ export default function ContactsList({
                 </>
             }
             <div style={{
-                height: "15px",
+                height: "10px",
             }}></div>
         </div>
 

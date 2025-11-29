@@ -674,7 +674,20 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         )
                     }
                 </mdui-tab-panel>
-                <mdui-tab-panel slot="panel" value="None">
+                <mdui-tab-panel slot="panel" value="None" style={{
+                    display: tabItemSelected == "None" ? "flex" : "none",
+                    flexDirection: "column",
+                    height: "100%",
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        width: '100%',
+                        height: '100%',
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}>
+                        <mdui-circular-progress></mdui-circular-progress>
+                    </div>
                 </mdui-tab-panel>
             </mdui-tabs>
         </div>

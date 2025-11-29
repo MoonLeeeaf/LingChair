@@ -469,6 +469,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                             ],
                                         })
                                     }} /></SystemMessage> : <Element_Message
+                                        noUserDisplay={lastUser == user && !shouldShowTime}
                                         rawData={msg.text}
                                         renderHTML={DOMPurify.sanitize(markedInstance.parse(msg.text) as string, sanitizeConfig)}
                                         message={msg}

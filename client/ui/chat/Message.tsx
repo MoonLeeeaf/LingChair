@@ -13,14 +13,6 @@ import User from "../../api/client_data/User.ts"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 import escapeHTML from "../../escapeHtml.ts"
 
-interface Args extends React.HTMLAttributes<HTMLElement> {
-    userId: string
-    rawData: string
-    renderHTML: string
-    message: Data_Message
-    openUserInfoDialog: (user: User | string) => void
-}
-
 function prettyFlatParsedMessage(html: string) {
     const elements = new DOMParser().parseFromString(html, 'text/html').body.children
     // 纯文本直接处理
@@ -72,7 +64,16 @@ function prettyFlatParsedMessage(html: string) {
     return ret
 }
 
-export default function Message({ userId, rawData, renderHTML, message, openUserInfoDialog, ...props }: Args) {
+interface Args extends React.HTMLAttributes<HTMLElement> {
+    userId: string
+    noUserDisplay?: boolean
+    rawData: string
+    renderHTML: string
+    message: Data_Message
+    openUserInfoDialog: (user: User | string) => void
+}
+
+export default function Message({ userId, rawData, renderHTML, message, openUserInfoDialog, noUserDisplay, ...props }: Args) {
     const isAtRight = Client.myUserProfile?.id == userId
 
     const [nickName, setNickName] = React.useState("")
@@ -123,7 +124,7 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
             {...props}>
             <div
                 style={{
-                    display: "flex",
+                    display: noUserDisplay ? 'none' : "flex",
                     justifyContent: isAtRight ? "flex-end" : "flex-start",
                 }}>
                 {
@@ -168,7 +169,7 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                     maxWidth: 'var(--whitesilk-widget-message-maxwidth)', // (window.matchMedia('(pointer: fine)') && "50%") || (window.matchMedia('(pointer: coarse)') && "77%"),
                     minWidth: "0%",
                     [isAtRight ? "marginRight" : "marginLeft"]: "55px",
-                    marginTop: "-5px",
+                    marginTop: noUserDisplay ? '5px' : "-5px",
                     alignSelf: isAtRight ? "flex-end" : "flex-start",
                     // boxShadow: isUsingFullDisplay ? 'inherit' : 'var(--mdui-elevation-level1)',
                     // padding: isUsingFullDisplay ?  undefined : "13px",

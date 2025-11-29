@@ -60,7 +60,7 @@ export default function AllChatsList({
         width: '100%',
     }} {...props}>
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
-            paddingTop: '5px',
+            paddingTop: '12px',
             paddingBottom: '13px',
             position: 'sticky',
             top: '0',

@@ -61,7 +61,7 @@ export default function RecentsList({
         width: '100%',
     }} {...props}>
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
-            marginTop: '5px',
+            paddingTop: '12px',
             marginBottom: '13px',
             position: 'sticky',
             top: '0',

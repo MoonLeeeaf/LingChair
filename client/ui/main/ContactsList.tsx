@@ -74,7 +74,7 @@ export default function ContactsList({
             zIndex: '10',
         }}>
             <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
-                marginTop: '5px',
+                paddingTop: '12px',
             }}></mdui-text-field>
             <mdui-list-item rounded style={{
                 marginTop: '13px',

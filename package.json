@@ -1,0 +1,15 @@
+{
+    "type": "module",
+    "scripts": {
+        "server": "npx tsx ./server/main.ts",
+        "build-client": "cd client && npm run build"
+    },
+    "dependencies": {
+        "chalk": "5.4.1",
+        "file-type": "21.0.0",
+        "express": "5.1.0",
+        "socket.io": "4.8.1",
+        "cookie-parser": "1.4.7",
+        "express-fileupload": "1.5.2"
+    }
+}

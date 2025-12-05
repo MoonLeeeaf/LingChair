@@ -3,18 +3,33 @@ import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
 import crypto from 'node:crypto'
 import { CallMethod, ClientEvent, ClientEventCallback } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
-import User from "./User.ts"
-import UserMySelf from "./UserMySelf.ts"
-import CallbackError from "./CallbackError.ts"
-import Chat from "./Chat.ts"
 import { CallableMethodBeforeAuth } from "lingchair-internal-shared"
+import CallbackError from "./CallbackError.ts"
+
 import Message from "./Message.ts"
 
+import Chat from "./Chat.ts"
+import User from "./User.ts"
+import UserMySelf from "./UserMySelf.ts"
+import UserBean from "./bean/UserBean.ts"
+import ChatBean from "./bean/ChatBean.ts"
+import GroupSettingsBean from "./bean/GroupSettingsBean.ts"
+import JoinRequestBean from "./bean/JoinRequestBean.ts"
+import MessageBean from "./bean/MessageBean.ts"
+import RecentChatBean from "./bean/RecentChatBean.ts"
+
 export {
-    User,
     Chat,
+    User,
     UserMySelf,
+
+    UserBean,
+    ChatBean,
+    MessageBean,
+    RecentChatBean,
+    JoinRequestBean,
 }
+export type { GroupSettingsBean }
 
 export default class LingChairClient {
     declare client: Socket

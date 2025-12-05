@@ -11,6 +11,7 @@ import './ui/custom-elements/chat-file.ts'
 import './ui/custom-elements/chat-text.ts'
 import './ui/custom-elements/chat-mention.ts'
 import './ui/custom-elements/chat-text-container.ts'
+import './ui/custom-elements/chat-quote.ts'
 
 import App from './ui/App.tsx'
 import AppMobile from './ui/AppMobile.tsx'

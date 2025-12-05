@@ -25,6 +25,7 @@ function prettyFlatParsedMessage(html: string) {
     const textElementTags = [
         'chat-text',
         'chat-mention',
+        'chat-quote',
     ]
     function checkContinuousElement(tagName: string) {
         /* console.log('shangyige ', lastElementType)

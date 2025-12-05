@@ -49,6 +49,7 @@ const sanitizeConfig = {
         'chat-text',
         "chat-link",
         'chat-mention',
+        'chat-quote',
     ],
     ALLOWED_ATTR: [
         'underline',
@@ -64,6 +65,9 @@ const sanitizeConfig = {
 
 const markedInstance = new marked.Marked({
     renderer: {
+        blockquote({ text }) {
+            return `<chat-quote>${escapeHTML(text)}</chat-quote>`
+        },
         text({ text }) {
             return `<chat-text>${escapeHTML(text)}</chat-text>`
         },

@@ -35,7 +35,9 @@
     "marked": "npm:marked@16.3.0",
     "dompurify": "npm:dompurify@3.2.7",
     "pinch-zoom-element": "npm:pinch-zoom-element@1.1.1",
+    "ua-parser-js": "npm:ua-parser-js@2.0.6",
 
-    "lingchair-internal-shared": "../internal-shared/mod.ts"
+    "lingchair-internal-shared": "../internal-shared/mod.ts",
+    "lingchair-client-protocol": "../mod.ts"
   }
 }

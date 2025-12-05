@@ -1,5 +1,4 @@
 import { snackbar as mduiSnackbar, Snackbar } from "mdui"
-import ApiCallbackMessage from "../api/ApiCallbackMessage.ts"
 
 interface Options {
     /**
@@ -83,19 +82,8 @@ interface SnackbarOptions extends Options {
     message: string
 }
 
-export function checkApiSuccessOrSncakbar(re: ApiCallbackMessage, msg_ahead: string, opinions_override: Options = {}): Snackbar | null {
-    return re.code != 200 ? snackbar(
-        Object.assign({
-            message: `${msg_ahead}: ${re.msg.indexOf("fetch") != -1
-                ? "HTTP 请求失败"
-                : re.msg
-                } [${re.code}]`,
-            placement: "top",
-        } as SnackbarOptions, opinions_override)
-    ) : null
-}
-
-export function snackbar(opinions: SnackbarOptions) {
+export default  function showSnackbar(opinions: SnackbarOptions) {
     opinions.autoCloseDelay == null && (opinions.autoCloseDelay = 3500)
+    opinions.placement == null && (opinions.placement = 'top')
     return mduiSnackbar(opinions)
 }

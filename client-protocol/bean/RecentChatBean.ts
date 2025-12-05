@@ -1,5 +1,5 @@
 import ChatBean from "./ChatBean.ts"
 
-export default class RecentChat extends ChatBean {
+export default class RecentChatBean extends ChatBean {
     declare content: string
 }

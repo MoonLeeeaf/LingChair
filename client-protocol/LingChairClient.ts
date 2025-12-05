@@ -121,6 +121,25 @@ export default class LingChairClient {
             })
         })
     }
+    /** 
+     * 建议在 auth 返回 true 时调用
+     */
+    getCachedAccessToken() {
+        return this.access_token
+    }
+    /** 
+     * 建议在 auth 返回 true 时调用
+     */
+    getCachedRefreshToken() {
+        return this.refresh_token
+    }
+    /** 
+     * 客户端上线
+     * 
+     * 使用验证方式优先级: 访问 > 刷新 > 账号密码
+     * 
+     * 不会逐一尝试
+     */
     async auth(args: {
         refresh_token?: string,
         access_token?: string,
@@ -134,6 +153,13 @@ export default class LingChairClient {
             return false
         }
     }
+    /** 
+     * 客户端上线
+     * 
+     * 使用验证方式优先级: 访问 > 刷新 > 账号密码
+     * 
+     * 不会逐一尝试
+     */
     async authOrThrow(args: {
         refresh_token?: string,
         access_token?: string,

@@ -1,5 +1,7 @@
 import CallbackError from "./CallbackError.ts"
+import Chat from "./Chat.ts"
 import LingChairClient from "./LingChairClient.ts"
+import RecentChat from "./RecentChat.ts"
 import User from "./User.ts"
 import ChatBean from "./bean/ChatBean.ts"
 import RecentChatBean from "./bean/RecentChatBean.ts"
@@ -157,6 +159,16 @@ export default class UserMySelf extends User {
             return re.data!.recent_chats as ChatBean[]
         throw new CallbackError(re)
     }
+    async getMyFavouriteChats() {
+        try {
+            return await this.getMyFavouriteChatsOrThrow()
+        } catch (_) {
+            return []
+        }
+    }
+    async getMyFavouriteChatsOrThrow() {
+        return (await this.getMyFavouriteChatBeansOrThrow()).map((bean) => new Chat(this.client, bean))
+    }
     /*
      * ================================================
      *                    最近对话
@@ -177,6 +189,16 @@ export default class UserMySelf extends User {
             return re.data!.recent_chats as RecentChatBean[]
         throw new CallbackError(re)
     }
+    async getMyRecentChats() {
+        try {
+            return await this.getMyRecentChatsOrThrow()
+        } catch (_) {
+            return []
+        }
+    }
+    async getMyRecentChatsOrThrow() {
+        return (await this.getMyRecentChatBeansOrThrow()).map((bean) => new RecentChat(this.client, bean))
+    }
     /*
      * ================================================
      *                    所有对话
@@ -196,5 +218,15 @@ export default class UserMySelf extends User {
         if (re.code == 200)
             return re.data!.all_chats as ChatBean[]
         throw new CallbackError(re)
+    }
+    async getMyAllChats() {
+        try {
+            return await this.getMyAllChatsOrThrow()
+        } catch (_) {
+            return []
+        }
+    }
+    async getMyAllChatsOrThrow() {
+        return (await this.getMyAllChatBeansOrThrow()).map((bean) => new Chat(this.client, bean))
     }
 }

@@ -1,7 +1,5 @@
 import { $ } from 'mdui'
-import DataCaches from "../../api/DataCaches.ts"
-import { snackbar } from "../snackbar.ts"
-
+import showSnackbar from "../../utils/showSnackbar.ts";
 customElements.define('chat-mention', class extends HTMLElement {
     declare link: HTMLAnchorElement
     static observedAttributes = ['user-id']
@@ -32,20 +30,18 @@ customElements.define('chat-mention', class extends HTMLElement {
         const text = $(this).attr('text')
         this.link.style.fontStyle = ''
         if (chatId) {
-            const chat = await DataCaches.getChatInfo(chatId)
-            this.link.textContent = chat?.title
+            
             this.link.onclick = (e) => {
                 e.stopPropagation()
                 // deno-lint-ignore no-window
-                window.openChatInfoDialog(chat)
+                
             }
         } else if (userId) {
-            const user = await DataCaches.getUserProfile(userId)
-            this.link.textContent = user?.nickname
+           
             this.link.onclick = (e) => {
                 e.stopPropagation()
                 // deno-lint-ignore no-window
-                window.openUserInfoDialog(user)
+                
             }
         }
         
@@ -55,9 +51,8 @@ customElements.define('chat-mention', class extends HTMLElement {
             this.link.style.fontStyle = 'italic'
             this.link.onclick = (e) => {
                 e.stopPropagation()
-                snackbar({
+                showSnackbar({
                     message: "该提及没有指定用户或者对话！",
-                    placement: 'top',
                 })
             }
         }

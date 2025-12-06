@@ -6,8 +6,6 @@
         "build-watch": "npx vite --watch build"
     },
     "dependencies": {
-        "crypto-browserify": "3.12.1",
-        "crypto-js": "4.2.0",
         "dompurify": "3.2.7",
         "lingchair-internal-shared": "*",
         "marked": "16.3.0",

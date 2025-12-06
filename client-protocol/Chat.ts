@@ -19,6 +19,11 @@ export default class Chat extends BaseClientObject {
      *                    实例化方法
      * ================================================
      */
+    static getForInvokeOnlyById(client: LingChairClient, id: string) {
+        return new Chat(client, {
+            id
+        } as ChatBean)
+    }
     static async getById(client: LingChairClient, id: string) {
         try {
             return await this.getByIdOrThrow(client, id)

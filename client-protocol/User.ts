@@ -14,10 +14,15 @@ export default class User extends BaseClientObject {
      *                    实例化方法
      * ================================================
      */
+    static getForInvokeOnlyById(client: LingChairClient, id: string) {
+        return new User(client, {
+            id
+        } as UserBean)
+    }
     static async getById(client: LingChairClient, id: string) {
         try {
             return await this.getByIdOrThrow(client, id)
-        } catch(_) {
+        } catch (_) {
             return null
         }
     }

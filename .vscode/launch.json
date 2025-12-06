@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "npm run build-client-and-server",
+            "command": "npm run debug",
             "name": "Debug",
             "request": "launch",
             "type": "node-terminal"

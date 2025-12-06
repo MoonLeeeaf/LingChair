@@ -8,7 +8,8 @@
         "./client"
     ],
     "scripts": {
-        "build-client-and-server": "npm run build-client && npm run server",
+        "install-dependencies": "npm install -d --workspaces",
+        "debug": "npm run build-client && npx tsx --watch ./server/main.ts",
         "server": "npx tsx ./server/main.ts",
         "build-client": "cd client && npm run build"
     },

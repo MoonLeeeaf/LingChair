@@ -1,7 +1,0 @@
-{
-    "deno.enable": false,
-    "deno.disablePaths": [
-        "./thewhitesilk_data",
-        "./mdui_patched"
-    ]
-}

@@ -1,14 +1,16 @@
-import data from "./Data.ts";
+import data from "./data.ts"
 import getClient from "./getClient.ts"
 
 /** 
- * 尝试进行验证
+ * 进行身份验证以接受客户端事件
  * 
- * 成功后自动保存到本地
+ * 使用验证方式优先级: 访问 > 刷新 > 账号密码
  * 
- * 优先级: 账号密码 > 提供刷新令牌 > 储存的刷新令牌
+ * 若传递了账号密码, 则同时缓存新的访问令牌和刷新令牌
  * 
- * 不会逐一尝试
+ * 如只传递两个令牌的其一, 按照优先级并在成功验证后赋值
+ * 
+ * 多个验证方式不会逐一尝试
  */
 export default async function performAuth(args: {
     refresh_token?: string
@@ -21,7 +23,7 @@ export default async function performAuth(args: {
             password: args.password,
         })
     else {
-        await getClient().authOrThrow({ refresh_token: args.refresh_token ? args.refresh_token : data.refresh_token })
+        await getClient().authOrThrow({ refresh_token: args.refresh_token ? args.refresh_token : data.refresh_token, ignore_all_empty: true })
     }
     data.refresh_token = getClient().getCachedRefreshToken()
     data.access_token = getClient().getCachedAccessToken()

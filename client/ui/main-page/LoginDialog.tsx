@@ -8,12 +8,11 @@ import MainSharedContext from '../MainSharedContext.ts'
 export default function LoginDialog({ ...props }: { open: boolean } & React.HTMLAttributes<Dialog>) {
     const shared = React.useContext(MainSharedContext)
 
-    const loginDialogRef = React.useRef<Dialog>(null)
     const loginInputAccountRef = React.useRef<TextField>(null)
     const loginInputPasswordRef = React.useRef<TextField>(null)
 
     return (
-        <mdui-dialog {...props} headline="登录" ref={loginDialogRef}>
+        <mdui-dialog {...props} headline="登录">
 
             <mdui-text-field label="用户 ID / 用户名" ref={loginInputAccountRef}></mdui-text-field>
             <div style={{

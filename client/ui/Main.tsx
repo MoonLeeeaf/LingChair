@@ -54,7 +54,8 @@ export default function Main() {
                         <div style={{
                             display: "flex",
                             position: 'relative',
-                            width: 'calc(var(--whitesilk-window-width) - 80px)',
+                            flexDirection: isMobileUI() ? 'column' : 'row',
+                            width: `calc(var(--whitesilk-window-width))${isMobileUI() ? '' : ' - 80px'}`,
                             height: 'var(--whitesilk-window-height)',
                         }}>
                             {

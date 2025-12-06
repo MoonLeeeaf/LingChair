@@ -1,13 +1,14 @@
 import isMobileUI from "../utils/isMobileUI.ts"
 import AvatarMySelf from "./AvatarMySelf.tsx"
 import MainSharedContext from './MainSharedContext.ts'
+import React from "react"
 
 export default function Main() {
     const sharedContext = {
         openChatFragment: React.useRef()
     }
     return (
-        <MainSharedContext.Provider value={{}}>
+        <MainSharedContext.Provider value={sharedContext}>
             <div style={{
                 display: "flex",
                 position: 'relative',

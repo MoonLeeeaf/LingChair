@@ -2,6 +2,7 @@ import { UserMySelf } from "lingchair-client-protocol"
 import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import Avatar from "./Avatar.tsx"
 import getClient from "../getClient.ts"
+import React from "react"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     avatarRef?: React.LegacyRef<HTMLElement>

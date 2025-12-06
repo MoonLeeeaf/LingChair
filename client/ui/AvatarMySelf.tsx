@@ -28,5 +28,5 @@ export default function AvatarMySelf({
         })
     })
 
-    return <Avatar avatarRef={avatarRef} {...props} {...args}></Avatar>
+    return <Avatar avatarRef={avatarRef} {...props} text={args.text} src={args.src}></Avatar>
 }

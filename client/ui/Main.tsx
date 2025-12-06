@@ -24,12 +24,16 @@ export default function Main() {
     const [showLoginDialog, setShowLoginDialog] = React.useState(false)
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false)
 
+    // TODO
+    const [currentSelectedChatId, setCurrentSelectedChatId] = React.useState(false)
+
     const sharedContext = {
         ui_functions: React.useRef({
 
         }),
         setShowLoginDialog,
         setShowRegisterDialog,
+
     }
 
     useAsyncEffect(async () => {
@@ -78,7 +82,6 @@ export default function Main() {
                                         <mdui-navigation-rail-item icon="favorite_border" active-icon="favorite" value="Contacts"></mdui-navigation-rail-item>
                                         <mdui-navigation-rail-item icon="chat--outlined" active-icon="chat--filled" value="AllChats"></mdui-navigation-rail-item>
 
-
                                         <mdui-dropdown trigger="hover" slot="bottom">
                                             <mdui-button-icon icon="add" slot="trigger"></mdui-button-icon>
                                             <mdui-menu>
@@ -102,7 +105,7 @@ export default function Main() {
                                                 Recents: "最近对话",
                                                 Contacts: "收藏对话",
                                                 AllChats: "所有对话",
-                                            })['Recents']
+                                            })[currentShowPage]
                                         }</mdui-top-app-bar-title>
                                         <div style={{
                                             flexGrow: 1,

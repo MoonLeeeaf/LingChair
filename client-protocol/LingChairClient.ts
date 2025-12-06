@@ -215,7 +215,7 @@ export default class LingChairClient {
         const re = await this.invoke('User.register', {
             nickname,
             username,
-            password,
+            password: crypto.createHash('sha256').update(password).digest('hex'),
         })
         if (re.code != 200)
             throw new CallbackError(re)

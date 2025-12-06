@@ -3,7 +3,7 @@ import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
 import crypto from 'node:crypto'
 import { CallMethod, ClientEvent, ClientEventCallback } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
-import { CallableMethodBeforeAuth } from "lingchair-internal-shared"
+import { CallableMethodBeforeAuth, randomUUID } from "lingchair-internal-shared"
 import CallbackError from "./CallbackError.ts"
 
 import Message from "./Message.ts"
@@ -36,7 +36,7 @@ export default class LingChairClient {
             auth: {
                 ...args.io?.auth,
                 device_id: this.device_id,
-                session_id: crypto.randomUUID(),
+                session_id: randomUUID(),
             },
         })
         this.client.on("The_White_Silk", (name: ClientEvent, data: any, _callback: (ret: unknown) => void) => {

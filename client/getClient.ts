@@ -1,7 +1,7 @@
 import { LingChairClient } from 'lingchair-client-protocol'
 import data from "./Data.ts"
 import { UAParser } from 'ua-parser-js'
-import randomUUID from "./utils/randomUUID.ts"
+import { randomUUID } from 'lingchair-internal-shared'
 
 if (!data.device_id) {
     const ua = new UAParser(navigator.userAgent)

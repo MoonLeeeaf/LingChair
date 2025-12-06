@@ -1,43 +1,56 @@
-// @ts-types="npm:@types/crypto-js"
-import * as CryptoJS from 'crypto-js'
+import crypto from 'node:crypto'
 
 const dataIsEmpty = !localStorage.tws_data || localStorage.tws_data == ''
 
-const aes = {
-    enc: (data: string, key: string) => CryptoJS.AES.encrypt(data, key).toString(),
-    dec: (data: string, key: string) => CryptoJS.AES.decrypt(data, key).toString(CryptoJS.enc.Utf8),
+class Aes {
+    static randomIv() {
+        return crypto.randomBytes(12)
+    }
+    static normalizeKey(key: string, keyLength = 32) {
+        const hash = crypto.createHash('sha256')
+        hash.update(key)
+        const keyBuffer = hash.digest()
+        return keyLength ? keyBuffer.subarray(0, keyLength) : keyBuffer
+    }
+    static encrypt(data: string, key: string) {
+        const iv = this.randomIv()
+        return Buffer.concat([iv, crypto.createCipheriv("aes-256-gcm", this.normalizeKey(key), iv).update(data)]).toString('hex')
+    }
+    static decrypt(data: string, key: string) {
+        const buffer = Buffer.from(data, 'hex')
+        const iv = buffer.subarray(0, 12)
+        return crypto.createDecipheriv("aes-256-gcm", this.normalizeKey(key), iv).update(buffer.subarray(12)).toString()
+    }
 }
 
-const key = location.host + '_TWS_姐姐'
+// 尽可能防止被窃取, 虽然理论上还是会被窃取
+const key = crypto.createHash('sha256').update(location.host + '_TWS_姐姐_' + navigator.userAgent).digest().toString('base64')
 
-if (dataIsEmpty) localStorage.tws_data = aes.enc('{}', key)
+if (dataIsEmpty) localStorage.tws_data = Aes.encrypt('{}', key)
 
-let _dec = aes.dec(localStorage.tws_data, key)
+let _dec = Aes.decrypt(localStorage.tws_data, key)
 if (_dec == '') _dec = '{}'
 
 const _data_cached = JSON.parse(_dec)
 
-// 類型定義
+type IData = {
+    refresh_token?: string
+    split_sizes: number[]
+    apply(): void
+    access_token?: string
+    device_id: string
+}
+
 declare global {
     interface Window {
-        data: {
-            refresh_token?: string
-            split_sizes: number[]
-            apply(): void
-            access_token?: string
-            device_id: string
-        }
+        data?: IData
     }
 }
 
-// @ts-ignore: 忽略...
-// deno-lint-ignore no-window
-(window.data == null) && (window.data = new Proxy({
-    apply() {}
-}, {
+const data = new Proxy({} as IData, {
     get(_obj, k) {
         if (k == '_cached') return _data_cached
-        if (k == 'apply') return () => localStorage.tws_data = aes.enc(JSON.stringify(_data_cached), key)
+        if (k == 'apply') return () => localStorage.tws_data = Aes.encrypt(JSON.stringify(_data_cached), key)
         return _data_cached[k]
     },
     set(_obj, k, v) {
@@ -45,7 +58,11 @@ declare global {
         _data_cached[k] = v
         return true
     }
-}))
+})
 
-// deno-lint-ignore no-window
-export default window.data
+if (new URL(location.href).searchParams.get('export_data') == 'true') {
+    window.data = data
+    console.warn("警告: 将 data 暴露到 window 有可能会导致令牌泄露!")
+}
+
+export default data

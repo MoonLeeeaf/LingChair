@@ -180,18 +180,6 @@ export default class LingChairClient {
         else
             throw new CallbackError(re)
     }
-    async register(args: {
-        nickname: string,
-        username?: string,
-        password: string,
-    }) {
-        try {
-            await this.registerOrThrow(args)
-            return true
-        } catch (_) {
-            return false
-        }
-    }
     getBaseHttpUrl() {
         const url = new URL(this.server_url)
         return (({
@@ -203,6 +191,17 @@ export default class LingChairClient {
     }
     getUrlForFileByHash(file_hash?: string, defaultUrl?: string) {
         return file_hash ? (this.getBaseHttpUrl() + '/uploaded_files/' + file_hash) : defaultUrl
+    }
+    async register(args: {
+        nickname: string,
+        username?: string,
+        password: string,
+    }) {
+        try {
+            return await this.registerOrThrow(args)
+        } catch (_) {
+            return null
+        }
     }
     async registerOrThrow({
         nickname,
@@ -220,6 +219,7 @@ export default class LingChairClient {
         })
         if (re.code != 200)
             throw new CallbackError(re)
+        return re.data!.user_id as string
     }
     async uploadFile({
         chatId,

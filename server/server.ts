@@ -33,6 +33,17 @@ export default async function createLingChairServer() {
         res.sendFile(path.resolve(file!.getFilePath()))
         file.updateLastUsedTime()
     })
+    // For client-side router
+    app.get(/.*/, (req, res, next) => {
+        if (
+            req.path.startsWith('/uploaded_files/')
+            || req.path === '/config.json'
+        ) {
+            return next()
+        }
+        
+        res.sendFile(path.resolve(config.data_path + '/page_compiled/index.html'))
+    })
 
     await fs.mkdir(config.data_path + '/upload_cache', { recursive: true })
     try {

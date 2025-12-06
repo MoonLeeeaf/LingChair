@@ -131,33 +131,37 @@ export default class LingChairClient {
         }
     }
     /** 
-     * 客户端上线
+     * 进行身份验证以接受客户端事件
      * 
      * 使用验证方式优先级: 访问 > 刷新 > 账号密码
      * 
-     * 不会逐一尝试
+     * 若传递了账号密码, 则同时缓存新的访问令牌和刷新令牌
+     * 
+     * 如只传递两个令牌的其一, 按照优先级并在成功验证后赋值
+     * 
+     * 多个验证方式不会逐一尝试
      */
     async authOrThrow(args: {
-        refresh_token?: string,
-        access_token?: string,
-        account?: string,
-        password?: string,
+        refresh_token?: string
+        access_token?: string
+        account?: string
+        password?: string
+        ignore_all_empty?: boolean
     }) {
-        if ((!args.access_token && !args.refresh_token) && (!args.account && !args.password))
-            throw new Error('Access/Refresh token or account & password required')
+        if ((!args.access_token && !args.refresh_token) && (!args.account && !args.password) && !args.ignore_all_empty)
+            throw new Error('Access/Refresh token or account & password required, or ignore_all_empty=true')
 
         this.auth_cache = args
-
-        this.refresh_token = args.refresh_token
 
         let access_token = args.access_token
         if (!access_token && args.refresh_token) {
             const re = await this.invoke('User.refreshAccessToken', {
                 refresh_token: args.refresh_token,
             })
-            if (re.code == 200)
+            if (re.code == 200) {
                 access_token = re.data!.access_token as string | undefined
-            else
+                this.refresh_token = args.refresh_token
+            } else
                 throw new CallbackError(re)
         }
 
@@ -166,9 +170,10 @@ export default class LingChairClient {
                 account: args.account,
                 password: crypto.createHash('sha256').update(args.password).digest('hex'),
             })
-            if (re.code == 200)
+            if (re.code == 200) {
                 access_token = re.data!.access_token as string | undefined
-            else
+                this.refresh_token = re.data!.refresh_token as string
+            } else
                 throw new CallbackError(re)
         }
 

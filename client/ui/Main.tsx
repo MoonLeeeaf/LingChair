@@ -2,16 +2,17 @@ import isMobileUI from "../utils/isMobileUI.ts"
 import useEventListener from "../utils/useEventListener.ts"
 import AvatarMySelf from "./AvatarMySelf.tsx"
 import MainSharedContext from './MainSharedContext.ts'
-import React from "react"
+import * as React from 'react'
 import { BrowserRouter, Outlet, Route, Routes } from "react-router"
 import LoginDialog from "./main-page/LoginDialog.tsx"
 import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import performAuth from "../performAuth.ts"
 import { CallbackError } from "lingchair-client-protocol"
+import showCircleProgressDialog from "./showCircleProgressDialog.ts"
+import RegisterDialog from "./main-page/RegisterDialog.tsx"
+import sleep from "../utils/sleep.ts"
 
 export default function Main() {
-    const [showLoginDialog, setShowLoginDialog] = React.useState(false)
-
     // 多页面切换
     const navigationRef = React.useRef<HTMLElement>()
     const [currentShowPage, setCurrentShowPage] = React.useState('Recents')
@@ -20,14 +21,19 @@ export default function Main() {
         setCurrentShowPage((event.target as HTMLElementWithValue).value)
     })
 
+    const [showLoginDialog, setShowLoginDialog] = React.useState(false)
+    const [showRegisterDialog, setShowRegisterDialog] = React.useState(false)
+
     const sharedContext = {
         ui_functions: React.useRef({
 
         }),
         setShowLoginDialog,
+        setShowRegisterDialog,
     }
 
     useAsyncEffect(async () => {
+        const waitingForAuth = showCircleProgressDialog("验证中...")
         try {
             await performAuth({})
         } catch (e) {
@@ -35,6 +41,9 @@ export default function Main() {
                 if (e.code == 401 || e.code == 400)
                     setShowLoginDialog(true)
         }
+        // 动画都没来得及, 稍微等一下 (
+        await sleep(100)
+        waitingForAuth.open = false
     })
 
     return (
@@ -53,6 +62,7 @@ export default function Main() {
                                 <Outlet />
                             }
                             <LoginDialog open={showLoginDialog} />
+                            <RegisterDialog open={showRegisterDialog} />
                             {
                                 /**
                                  * Default: 侧边列表提供列表切换

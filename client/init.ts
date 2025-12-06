@@ -2,6 +2,8 @@ import 'mdui/mdui.css'
 import 'mdui'
 import { breakpoint } from "mdui"
 
+import './mdui.d.ts'
+
 import * as React from 'react'
 import ReactDOM from 'react-dom/client'
 

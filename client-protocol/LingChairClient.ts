@@ -8,29 +8,6 @@ import CallbackError from "./CallbackError.ts"
 
 import Message from "./Message.ts"
 
-import Chat from "./Chat.ts"
-import User from "./User.ts"
-import UserMySelf from "./UserMySelf.ts"
-import UserBean from "./bean/UserBean.ts"
-import ChatBean from "./bean/ChatBean.ts"
-import GroupSettingsBean from "./bean/GroupSettingsBean.ts"
-import JoinRequestBean from "./bean/JoinRequestBean.ts"
-import MessageBean from "./bean/MessageBean.ts"
-import RecentChatBean from "./bean/RecentChatBean.ts"
-
-export {
-    Chat,
-    User,
-    UserMySelf,
-
-    UserBean,
-    ChatBean,
-    MessageBean,
-    RecentChatBean,
-    JoinRequestBean,
-}
-export type { GroupSettingsBean }
-
 export default class LingChairClient {
     declare client: Socket
     declare access_token: string

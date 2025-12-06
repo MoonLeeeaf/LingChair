@@ -1,7 +1,7 @@
 {
-    "deno.enable": true,
+    "deno.enable": false,
     "deno.disablePaths": [
         "./thewhitesilk_data",
-        "./client/mdui_patched"
+        "./mdui_patched"
     ]
 }

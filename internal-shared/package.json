@@ -1,0 +1,5 @@
+{
+    "name": "lingchair-internal-shared",
+    "type": "module",
+    "main": "./main.ts"
+}

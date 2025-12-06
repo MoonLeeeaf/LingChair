@@ -11,10 +11,12 @@ WORKDIR /app
 COPY --exclude=.git --exclude=.gitignore --exclude=Dockerfile --exclude=readme.md --exclude=thewhitesilk_config.json --exclude=thewhitesilk_data . .
 
 # 缓存依赖并构建项目
-RUN deno task build
+RUN npm run install-dependencies
+
+RUN npm run build-client
 
 # 暴露应用端口（根据你的应用调整端口号）
 EXPOSE 3601
 
 # 启动服务
-CMD ["deno", "task", "build-and-run-server"]
+CMD ["npm", "run", "server"]

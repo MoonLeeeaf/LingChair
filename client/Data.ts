@@ -28,10 +28,13 @@ const key = crypto.createHash('sha256').update(location.host + '_TWS_姐姐_' + 
 
 if (dataIsEmpty) localStorage.tws_data = Aes.encrypt('{}', key)
 
-let _dec = Aes.decrypt(localStorage.tws_data, key)
-if (_dec == '') _dec = '{}'
-
-const _data_cached = JSON.parse(_dec)
+let _data_cached
+try {
+    _data_cached = JSON.parse(Aes.decrypt(localStorage.tws_data, key))
+} catch (e) {
+    console.warn("数据解密失败, 使用空数据...", e)
+    _data_cached = {}
+}
 
 type IData = {
     refresh_token?: string

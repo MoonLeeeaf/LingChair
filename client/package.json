@@ -26,7 +26,7 @@
         "@types/react-dom": "18.3.1",
         "@vitejs/plugin-react": "4.7.0",
         "chalk": "5.4.1",
-        "vite": "7.0.6",
+        "vite": "7.2.6",
         "vite-plugin-node-polyfills": "^0.24.0"
     }
 }

@@ -12,9 +12,9 @@ export default function Avatar({
     avatarRef,
     ...props
 }: Args) {
-    if (src != null)
+    if (src != null && src != '')
         return <mdui-avatar ref={avatarRef} {...props} src={src} />
-    else if (text != null)
+    else if (text != null && text != '')
         return <mdui-avatar ref={avatarRef} {...props}>
             {
                 text.substring(0, 1)

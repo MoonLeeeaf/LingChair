@@ -7,10 +7,13 @@ import GroupSettingsBean from "./bean/GroupSettingsBean.ts"
 import JoinRequestBean from "./bean/JoinRequestBean.ts"
 import MessageBean from "./bean/MessageBean.ts"
 import RecentChatBean from "./bean/RecentChatBean.ts"
+
 import LingChairClient from "./LingChairClient.ts"
+import CallbackError from "./CallbackError.ts"
 
 export {
     LingChairClient,
+    CallbackError,
     
     Chat,
     User,

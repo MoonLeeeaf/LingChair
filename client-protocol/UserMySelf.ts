@@ -156,7 +156,7 @@ export default class UserMySelf extends User {
             token: this.client.access_token
         })
         if (re.code == 200)
-            return re.data!.recent_chats as ChatBean[]
+            return (re.data!.favourite_chats || re.data!.contacts_list) as ChatBean[]
         throw new CallbackError(re)
     }
     async getMyFavouriteChats() {

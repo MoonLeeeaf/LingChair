@@ -117,7 +117,6 @@ export default function Main() {
                                                 <mdui-menu-item icon="group_add">创建群组</mdui-menu-item>
                                             </mdui-menu>
                                         </mdui-dropdown>
-                                        <mdui-button-icon icon="settings"></mdui-button-icon>
                                         <mdui-button-icon>
                                             <AvatarMySelf />
                                         </mdui-button-icon>

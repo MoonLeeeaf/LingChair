@@ -1,20 +1,27 @@
 import * as React from 'react'
 import { Button, Dialog, TextField } from "mdui"
-import MainSharedContext from '../MainSharedContext'
+import MainSharedContext, { Shared } from '../MainSharedContext'
 import showSnackbar from '../../utils/showSnackbar'
 import showCircleProgressDialog from '../showCircleProgressDialog'
 import getClient from '../../getClient'
 import performAuth from '../../performAuth'
+import { useContextSelector } from 'use-context-selector'
+import useEventListener from '../../utils/useEventListener'
 
 export default function RegisterDialog({ ...props }: { open: boolean } & React.HTMLAttributes<Dialog>) {
-    const shared = React.useContext(MainSharedContext)
+    const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
+        setShowRegisterDialog: context.setShowRegisterDialog
+    }))
+
+    const dialogRef = React.useRef<Dialog>()
+    useEventListener(dialogRef, 'closed', () => shared.setShowRegisterDialog(false))
 
     const registerInputUserNameRef = React.useRef<TextField>(null)
     const registerInputNickNameRef = React.useRef<TextField>(null)
     const registerInputPasswordRef = React.useRef<TextField>(null)
 
     return (
-        <mdui-dialog headline="注册" {...props}>
+        <mdui-dialog headline="注册" {...props} ref={dialogRef}>
 
             <mdui-text-field label="用户名 (可选)" ref={registerInputUserNameRef}></mdui-text-field>
             <div style={{

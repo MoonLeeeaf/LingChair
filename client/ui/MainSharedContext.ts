@@ -1,12 +1,23 @@
-import { createContext } from 'react'
+import { Chat, UserMySelf } from "lingchair-client-protocol"
+import { createContext } from "use-context-selector"
 
-type shared = {
-    ui_functions: React.MutableRefObject<{
-
+type Shared = {
+    functions_lazy: React.MutableRefObject<{
+        updateFavouriteChats: () => void
+        updateRecentChats: () => void
+        updateAllChats: () => void
     }>
+    favouriteChats: Chat[]
+    setFavouriteChats: React.Dispatch<React.SetStateAction<Chat[]>>
     setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowRegisterDialog: React.Dispatch<React.SetStateAction<boolean>>
+    setShowAddFavourtieChatDialog: React.Dispatch<React.SetStateAction<boolean>>
+    setCurrentSelectedChatId: React.Dispatch<React.SetStateAction<string>>
+    myProfileCache?: UserMySelf
+    currentSelectedChatId: string
 }
-const MainSharedContext = createContext({} as shared)
+const MainSharedContext = createContext({} as Shared)
 
 export default MainSharedContext
+
+export type { Shared }

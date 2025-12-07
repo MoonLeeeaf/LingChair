@@ -13,11 +13,6 @@ const client = new LingChairClient({
     device_id: data.device_id,
     auto_fresh_token: true,
 })
-try {
-    await performAuth({})
-} catch (_) {
-    console.log(_)
-}
 
 export default function getClient() {
     return client

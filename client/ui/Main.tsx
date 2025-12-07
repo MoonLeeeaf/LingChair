@@ -3,16 +3,26 @@ import useEventListener from "../utils/useEventListener.ts"
 import AvatarMySelf from "./AvatarMySelf.tsx"
 import MainSharedContext from './MainSharedContext.ts'
 import * as React from 'react'
-import { BrowserRouter, Outlet, Route, Routes } from "react-router"
+import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router"
 import LoginDialog from "./main-page/LoginDialog.tsx"
 import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import performAuth from "../performAuth.ts"
-import { CallbackError } from "lingchair-client-protocol"
+import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
 import showCircleProgressDialog from "./showCircleProgressDialog.ts"
 import RegisterDialog from "./main-page/RegisterDialog.tsx"
 import sleep from "../utils/sleep.ts"
+import { $, NavigationDrawer } from "mdui"
+import getClient from "../getClient.ts"
+import showSnackbar from "../utils/showSnackbar.ts"
+import AllChatsList from "./main-page/AllChatsList.tsx"
+import FavouriteChatsList from "./main-page/FavouriteChatsList.tsx"
+import AddFavourtieChatDialog from "./main-page/AddFavourtieChatDialog.tsx"
+import RecentChatsList from "./main-page/RecentChatsList.tsx"
+import ChatInfoDialog from "./routers/ChatInfoDialog.tsx"
 
 export default function Main() {
+    const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
+
     // 多页面切换
     const navigationRef = React.useRef<HTMLElement>()
     const [currentShowPage, setCurrentShowPage] = React.useState('Recents')
@@ -21,25 +31,60 @@ export default function Main() {
         setCurrentShowPage((event.target as HTMLElementWithValue).value)
     })
 
+    const drawerRef = React.useRef<NavigationDrawer>()
+    React.useEffect(() => {
+        $(drawerRef.current!.shadowRoot).append(`
+            <style>
+                .panel {
+                    width: 17.5rem !important;
+                    display: flex !important;
+                    flex-direction: column;
+                }
+            </style>
+        `)
+    }, [])
+
     const [showLoginDialog, setShowLoginDialog] = React.useState(false)
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false)
+    const [showAddFavourtieChatDialog, setShowAddFavourtieChatDialog] = React.useState(false)
 
-    // TODO
-    const [currentSelectedChatId, setCurrentSelectedChatId] = React.useState(false)
+    const [currentSelectedChatId, setCurrentSelectedChatId] = React.useState('')
+
+    const [favouriteChats, setFavouriteChats] = React.useState<Chat[]>([])
 
     const sharedContext = {
-        ui_functions: React.useRef({
-
+        functions_lazy: React.useRef({
+            updateFavouriteChats: () => { },
+            updateRecentChats: () => { },
+            updateAllChats: () => { },
         }),
+        favouriteChats,
+        setFavouriteChats,
+
         setShowLoginDialog,
         setShowRegisterDialog,
+        setShowAddFavourtieChatDialog,
+
+        currentSelectedChatId,
+        setCurrentSelectedChatId,
+
+        myProfileCache,
 
     }
 
     useAsyncEffect(async () => {
-        const waitingForAuth = showCircleProgressDialog("验证中...")
+        const waitingForAuth = showCircleProgressDialog("加载中...")
         try {
             await performAuth({})
+
+            try {
+                setMyProfileCache(await UserMySelf.getMySelfOrThrow(getClient()))
+            } catch (e) {
+                if (e instanceof CallbackError)
+                    showSnackbar({
+                        message: '获取资料失败: ' + e.message
+                    })
+            }
         } catch (e) {
             if (e instanceof CallbackError)
                 if (e.code == 401 || e.code == 400)
@@ -49,6 +94,13 @@ export default function Main() {
         await sleep(100)
         waitingForAuth.open = false
     })
+
+    const subRoutes = <>
+        <Route path="/info">
+            <Route path="chat" element={<ChatInfoDialog />} />
+            <Route path="user" element={<ChatInfoDialog />} />
+        </Route>
+    </>
 
     return (
         <MainSharedContext.Provider value={sharedContext}>
@@ -68,27 +120,47 @@ export default function Main() {
                             }
                             <LoginDialog open={showLoginDialog} />
                             <RegisterDialog open={showRegisterDialog} />
+                            <AddFavourtieChatDialog open={showAddFavourtieChatDialog} />
+                            <mdui-navigation-drawer ref={drawerRef} modal close-on-esc close-on-overlay-click>
+                                <mdui-list style={{
+                                    padding: '10px',
+                                }}>
+                                    <mdui-list-item rounded>
+                                        <span>{myProfileCache?.getNickName()}</span>
+                                        <AvatarMySelf slot="icon" />
+                                    </mdui-list-item>
+                                    <mdui-list-item rounded icon="manage_accounts">账号设置</mdui-list-item>
+                                    <mdui-divider style={{
+                                        margin: '10px',
+                                    }}></mdui-divider>
+                                    <mdui-list-item rounded icon="person_add">添加收藏对话</mdui-list-item>
+                                    <mdui-list-item rounded icon="group_add">创建新的群组</mdui-list-item>
+                                    <Link to="/info/user?id=0960bd15-4527-4000-97a8-73110160296f"><mdui-list-item rounded icon="group_add">我是测试</mdui-list-item></Link>
+                                    <Link to="/info/chat?id=priv_0960bd15_4527_4000_97a8_73110160296f__0960bd15_4527_4000_97a8_73110160296f"><mdui-list-item rounded icon="group_add">我是测试2</mdui-list-item></Link>
+                                </mdui-list>
+                                <div style={{
+                                    flexGrow: 1,
+                                }}></div>
+                                <span style={{
+                                    padding: '10px',
+                                    fontSize: 'small',
+                                }}>
+                                    LingChair Web v{__APP_VERSION__}<br />
+                                    Build: <a href={`https://codeberg.org/CrescentLeaf/LingChair/src/commit/${__GIT_HASH_FULL__}`}>{__GIT_HASH__}</a> ({__BUILD_TIME__})<br />
+                                    在 Codeberg 上<a href="https://codeberg.org/CrescentLeaf/LingChair">查看源代码</a>
+                                </span>
+                            </mdui-navigation-drawer>
                             {
                                 /**
                                  * Default: 侧边列表提供列表切换
                                  */
                                 !isMobileUI() ?
                                     <mdui-navigation-rail ref={navigationRef} contained value="Recents">
-                                        <mdui-button-icon slot="top">
-                                            <AvatarMySelf />
-                                        </mdui-button-icon>
+                                        <mdui-button-icon slot="top" icon="menu" onClick={() => drawerRef.current!.open = true}></mdui-button-icon>
 
                                         <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents"></mdui-navigation-rail-item>
-                                        <mdui-navigation-rail-item icon="favorite_border" active-icon="favorite" value="Contacts"></mdui-navigation-rail-item>
+                                        <mdui-navigation-rail-item icon="favorite_border" active-icon="favorite" value="Favourites"></mdui-navigation-rail-item>
                                         <mdui-navigation-rail-item icon="chat--outlined" active-icon="chat--filled" value="AllChats"></mdui-navigation-rail-item>
-
-                                        <mdui-dropdown trigger="hover" slot="bottom">
-                                            <mdui-button-icon icon="add" slot="trigger"></mdui-button-icon>
-                                            <mdui-menu>
-                                                <mdui-menu-item icon="person_add">添加收藏对话</mdui-menu-item>
-                                                <mdui-menu-item icon="group_add">创建群组</mdui-menu-item>
-                                            </mdui-menu>
-                                        </mdui-dropdown>
                                     </mdui-navigation-rail>
                                     /**
                                      * Mobile: 底部导航栏提供列表切换
@@ -100,26 +172,17 @@ export default function Main() {
                                         marginLeft: '15px',
                                         top: '0px',
                                     }}>
+                                        <mdui-button-icon icon="menu" onClick={() => drawerRef.current!.open = true}></mdui-button-icon>
                                         <mdui-top-app-bar-title>{
                                             ({
                                                 Recents: "最近对话",
-                                                Contacts: "收藏对话",
+                                                Favourites: "收藏对话",
                                                 AllChats: "所有对话",
                                             })[currentShowPage]
                                         }</mdui-top-app-bar-title>
                                         <div style={{
                                             flexGrow: 1,
                                         }}></div>
-                                        <mdui-dropdown trigger="hover">
-                                            <mdui-button-icon icon="add" slot="trigger"></mdui-button-icon>
-                                            <mdui-menu>
-                                                <mdui-menu-item icon="person_add">添加收藏对话</mdui-menu-item>
-                                                <mdui-menu-item icon="group_add">创建群组</mdui-menu-item>
-                                            </mdui-menu>
-                                        </mdui-dropdown>
-                                        <mdui-button-icon>
-                                            <AvatarMySelf />
-                                        </mdui-button-icon>
                                     </mdui-top-app-bar>
                             }
                             {
@@ -132,7 +195,15 @@ export default function Main() {
                                     height: 'calc(100% - 80px - 67px)',
                                     width: '100%',
                                 } : {}} id="SideBar">
-
+                                    <RecentChatsList style={{
+                                        display: currentShowPage == 'Recents' ? undefined : 'none'
+                                    }} />
+                                    <FavouriteChatsList style={{
+                                        display: currentShowPage == 'Favourites' ? undefined : 'none'
+                                    }} />
+                                    <AllChatsList style={{
+                                        display: currentShowPage == 'AllChats' ? undefined : 'none'
+                                    }} />
                                 </div>
                             }
                             {
@@ -145,12 +216,13 @@ export default function Main() {
                                     bottom: '0',
                                 }}>
                                     <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近对话</mdui-navigation-bar-item>
-                                    <mdui-navigation-bar-item icon="favorite_border" active-icon="favorite" value="Contacts">收藏对话</mdui-navigation-bar-item>
+                                    <mdui-navigation-bar-item icon="favorite_border" active-icon="favorite" value="Favourites">收藏对话</mdui-navigation-bar-item>
                                     <mdui-navigation-bar-item icon="chat--outlined" active-icon="chat--filled" value="AllChats">全部对话</mdui-navigation-bar-item>
                                 </mdui-navigation-bar>
                             }
                         </div>
                     )}>
+                        {subRoutes}
                     </Route>
                 </Routes>
             </BrowserRouter>

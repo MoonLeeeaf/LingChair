@@ -2,7 +2,7 @@ import 'mdui/mdui.css'
 import 'mdui'
 import { breakpoint } from "mdui"
 
-import './mdui.d.ts'
+import './env.d.ts'
 
 import * as React from 'react'
 import ReactDOM from 'react-dom/client'
@@ -15,6 +15,14 @@ import './ui/chat-elements/chat-mention.ts'
 import './ui/chat-elements/chat-text-container.ts'
 import './ui/chat-elements/chat-quote.ts'
 import Main from "./ui/Main.tsx"
+
+import performAuth from './performAuth.ts'
+
+try {
+    await performAuth({})
+} catch (e) {
+    console.log("验证失败", e)
+}
 
 ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(Main))
 

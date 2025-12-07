@@ -67,3 +67,7 @@ html {
 .gutter.gutter-horizontal {
   cursor: col-resize;
 }
+
+a {
+  color: rgb(var(--mdui-color-primary));
+}

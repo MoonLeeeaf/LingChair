@@ -1,18 +1,26 @@
 import * as React from 'react'
-import { Button, Dialog, TextField } from "mdui"
+import { Dialog, TextField } from "mdui"
 
 import performAuth from '../../performAuth.ts'
 import showSnackbar from '../../utils/showSnackbar.ts'
-import MainSharedContext from '../MainSharedContext.ts'
+import MainSharedContext, { Shared } from '../MainSharedContext.ts'
+import { useContextSelector } from 'use-context-selector'
+import useEventListener from '../../utils/useEventListener.ts'
 
 export default function LoginDialog({ ...props }: { open: boolean } & React.HTMLAttributes<Dialog>) {
-    const shared = React.useContext(MainSharedContext)
+    const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
+        setShowRegisterDialog: context.setShowRegisterDialog,
+        setShowLoginDialog: context.setShowLoginDialog
+    }))
+
+    const dialogRef = React.useRef<Dialog>()
+    useEventListener(dialogRef, 'closed', () => shared.setShowLoginDialog(false))
 
     const loginInputAccountRef = React.useRef<TextField>(null)
     const loginInputPasswordRef = React.useRef<TextField>(null)
 
     return (
-        <mdui-dialog {...props} headline="登录">
+        <mdui-dialog {...props} headline="登录" ref={dialogRef}>
 
             <mdui-text-field label="用户 ID / 用户名" ref={loginInputAccountRef}></mdui-text-field>
             <div style={{

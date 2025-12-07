@@ -3,6 +3,7 @@ import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import Avatar from "./Avatar.tsx"
 import getClient from "../getClient.ts"
 import React from "react"
+import sleep from "../utils/sleep.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     avatarRef?: React.LegacyRef<HTMLElement>
@@ -21,6 +22,7 @@ export default function AvatarMySelf({
     })
 
     useAsyncEffect(async () => {
+        await sleep(200)
         const mySelf = await UserMySelf.getMySelfOrThrow(getClient())
         setArgs({
             text: mySelf.getNickName(),

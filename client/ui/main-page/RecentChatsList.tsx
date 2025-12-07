@@ -1,46 +1,50 @@
 import { TextField } from "mdui"
+import RecentsListItem from "./RecentsListItem.tsx"
 import React from "react"
-import AllChatsListItem from "./AllChatsListItem.tsx"
-import useEventListener from "../../utils/useEventListener.ts"
-import useAsyncEffect from "../../utils/useAsyncEffect.ts"
-import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
-import getClient from "../../getClient.ts"
-import showSnackbar from "../../utils/showSnackbar.ts"
+import RecentChat from "lingchair-client-protocol/RecentChat.ts"
+import { data } from "react-router"
 import isMobileUI from "../../utils/isMobileUI.ts"
+import useAsyncEffect from "../../utils/useAsyncEffect.ts"
+import useEventListener from "../../utils/useEventListener.ts"
+import { CallbackError } from "lingchair-client-protocol"
 import { useContextSelector } from "use-context-selector"
+import showSnackbar from "../../utils/showSnackbar.ts"
 import MainSharedContext, { Shared } from "../MainSharedContext.ts"
 
-export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {
+export default function RecentChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
         myProfileCache: context.myProfileCache,
         functions_lazy: context.functions_lazy,
+        currentSelectedChatId: context.currentSelectedChatId,
     }))
 
     const searchRef = React.useRef<HTMLElement>(null)
     const [searchText, setSearchText] = React.useState('')
-    const [allChatsList, setAllChatsList] = React.useState<Chat[]>([])
+    const [recentsList, setRecentsList] = React.useState<RecentChat[]>([])
 
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
     })
 
     useAsyncEffect(async () => {
-        async function updateAllChats() {
+        async function updateRecents() {
             try {
-                setAllChatsList(await shared.myProfileCache!.getMyAllChatsOrThrow())
+                setRecentsList(await shared.myProfileCache!.getMyRecentChats())
             } catch (e) {
                 if (e instanceof CallbackError)
                     if (e.code != 401 && e.code != 400)
                         showSnackbar({
-                            message: '获取所有对话失败: ' + e.message
+                            message: '获取最近对话失败: ' + e.message
                         })
             }
         }
-        updateAllChats()
+        updateRecents()
 
-        shared.functions_lazy.current.updateAllChats = updateAllChats
-        
+        shared.functions_lazy.current.updateRecentChats = updateRecents
+
+        const id = setInterval(() => updateRecents(), 15 * 1000)
         return () => {
+            clearInterval(id)
         }
     })
 
@@ -55,25 +59,24 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
     }} {...props}>
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
             paddingTop: '12px',
-            paddingBottom: '13px',
+            marginBottom: '13px',
             position: 'sticky',
             top: '0',
             backgroundColor: 'rgb(var(--mdui-color-background))',
             zIndex: '10',
         }}></mdui-text-field>
         {
-            allChatsList.filter((chat) =>
+            recentsList.filter((chat) =>
                 searchText == '' ||
                 chat.getTitle().includes(searchText) ||
-                chat.getId().includes(searchText)
+                chat.getId().includes(searchText) ||
+                chat.getContent().includes(searchText)
             ).map((v) =>
-                <AllChatsListItem
-                    active={isMobileUI() ? false : currentChatId == v.getId()}
+                <RecentsListItem
+                    active={isMobileUI() ? false : shared.currentSelectedChatId == v.getId()}
+                    openChatFragment={() => openChatFragment(v.getId())}
                     key={v.getId()}
-                    onClick={() => {
-                        openChatInfoDialog(v)
-                    }}
-                    chat={v} />
+                    recentChat={v} />
             )
         }
     </mdui-list>

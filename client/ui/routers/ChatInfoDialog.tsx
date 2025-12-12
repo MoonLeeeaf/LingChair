@@ -20,11 +20,12 @@ export default function ChatInfoDialog({ ...props }: React.HTMLAttributes<HTMLEl
     const [userId, setUserId] = React.useState<string>()
 
     const [searchParams] = useSearchParams()
-    let currentLocation = useLocation()
+    let pathName = useLocation().pathname
     const navigate = useNavigate()
     function back() {
-        navigate(-1)
+        navigate('/')
     }
+
     const dialogRef = React.useRef<Dialog>()
     useEventListener(dialogRef, 'overlay-click', () => back())
     const id = searchParams.get('id')
@@ -35,27 +36,19 @@ export default function ChatInfoDialog({ ...props }: React.HTMLAttributes<HTMLEl
     }, [chat, shared])
 
     React.useEffect(() => {
-        console.log(currentLocation)
-    }, [currentLocation])
+        console.log("挂载喵!", pathName)
+        return () => console.log("被抛弃了喵!", pathName)
+    }, [pathName])
 
+    const isUser = pathName.startsWith('/info/user')
     useAsyncEffect(async () => {
-        console.log(id, currentLocation.pathname)
+        console.log(id, pathName)
         try {
-            if (!currentLocation.pathname.startsWith('/info/')) {
-                dialogRef.current!.open = false
-                return
-            }
-
-            if (id == null) {
-                dialogRef.current!.open = false
-                return back()
-            }
-
-            if (currentLocation.pathname.startsWith('/info/user')) {
-                setChat(await Chat.getOrCreatePrivateChatOrThrow(getClient(), id))
-                setUserId(id)
+            if (isUser) {
+                setChat(await Chat.getOrCreatePrivateChatOrThrow(getClient(), id!))
+                setUserId(id!)
             } else
-                setChat(await Chat.getByIdOrThrow(getClient(), id))
+                setChat(await Chat.getByIdOrThrow(getClient(), id!))
             dialogRef.current!.open = true
         } catch (e) {
             if (e instanceof CallbackError)
@@ -65,10 +58,7 @@ export default function ChatInfoDialog({ ...props }: React.HTMLAttributes<HTMLEl
             console.log(e)
             back()
         }
-    }, [id, currentLocation])
-
-    if (!currentLocation.pathname.startsWith('/info/'))
-        return null
+    }, [id, isUser])
 
     const avatarUrl = getClient().getUrlForFileByHash(chat?.getAvatarFileHash())!
 
@@ -141,4 +131,3 @@ export default function ChatInfoDialog({ ...props }: React.HTMLAttributes<HTMLEl
         </mdui-dialog>
     )
 }
-

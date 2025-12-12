@@ -14,9 +14,9 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
         myProfileCache: context.myProfileCache,
         setShowAddFavourtieChatDialog: context.setShowAddFavourtieChatDialog,
-        functions_lazy: context.functions_lazy,
+        favouriteChats: context.favouriteChats,
         currentSelectedChatId: context.currentSelectedChatId,
-        values_lazy: context.values_lazy,
+        functions_lazy: context.functions_lazy,
     }))
 
     const searchRef = React.useRef<HTMLElement>(null)
@@ -34,7 +34,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
             try {
                 const ls = await shared.myProfileCache!.getMyFavouriteChatsOrThrow()
                 setFavouriteChatsList(ls)
-                shared.favourite_chats
+                shared.favouriteChats
             } catch (e) {
                 if (e instanceof CallbackError)
                     if (e.code != 401 && e.code != 400)

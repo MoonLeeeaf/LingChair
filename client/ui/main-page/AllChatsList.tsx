@@ -14,6 +14,7 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
         myProfileCache: context.myProfileCache,
         functions_lazy: context.functions_lazy,
+        currentSelectedChatId: context.currentSelectedChatId,
     }))
 
     const searchRef = React.useRef<HTMLElement>(null)
@@ -68,7 +69,7 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
                 chat.getId().includes(searchText)
             ).map((v) =>
                 <AllChatsListItem
-                    active={isMobileUI() ? false : currentChatId == v.getId()}
+                    active={isMobileUI() ? false : shared.currentSelectedChatId == v.getId()}
                     key={v.getId()}
                     onClick={() => {
                         openChatInfoDialog(v)

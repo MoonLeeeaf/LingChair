@@ -9,12 +9,15 @@ type Shared = {
     }>
     favouriteChats: Chat[]
     setFavouriteChats: React.Dispatch<React.SetStateAction<Chat[]>>
+    
     setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowRegisterDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowAddFavourtieChatDialog: React.Dispatch<React.SetStateAction<boolean>>
-    setCurrentSelectedChatId: React.Dispatch<React.SetStateAction<string>>
-    myProfileCache?: UserMySelf
+
     currentSelectedChatId: string
+    setCurrentSelectedChatId: React.Dispatch<React.SetStateAction<string>>
+
+    myProfileCache?: UserMySelf
 }
 const MainSharedContext = createContext({} as Shared)
 

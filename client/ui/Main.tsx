@@ -3,7 +3,7 @@ import useEventListener from "../utils/useEventListener.ts"
 import AvatarMySelf from "./AvatarMySelf.tsx"
 import MainSharedContext from './MainSharedContext.ts'
 import * as React from 'react'
-import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router"
+import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate } from "react-router"
 import LoginDialog from "./main-page/LoginDialog.tsx"
 import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import performAuth from "../performAuth.ts"
@@ -11,7 +11,7 @@ import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
 import showCircleProgressDialog from "./showCircleProgressDialog.ts"
 import RegisterDialog from "./main-page/RegisterDialog.tsx"
 import sleep from "../utils/sleep.ts"
-import { $, NavigationDrawer } from "mdui"
+import { $, Dialog, NavigationDrawer } from "mdui"
 import getClient from "../getClient.ts"
 import showSnackbar from "../utils/showSnackbar.ts"
 import AllChatsList from "./main-page/AllChatsList.tsx"
@@ -19,6 +19,23 @@ import FavouriteChatsList from "./main-page/FavouriteChatsList.tsx"
 import AddFavourtieChatDialog from "./main-page/AddFavourtieChatDialog.tsx"
 import RecentChatsList from "./main-page/RecentChatsList.tsx"
 import ChatInfoDialog from "./routers/ChatInfoDialog.tsx"
+
+function Test() {
+    const nav = useNavigate()
+    const dialogRef = React.useRef<Dialog>()
+    useAsyncEffect(async () => {
+        await sleep(10)
+        dialogRef.current!.open = true
+        dialogRef.current!.addEventListener('overlay-click', () => {
+            dialogRef.current!.open = false
+        })
+        dialogRef.current!.addEventListener('closed', async () => {
+            await sleep(100)
+            nav(-1)
+        })
+    }, [])
+    return <mdui-dialog ref={dialogRef}></mdui-dialog>
+}
 
 export default function Main() {
     const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
@@ -69,7 +86,6 @@ export default function Main() {
         setCurrentSelectedChatId,
 
         myProfileCache,
-
     }
 
     useAsyncEffect(async () => {
@@ -95,16 +111,9 @@ export default function Main() {
         waitingForAuth.open = false
     })
 
-    const subRoutes = <>
-        <Route path="/info">
-            <Route path="chat" element={<ChatInfoDialog />} />
-            <Route path="user" element={<ChatInfoDialog />} />
-        </Route>
-    </>
-
     return (
-        <MainSharedContext.Provider value={sharedContext}>
-            <BrowserRouter>
+        <BrowserRouter>
+            <MainSharedContext.Provider value={sharedContext}>
                 <Routes>
                     <Route path="/" element={(
                         <div style={{
@@ -222,10 +231,13 @@ export default function Main() {
                             }
                         </div>
                     )}>
-                        {subRoutes}
+                        <Route path="info">
+                            <Route path="chat" element={<Test />} />
+                            <Route path="user" element={<ChatInfoDialog />} />
+                        </Route>
                     </Route>
                 </Routes>
-            </BrowserRouter>
-        </MainSharedContext.Provider>
+            </MainSharedContext.Provider>
+        </BrowserRouter>
     )
 }

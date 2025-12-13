@@ -32,16 +32,19 @@ export default function EditMyProfileDialog() {
                 fileData: file,
             })
             await mySelf?.setAvatarFileHashOrThrow(hash)
+            showSnackbar({
+                message: "修改成功, 刷新页面以更新",
+            })
         } catch (e) {
+            console.error(e)
             if (e instanceof CallbackError)
                 showSnackbar({
                     message: '上传头像失败: ' + e.message
                 })
+            showSnackbar({
+                message: '上传头像失败: ' + (e instanceof Error ? e.message : e)
+            })
         }
-
-        showSnackbar({
-            message: "修改成功, 刷新页面以更新",
-        })
     })
 
     return (
@@ -57,7 +60,10 @@ export default function EditMyProfileDialog() {
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <AvatarMySelf style={{
+                <AvatarMySelf onClick={() => {
+                    chooseAvatarFileRef.current!.value = ''
+                    chooseAvatarFileRef.current!.click()
+                }} style={{
                     width: '50px',
                     height: '50px',
                 }} />

@@ -14,7 +14,8 @@ type Shared = {
     setShowRegisterDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowAddFavourtieChatDialog: React.Dispatch<React.SetStateAction<boolean>>
 
-    setCurrentSelectedChatId: React.Dispatch<React.SetStateAction<string>>
+    setCurrentSelectedChatId: (id: string) => void
+    setFavouriteChats: (chats: Chat[]) => void
 }
 const MainSharedContext = createContext({} as Shared)
 

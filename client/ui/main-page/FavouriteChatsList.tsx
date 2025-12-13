@@ -3,19 +3,19 @@ import FavouriteChatsListItem from "./FavouriteChatsListItem.tsx"
 import { dialog, TextField } from "mdui"
 import useAsyncEffect from "../../utils/useAsyncEffect.ts"
 import useEventListener from "../../utils/useEventListener.ts"
-import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
+import { CallbackError, Chat } from "lingchair-client-protocol"
 import showSnackbar from "../../utils/showSnackbar.ts"
-import getClient from "../../getClient.ts"
 import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext.ts"
 import isMobileUI from "../../utils/isMobileUI.ts"
+import gotoChatInfo from "../routers/gotoChatInfo.ts"
+import ClientCache from "../../ClientCache.ts"
+import { useNavigate } from "react-router"
 
 export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
-        myProfileCache: context.myProfileCache,
         setShowAddFavourtieChatDialog: context.setShowAddFavourtieChatDialog,
-        favouriteChats: context.favouriteChats,
-        currentSelectedChatId: context.currentSelectedChatId,
+        state: context.state,
         functions_lazy: context.functions_lazy,
     }))
 
@@ -25,6 +25,8 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
     const [favouriteChatsList, setFavouriteChatsList] = React.useState<Chat[]>([])
     const [checkedList, setCheckedList] = React.useState<{ [key: string]: boolean }>({})
 
+    const nav = useNavigate()
+
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
     })
@@ -32,9 +34,8 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
     useAsyncEffect(async () => {
         async function updateFavouriteChats() {
             try {
-                const ls = await shared.myProfileCache!.getMyFavouriteChatsOrThrow()
+                const ls = await (await ClientCache.getMySelf())!.getMyFavouriteChatsOrThrow()
                 setFavouriteChatsList(ls)
-                shared.favouriteChats
             } catch (e) {
                 if (e instanceof CallbackError)
                     if (e.code != 401 && e.code != 400)
@@ -50,7 +51,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
 
         return () => {
         }
-    }, [shared.myProfileCache])
+    }, [])
 
     return <mdui-list style={{
         overflowY: 'auto',
@@ -106,7 +107,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
                                     const ls = Object.keys(checkedList).filter((chatId) => checkedList[chatId] == true)
 
                                     try {
-                                        shared.myProfileCache!.removeFavouriteChatsOrThrow(ls)
+                                        (await ClientCache.getMySelf())!.removeFavouriteChatsOrThrow(ls)
 
                                         setCheckedList({})
                                         setIsMultiSelecting(false)
@@ -118,7 +119,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
                                             action: "撤销操作",
                                             onActionClick: async () => {
                                                 try {
-                                                    shared.myProfileCache!.addFavouriteChatsOrThrow(ls)
+                                                    (await ClientCache.getMySelf())!.addFavouriteChatsOrThrow(ls)
                                                 } catch (e) {
                                                     if (e instanceof CallbackError)
                                                         showSnackbar({
@@ -152,7 +153,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
                 chat.getId().includes(searchText)
             ).map((v) =>
                 <FavouriteChatsListItem
-                    active={isMultiSelecting ? checkedList[v.getId()] == true : (isMobileUI() ? false : shared.currentSelectedChatId == v.getId())}
+                    active={isMultiSelecting ? checkedList[v.getId()] == true : (isMobileUI() ? false : shared.state.currentSelectedChatId == v.getId())}
                     onClick={() => {
                         if (isMultiSelecting)
                             setCheckedList({
@@ -160,7 +161,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
                                 [v.getId()]: !checkedList[v.getId()],
                             })
                         else
-                            openChatInfoDialog(v)
+                            gotoChatInfo(nav, v.getId())
                     }}
                     key={v.getId()}
                     chat={v} />

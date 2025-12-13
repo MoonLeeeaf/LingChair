@@ -3,23 +3,26 @@ import React from "react"
 import AllChatsListItem from "./AllChatsListItem.tsx"
 import useEventListener from "../../utils/useEventListener.ts"
 import useAsyncEffect from "../../utils/useAsyncEffect.ts"
-import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
-import getClient from "../../getClient.ts"
+import { CallbackError, Chat } from "lingchair-client-protocol"
 import showSnackbar from "../../utils/showSnackbar.ts"
 import isMobileUI from "../../utils/isMobileUI.ts"
 import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext.ts"
+import ClientCache from "../../ClientCache.ts"
+import gotoChatInfo from "../routers/gotoChatInfo.ts"
+import { useNavigate } from "react-router"
 
 export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
-        myProfileCache: context.myProfileCache,
         functions_lazy: context.functions_lazy,
-        currentSelectedChatId: context.currentSelectedChatId,
+        state: context.state,
     }))
 
     const searchRef = React.useRef<HTMLElement>(null)
     const [searchText, setSearchText] = React.useState('')
     const [allChatsList, setAllChatsList] = React.useState<Chat[]>([])
+
+    const nav = useNavigate()
 
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
@@ -28,7 +31,7 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
     useAsyncEffect(async () => {
         async function updateAllChats() {
             try {
-                setAllChatsList(await shared.myProfileCache!.getMyAllChatsOrThrow())
+                setAllChatsList(await (await ClientCache.getMySelf())!.getMyAllChatsOrThrow())
             } catch (e) {
                 if (e instanceof CallbackError)
                     if (e.code != 401 && e.code != 400)
@@ -40,7 +43,7 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
         updateAllChats()
 
         shared.functions_lazy.current.updateAllChats = updateAllChats
-        
+
         return () => {
         }
     })
@@ -69,10 +72,10 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
                 chat.getId().includes(searchText)
             ).map((v) =>
                 <AllChatsListItem
-                    active={isMobileUI() ? false : shared.currentSelectedChatId == v.getId()}
+                    active={isMobileUI() ? false : shared.state.currentSelectedChatId == v.getId()}
                     key={v.getId()}
                     onClick={() => {
-                        openChatInfoDialog(v)
+                        gotoChatInfo(nav, v.getId())
                     }}
                     chat={v} />
             )

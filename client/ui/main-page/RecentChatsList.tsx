@@ -10,12 +10,12 @@ import { CallbackError } from "lingchair-client-protocol"
 import { useContextSelector } from "use-context-selector"
 import showSnackbar from "../../utils/showSnackbar.ts"
 import MainSharedContext, { Shared } from "../MainSharedContext.ts"
+import ClientCache from "../../ClientCache.ts"
 
 export default function RecentChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
-        myProfileCache: context.myProfileCache,
         functions_lazy: context.functions_lazy,
-        currentSelectedChatId: context.currentSelectedChatId,
+        state: context.state,
     }))
 
     const searchRef = React.useRef<HTMLElement>(null)
@@ -29,7 +29,7 @@ export default function RecentChatsList({ ...props }: React.HTMLAttributes<HTMLE
     useAsyncEffect(async () => {
         async function updateRecents() {
             try {
-                setRecentsList(await shared.myProfileCache!.getMyRecentChats())
+                setRecentsList(await (await ClientCache.getMySelf())!.getMyRecentChats())
             } catch (e) {
                 if (e instanceof CallbackError)
                     if (e.code != 401 && e.code != 400)
@@ -73,8 +73,8 @@ export default function RecentChatsList({ ...props }: React.HTMLAttributes<HTMLE
                 chat.getContent().includes(searchText)
             ).map((v) =>
                 <RecentsListItem
-                    active={isMobileUI() ? false : shared.currentSelectedChatId == v.getId()}
-                    openChatFragment={() => openChatFragment(v.getId())}
+                    active={isMobileUI() ? false : shared.state.currentSelectedChatId == v.getId()}
+                    onClick={() => {}}
                     key={v.getId()}
                     recentChat={v} />
             )

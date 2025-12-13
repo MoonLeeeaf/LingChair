@@ -17,12 +17,12 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
         setShowAddFavourtieChatDialog: context.setShowAddFavourtieChatDialog,
         state: context.state,
         functions_lazy: context.functions_lazy,
+        setFavouriteChats: context.setFavouriteChats,
     }))
 
     const searchRef = React.useRef<HTMLElement>(null)
     const [isMultiSelecting, setIsMultiSelecting] = React.useState(false)
     const [searchText, setSearchText] = React.useState('')
-    const [favouriteChatsList, setFavouriteChatsList] = React.useState<Chat[]>([])
     const [checkedList, setCheckedList] = React.useState<{ [key: string]: boolean }>({})
 
     const nav = useNavigate()
@@ -35,7 +35,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
         async function updateFavouriteChats() {
             try {
                 const ls = await (await ClientCache.getMySelf())!.getMyFavouriteChatsOrThrow()
-                setFavouriteChatsList(ls)
+                shared.setFavouriteChats(ls)
             } catch (e) {
                 if (e instanceof CallbackError)
                     if (e.code != 401 && e.code != 400)
@@ -147,7 +147,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
         </div>
 
         {
-            favouriteChatsList.filter((chat) =>
+            shared.state.favouriteChats.filter((chat) =>
                 searchText == '' ||
                 chat.getTitle().includes(searchText) ||
                 chat.getId().includes(searchText)

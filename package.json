@@ -22,5 +22,10 @@
         "file-type": "21.0.0",
         "lingchair-internal-shared": "*",
         "socket.io": "4.8.1"
+    },
+    "devDependencies": {
+        "@types/cookie-parser": "^1.4.10",
+        "@types/express": "^5.0.6",
+        "@types/express-fileupload": "^1.5.1"
     }
 }

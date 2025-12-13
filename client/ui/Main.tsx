@@ -24,6 +24,7 @@ import ChatFragmentDialog from "./routers/ChatFragmentDialog.tsx"
 import EffectOnly from "./EffectOnly.tsx"
 import MainSharedReducer from "./MainSharedReducer.ts"
 import gotoUserInfo from "./routers/gotoUserInfo.ts"
+import EditMyProfileDialog from "./routers/EditMyProfileDialog.tsx"
 
 function Root() {
     const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
@@ -129,8 +130,6 @@ function Root() {
                         }}></mdui-divider>
                         <mdui-list-item rounded icon="person_add">添加收藏对话</mdui-list-item>
                         <mdui-list-item rounded icon="group_add">创建新的群组</mdui-list-item>
-                        <Link to="/info/user?id=0960bd15-4527-4000-97a8-73110160296f"><mdui-list-item rounded icon="group_add">我是测试</mdui-list-item></Link>
-                        <Link to="/info/chat?id=priv_0960bd15_4527_4000_97a8_73110160296f__0960bd15_4527_4000_97a8_73110160296f"><mdui-list-item rounded icon="group_add">我是测试2</mdui-list-item></Link>
                     </mdui-list>
                     <div style={{
                         flexGrow: 1,
@@ -234,6 +233,15 @@ export default function Main() {
                 path: 'info/:type',
                 Component: UserOrChatInfoDialog,
                 loader: UserOrChatInfoDialogLoader,
+            },
+            {
+                path: 'settings',
+                children: [
+                    {
+                        path: 'edit_profile',
+                        Component: EditMyProfileDialog,
+                    }
+                ],
             },
             /* {
                 path: 'chat',

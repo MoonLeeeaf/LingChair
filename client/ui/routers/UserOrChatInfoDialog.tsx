@@ -1,6 +1,6 @@
 import { dialog } from "mdui"
 import useRouterDialogRef from "./useRouterDialogRef"
-import { useLoaderData } from "react-router"
+import { useLoaderData, useNavigate } from "react-router"
 import { CallbackError } from "lingchair-client-protocol"
 import showSnackbar from "../../utils/showSnackbar"
 import Avatar from "../Avatar"
@@ -15,6 +15,8 @@ export default function UserOrChatInfoDialog() {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
         state: context.state,
     }))
+
+    const nav = useNavigate()
 
     const dialogRef = useRouterDialogRef()
     const { chat, id, mySelf } = useLoaderData<typeof UserOrChatInfoDialogLoader>()
@@ -56,7 +58,7 @@ export default function UserOrChatInfoDialog() {
             }}></mdui-divider>
             <mdui-list>
                 {
-                    isMySelf && <mdui-list-item icon="edit" rounded>
+                    isMySelf && <mdui-list-item icon="edit" rounded onClick={() => nav('/settings/edit_profile')}>
                         编辑资料
                     </mdui-list-item>
                 }

@@ -13,9 +13,22 @@ import fs from 'node:fs/promises'
 // @ts-types="npm:@types/express-fileupload"
 import fileUpload from 'express-fileupload'
 import FileUploadMiddleware from "./fileupload-middleware.ts"
+import chalk from "chalk"
 
 export default async function createLingChairServer() {
     const app = express()
+
+    app.use((req, res, next) => {
+        const start = Date.now()
+
+        res.on('finish', () => {
+            const duration = Date.now() - start
+            console.log(`${chalk.grey('[求]')} ${req.socket.remoteAddress} <- ${req.originalUrl} [${res.statusCode}] (with ${req.method}, ${duration}ms)`)
+        })
+
+        next()
+    })
+
     app.use('/', express.static(config.data_path + '/page_compiled'))
     app.use(cookieParser())
     app.get('/config.json', (req, res) => {
@@ -41,15 +54,15 @@ export default async function createLingChairServer() {
         ) {
             return next()
         }
-        
+
         res.sendFile(path.resolve(config.data_path + '/page_compiled/index.html'))
     })
 
     await fs.mkdir(config.data_path + '/upload_cache', { recursive: true })
     try {
         await fs.rmdir(config.data_path + '/upload_cache')
-    // deno-lint-ignore no-empty
-    } catch (_) {}
+        // deno-lint-ignore no-empty
+    } catch (_) { }
     app.use(fileUpload({
         limits: { fileSize: 2 * 1024 * 1024 * 1024 },
         useTempFiles: true,

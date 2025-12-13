@@ -37,5 +37,5 @@ const onResize = () => {
 window.addEventListener('resize', onResize)
 onResize()
 
-const config = await fetch('config.json').then((re) => re.json())
+const config = await fetch('/config.json').then((re) => re.json())
 config.title && (document.title = config.title)

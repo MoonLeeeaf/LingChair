@@ -3,7 +3,7 @@ import useEventListener from "../utils/useEventListener.ts"
 import AvatarMySelf from "./AvatarMySelf.tsx"
 import MainSharedContext from './MainSharedContext.ts'
 import * as React from 'react'
-import { BrowserRouter, createBrowserRouter, Link, LoaderFunction, Outlet, Route, RouterProvider, Routes } from "react-router"
+import { BrowserRouter, createBrowserRouter, Link, LoaderFunction, Outlet, Route, RouterProvider, Routes, useNavigate } from "react-router"
 import LoginDialog from "./main-page/LoginDialog.tsx"
 import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import performAuth from "../performAuth.ts"
@@ -23,6 +23,7 @@ import UserOrChatInfoDialogLoader from "./routers/UserOrChatInfoDialogDataLoader
 import ChatFragmentDialog from "./routers/ChatFragmentDialog.tsx"
 import EffectOnly from "./EffectOnly.tsx"
 import MainSharedReducer from "./MainSharedReducer.ts"
+import gotoUserInfo from "./routers/gotoUserInfo.ts"
 
 function Root() {
     const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
@@ -51,6 +52,8 @@ function Root() {
     const [showLoginDialog, setShowLoginDialog] = React.useState(false)
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false)
     const [showAddFavourtieChatDialog, setShowAddFavourtieChatDialog] = React.useState(false)
+
+    const nav = useNavigate()
 
     const [state, dispatch] = React.useReducer(MainSharedReducer, {
         favouriteChats: [],
@@ -116,7 +119,7 @@ function Root() {
                     <mdui-list style={{
                         padding: '10px',
                     }}>
-                        <mdui-list-item rounded>
+                        <mdui-list-item rounded onClick={() => gotoUserInfo(nav, myProfileCache!.getId())}>
                             <span>{myProfileCache?.getNickName()}</span>
                             <AvatarMySelf slot="icon" />
                         </mdui-list-item>

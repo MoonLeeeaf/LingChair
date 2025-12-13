@@ -1,6 +1,7 @@
 import { LoaderFunctionArgs } from "react-router"
 import getClient from "../../getClient"
 import { Chat } from "lingchair-client-protocol"
+import ClientCache from "../../ClientCache"
 
 export default async function UserOrChatInfoDialogLoader({ params, request }: LoaderFunctionArgs) {
     const searchParams = new URL(request.url).searchParams
@@ -16,6 +17,7 @@ export default async function UserOrChatInfoDialogLoader({ params, request }: Lo
         id = await chat.getTheOtherUserIdOrThrow()
 
     return {
+        mySelf: await ClientCache.getMySelf(),
         chat,
         id,
     }

@@ -198,7 +198,7 @@ export default class Chat extends BaseClientObject {
         }
     }
     async getTheOtherUserIdOrThrow() {
-        const re = await this.client.invoke("Chat.updateSettings", {
+        const re = await this.client.invoke("Chat.getAnotherUserIdFromPrivate", {
             token: this.client.access_token,
             target: this.bean.id,
         })

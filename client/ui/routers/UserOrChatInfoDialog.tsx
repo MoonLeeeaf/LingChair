@@ -10,6 +10,7 @@ import * as React from 'react'
 import UserOrChatInfoDialogLoader from "./UserOrChatInfoDialogDataLoader"
 import MainSharedReducer from "../MainSharedReducer"
 import ClientCache from "../../ClientCache"
+import getClient from "../../getClient"
 
 export default function UserOrChatInfoDialog() {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
@@ -31,7 +32,7 @@ export default function UserOrChatInfoDialog() {
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Avatar src={chat.getAvatarFileHash()} text={chat.getTitle()} style={{
+                <Avatar src={getClient().getUrlForFileByHash(chat.getAvatarFileHash())} text={chat.getTitle()} style={{
                     width: '50px',
                     height: '50px',
                 }} />

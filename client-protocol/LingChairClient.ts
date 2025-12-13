@@ -186,7 +186,7 @@ export default class LingChairClient {
             throw new CallbackError(re)
     }
     getBaseHttpUrl() {
-        const url = new URL(this.server_url)
+        const url = new URL(this.client.io.opts.host || (this.server_url == '' ? `${window.location.protocol}//${window.location.host}` : this.server_url))
         return (({
             'ws:': 'http:',
             'wss:': 'https:',

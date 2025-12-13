@@ -3,11 +3,11 @@ import useEventListener from "../utils/useEventListener.ts"
 import AvatarMySelf from "./AvatarMySelf.tsx"
 import MainSharedContext from './MainSharedContext.ts'
 import * as React from 'react'
-import { BrowserRouter, createBrowserRouter, Link, Outlet, Route, RouterProvider, Routes } from "react-router"
+import { BrowserRouter, createBrowserRouter, Link, LoaderFunction, Outlet, Route, RouterProvider, Routes } from "react-router"
 import LoginDialog from "./main-page/LoginDialog.tsx"
 import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import performAuth from "../performAuth.ts"
-import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
+import { CallbackError, Chat, User, UserMySelf } from "lingchair-client-protocol"
 import showCircleProgressDialog from "./showCircleProgressDialog.ts"
 import RegisterDialog from "./main-page/RegisterDialog.tsx"
 import sleep from "../utils/sleep.ts"
@@ -19,8 +19,12 @@ import FavouriteChatsList from "./main-page/FavouriteChatsList.tsx"
 import AddFavourtieChatDialog from "./main-page/AddFavourtieChatDialog.tsx"
 import RecentChatsList from "./main-page/RecentChatsList.tsx"
 import UserOrChatInfoDialog from "./routers/UserOrChatInfoDialog.tsx"
+import UserOrChatInfoDialogLoader from "./routers/UserOrChatInfoDialogDataLoader.ts"
+import ChatFragmentDialog from "./routers/ChatFragmentDialog.tsx"
+import EffectOnly from "./EffectOnly.tsx"
+import MainSharedReducer from "./MainSharedReducer.ts"
 
-export default function Main() {
+function Root() {
     const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
 
     // 多页面切换
@@ -48,9 +52,10 @@ export default function Main() {
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false)
     const [showAddFavourtieChatDialog, setShowAddFavourtieChatDialog] = React.useState(false)
 
-    const [currentSelectedChatId, setCurrentSelectedChatId] = React.useState('')
-
-    const [favouriteChats, setFavouriteChats] = React.useState<Chat[]>([])
+    const [state, dispatch] = React.useReducer(MainSharedReducer, {
+        favouriteChats: [],
+        currentSelectedChatId: '',
+    })
 
     const sharedContext = {
         functions_lazy: React.useRef({
@@ -58,17 +63,14 @@ export default function Main() {
             updateRecentChats: () => { },
             updateAllChats: () => { },
         }),
-        favouriteChats,
-        setFavouriteChats,
+        state,
+        setFavouriteChats: (chats: Chat[]) => dispatch({ type: 'update_favourite_chat', data: chats }),
 
         setShowLoginDialog,
         setShowRegisterDialog,
         setShowAddFavourtieChatDialog,
 
-        currentSelectedChatId,
-        setCurrentSelectedChatId,
-
-        myProfileCache,
+        setCurrentSelectedChatId: (id: string) => dispatch({ type: 'update_selected_chat_id', data: id }),
     }
 
     useAsyncEffect(async () => {
@@ -94,7 +96,7 @@ export default function Main() {
         waitingForAuth.open = false
     })
 
-    const Root = (
+    return (
         <MainSharedContext.Provider value={sharedContext}>
             <div style={{
                 display: "flex",
@@ -212,12 +214,29 @@ export default function Main() {
             </div>
         </MainSharedContext.Provider>
     )
+}
 
+export default function Main() {
     const router = createBrowserRouter([{
         path: "/",
-        element: Root,
+        Component: Root,
+        hydrateFallbackElement: <EffectOnly effect={() => {
+            const wait = showCircleProgressDialog("请稍后...")
+            return () => {
+                wait.open = false
+            }
+        }} deps={[]} />,
         children: [
-            { path: 'info/:type', Component: UserOrChatInfoDialog, },
+            {
+                path: 'info/:type',
+                Component: UserOrChatInfoDialog,
+                loader: UserOrChatInfoDialogLoader,
+            },
+            /* {
+                path: 'chat',
+                Component: ChatFragmentDialog,
+                loader: UserOrChatInfoDialogLoader,
+            }, */
         ],
     }])
 

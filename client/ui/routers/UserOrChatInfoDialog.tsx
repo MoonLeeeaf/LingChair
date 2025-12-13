@@ -1,24 +1,97 @@
 import { dialog } from "mdui"
 import useRouterDialogRef from "./useRouterDialogRef"
-import { BlockerFunction, useBlocker, useLocation, useNavigate, useParams, useSearchParams } from "react-router"
-import useAsyncEffect from "../../utils/useAsyncEffect"
-import { CallbackError, Chat } from "lingchair-client-protocol"
+import { useLoaderData } from "react-router"
+import { CallbackError } from "lingchair-client-protocol"
 import showSnackbar from "../../utils/showSnackbar"
-import getClient from "../../getClient"
 import Avatar from "../Avatar"
 import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext"
 import * as React from 'react'
+import UserOrChatInfoDialogLoader from "./UserOrChatInfoDialogDataLoader"
+import MainSharedReducer from "../MainSharedReducer"
+import ClientCache from "../../ClientCache"
 
 export default function UserOrChatInfoDialog() {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
-        myProfileCache: context.myProfileCache,
-        favouriteChats: context.favouriteChats,
+        state: context.state,
     }))
 
     const dialogRef = useRouterDialogRef()
+    const { chat, id } = useLoaderData<typeof UserOrChatInfoDialogLoader>()
 
-    const location = useLocation()
+    const favourited = React.useMemo(() => shared.state.favouriteChats.map((v) => v.getId()).indexOf(chat.getId() || '') != -1, [chat, shared.state.favouriteChats])
+
+    return (
+        <mdui-dialog close-on-overlay-click close-on-esc ref={dialogRef}>
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+            }}>
+                <Avatar src={chat.getAvatarFileHash()} text={chat.getTitle()} style={{
+                    width: '50px',
+                    height: '50px',
+                }} />
+                <div style={{
+                    display: 'flex',
+                    marginLeft: '15px',
+                    marginRight: '15px',
+                    fontSize: '16.5px',
+                    flexDirection: 'column',
+                    wordBreak: 'break-word',
+                }}>
+                    <span style={{
+                        fontSize: '16.5px'
+                    }}>{chat.getTitle()}</span>
+                    <span style={{
+                        fontSize: '10.5px',
+                        marginTop: '3px',
+                        color: 'rgb(var(--mdui-color-secondary))',
+                    }}>({chat.getType()}) ID: {chat.getType() == 'private' ? id : chat.getId()}</span>
+                </div>
+            </div>
+            <mdui-divider style={{
+                marginTop: "10px",
+            }}></mdui-divider>
+            <mdui-list>
+                <mdui-list-item icon={favourited ? "favorite_border" : "favorite"} rounded onClick={() => dialog({
+                    headline: favourited ? "取消收藏对话" : "收藏对话",
+                    description: favourited ? "确定从收藏对话列表中移除吗? (虽然这不会导致聊天记录丢失)" : "确定要添加到收藏对话列表吗?",
+                    actions: [
+                        {
+                            text: "取消",
+                            onClick: () => {
+                                return true
+                            },
+                        },
+                        {
+                            text: "确定",
+                            onClick: () => {
+                                ; (async () => {
+                                    try {
+                                        if (favourited)
+                                            await (await ClientCache.getMySelf())!.removeFavouriteChatsOrThrow([chat.getId()])
+                                        else
+                                            await (await ClientCache.getMySelf())!.addFavouriteChatsOrThrow([chat.getId()])
+                                    } catch (e) {
+                                        if (e instanceof CallbackError)
+                                            showSnackbar({
+                                                message: (favourited ? "取消收藏对话" : "收藏对话") + '失败: ' + e.message
+                                            })
+                                    }
+                                })()
+                                return true
+                            },
+                        }
+                    ],
+                })}>{favourited ? '取消收藏' : '收藏对话'}</mdui-list-item>
+                <mdui-list-item icon="chat" rounded onClick={() => {
+
+                }}>打开对话</mdui-list-item>
+            </mdui-list>
+        </mdui-dialog>
+    )
+
+    /* const location = useLocation()
     const searchParams = useSearchParams()
     const params = useParams()
 
@@ -42,5 +115,5 @@ export default function UserOrChatInfoDialog() {
                         .join('<br><br>')
             }}></span>
         </mdui-dialog>
-    )
+    ) */
 }

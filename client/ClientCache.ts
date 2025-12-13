@@ -1,9 +1,17 @@
-import { Chat, User } from "lingchair-client-protocol"
+import { Chat, User, UserMySelf } from "lingchair-client-protocol"
 import getClient from "./getClient"
 
 type CouldCached = User | Chat | null
 export default class ClientCache {
     static caches: { [key: string]: CouldCached } = {}
+
+    static async getMySelf() {
+        const k = 'usermyself'
+        if (this.caches[k] != null)
+            return this.caches[k] as UserMySelf | null
+        this.caches[k] = await UserMySelf.getMySelf(getClient())
+        return this.caches[k] as UserMySelf | null
+    }
     
     static async getUser(id: string) {
         const k = 'user_' + id

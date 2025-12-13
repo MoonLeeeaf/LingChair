@@ -1,5 +1,6 @@
 import { Chat, UserMySelf } from "lingchair-client-protocol"
 import { createContext } from "use-context-selector"
+import { SharedState } from "./MainSharedReducer"
 
 type Shared = {
     functions_lazy: React.MutableRefObject<{
@@ -7,17 +8,13 @@ type Shared = {
         updateRecentChats: () => void
         updateAllChats: () => void
     }>
-    favouriteChats: Chat[]
-    setFavouriteChats: React.Dispatch<React.SetStateAction<Chat[]>>
+    state: SharedState
     
     setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowRegisterDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowAddFavourtieChatDialog: React.Dispatch<React.SetStateAction<boolean>>
 
-    currentSelectedChatId: string
     setCurrentSelectedChatId: React.Dispatch<React.SetStateAction<string>>
-
-    myProfileCache?: UserMySelf
 }
 const MainSharedContext = createContext({} as Shared)
 

@@ -1,7 +1,7 @@
 {
     "name": "lingchair-client",
     "type": "module",
-    "version": "0.1.0-alpha",
+    "version": "0.1.0",
     "scripts": {
         "build": "npx vite build",
         "build-watch": "npx vite --watch build"

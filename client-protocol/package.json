@@ -1,5 +1,6 @@
 {
     "name": "lingchair-client-protocol",
+    "version": "0.1.0",
     "type": "module",
     "main": "./main.ts",
     "dependencies": {

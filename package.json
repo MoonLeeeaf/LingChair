@@ -1,5 +1,6 @@
 {
     "name": "lingchair",
+    "version": "0.1.0",
     "type": "module",
     "workspaces": [
         "./mdui_patched",

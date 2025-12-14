@@ -103,6 +103,7 @@ let Dialog = class Dialog extends MduiElement {
         ]);
         // 打开
         // 要区分是否首次渲染，首次渲染不触发事件，不执行动画；非首次渲染，触发事件，执行动画
+        this.panelRef.value.style.transformOrigin = 'center center';
         if (this.open) {
             if (hasUpdated) {
                 const eventProceeded = this.emit('open', { cancelable: true });
@@ -136,8 +137,34 @@ let Dialog = class Dialog extends MduiElement {
                     this.panelRef.value.focus({ preventScroll: true });
                 }
             });
-            const duration = getDuration(this, 'medium4');
+            // const duration = getDuration(this, 'medium4');
+            const duration = hasUpdated ? getDuration(this, 'medium4') : 0;
             await Promise.all([
+                // 遮罩层淡入
+                animateTo(this.overlayRef.value, [
+                    { opacity: 0 },
+                    { opacity: 1 }
+                ], {
+                    duration: hasUpdated ? duration * 0.7 : 0,
+                    easing: easingLinear,
+                }),
+
+                // 面板缩放淡入
+                animateTo(this.panelRef.value, [
+                    {
+                        opacity: 0,
+                        transform: 'scale(0.8)',
+                    },
+                    {
+                        opacity: 1,
+                        transform: 'scale(1)'
+                    }
+                ], {
+                    duration: hasUpdated ? duration : 0,
+                    easing: easingEmphasizedDecelerate,
+                }),
+            ]);
+            /* await Promise.all([
                 animateTo(this.overlayRef.value, [{ opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 1 }], {
                     duration: hasUpdated ? duration : 0,
                     easing: easingLinear,
@@ -162,7 +189,7 @@ let Dialog = class Dialog extends MduiElement {
                     duration: hasUpdated ? duration : 0,
                     easing: easingLinear,
                 })),
-            ]);
+            ]); */
             if (hasUpdated) {
                 this.emit('opened');
             }
@@ -174,8 +201,32 @@ let Dialog = class Dialog extends MduiElement {
             }
             this.modalHelper.deactivate();
             await stopAnimation();
-            const duration = getDuration(this, 'short4');
+            // const duration = getDuration(this, 'short4');
+            const duration = getDuration(this, 'short3');
             await Promise.all([
+                // 遮罩层淡出
+                animateTo(this.overlayRef.value, [
+                    { opacity: 1 },
+                    { opacity: 0 }
+                ], {
+                    duration,
+                    easing: easingLinear,
+                }),
+
+                // 面板缩放淡出
+                animateTo(this.panelRef.value, [
+                    {
+                        opacity: 1,
+                    },
+                    {
+                        opacity: 0,
+                    }
+                ], {
+                    duration,
+                    easing: easingEmphasizedAccelerate,
+                }),
+            ]);
+            /* await Promise.all([
                 animateTo(this.overlayRef.value, [{ opacity: 1 }, { opacity: 0 }], {
                     duration,
                     easing: easingLinear,
@@ -186,7 +237,7 @@ let Dialog = class Dialog extends MduiElement {
                 ], { duration, easing: easingEmphasizedAccelerate }),
                 animateTo(this.panelRef.value, [{ opacity: 1 }, { opacity: 1, offset: 0.75 }, { opacity: 0 }], { duration, easing: easingLinear }),
                 ...children.map((child) => animateTo(child, [{ opacity: 1 }, { opacity: 0, offset: 0.75 }, { opacity: 0 }], { duration, easing: easingLinear })),
-            ]);
+            ]); */
             this.style.display = 'none';
             unlockScreen(this);
             // 对话框关闭后，恢复焦点到原有的元素上
@@ -222,11 +273,11 @@ let Dialog = class Dialog extends MduiElement {
         const hasHeader = hasIcon || hasHeadline || this.hasSlotController.test('header');
         const hasBody = hasDescription || hasDefaultSlot;
         // modify: 移除了 tabindex="0", 换为 tabindex
-        return html `<div ${ref(this.overlayRef)} part="overlay" class="overlay" @click="${this.onOverlayClick}" tabindex="-1"></div><div ${ref(this.panelRef)} part="panel" class="panel ${classMap({
+        return html`<div ${ref(this.overlayRef)} part="overlay" class="overlay" @click="${this.onOverlayClick}" tabindex="-1"></div><div ${ref(this.panelRef)} part="panel" class="panel ${classMap({
             'has-icon': hasIcon,
             'has-description': hasDescription,
             'has-default': hasDefaultSlot,
-        })}" tabindex>${when(hasHeader, () => html `<slot name="header" part="header" class="header">${when(hasIcon, () => this.renderIcon())} ${when(hasHeadline, () => this.renderHeadline())}</slot>`)} ${when(hasBody, () => html `<div ${ref(this.bodyRef)} part="body" class="body">${when(hasDescription, () => this.renderDescription())}<slot></slot></div>`)} ${when(hasActionSlot, () => html `<slot name="action" part="action" class="action"></slot>`)}</div>`;
+        })}" tabindex>${when(hasHeader, () => html`<slot name="header" part="header" class="header">${when(hasIcon, () => this.renderIcon())} ${when(hasHeadline, () => this.renderHeadline())}</slot>`)} ${when(hasBody, () => html`<div ${ref(this.bodyRef)} part="body" class="body">${when(hasDescription, () => this.renderDescription())}<slot></slot></div>`)} ${when(hasActionSlot, () => html`<slot name="action" part="action" class="action"></slot>`)}</div>`;
     }
     onOverlayClick() {
         this.emit('overlay-click');
@@ -236,15 +287,15 @@ let Dialog = class Dialog extends MduiElement {
         this.open = false;
     }
     renderIcon() {
-        return html `<slot name="icon" part="icon" class="icon">${this.icon
-            ? html `<mdui-icon name="${this.icon}"></mdui-icon>`
+        return html`<slot name="icon" part="icon" class="icon">${this.icon
+            ? html`<mdui-icon name="${this.icon}"></mdui-icon>`
             : nothingTemplate}</slot>`;
     }
     renderHeadline() {
-        return html `<slot name="headline" part="headline" class="headline">${this.headline}</slot>`;
+        return html`<slot name="headline" part="headline" class="headline">${this.headline}</slot>`;
     }
     renderDescription() {
-        return html `<slot name="description" part="description" class="description">${this.description}</slot>`;
+        return html`<slot name="description" part="description" class="description">${this.description}</slot>`;
     }
 };
 Dialog.styles = [componentStyle, style];

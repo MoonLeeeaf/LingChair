@@ -9,7 +9,8 @@ import EffectOnly from "../EffectOnly"
 export default function LazyChatFragment({ chatId, openedWithRouter }: { chatId: string, openedWithRouter: boolean }) {
     return <React.Suspense fallback={<EffectOnly effect={() => {
         const s = showSnackbar({
-            message: '请稍后',
+            message: '请稍后...',
+            autoCloseDelay: 0,
         })
         return () => {
             s.open = false

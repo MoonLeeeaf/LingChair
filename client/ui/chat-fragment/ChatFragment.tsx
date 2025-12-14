@@ -12,6 +12,7 @@ import PreferenceUpdater from "../preference/PreferenceUpdater"
 import SwitchPreference from "../preference/SwitchPreference"
 import TextFieldPreference from "../preference/TextFieldPreference"
 import * as React from 'react'
+import ChatMessageContainer from "./ChatMessageContainer"
 
 interface MduiTabFitSizeArgs extends React.HTMLAttributes<HTMLElement & Tab> {
     value: string
@@ -34,7 +35,7 @@ export default function ChatFragment({
 }) {
     const nav = useNavigate()
 
-    const [tabItemSelected, setTabItemSelected] = React.useState('None')
+    const [tabItemSelected, setTabItemSelected] = React.useState('Chat')
     const tabRef = React.useRef<Tab>()
     useEventListener(tabRef, 'change', () => {
         tabRef.current != null && setTabItemSelected(tabRef.current!.value as string)
@@ -42,8 +43,6 @@ export default function ChatFragment({
 
     const chatPanelRef = React.useRef<HTMLElement>()
     const inputRef = React.useRef<TextField>()
-
-    
 
     return <div style={{
         width: '100%',
@@ -73,40 +72,42 @@ export default function ChatFragment({
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",
+                width: '100%',
                 overflowX: 'auto',
-            }}></mdui-tabs>{
-                chatInfo.isMember() ? <>
-                    <MduiTabFitSize value="Chat">{chatInfo.getTitle()}</MduiTabFitSize>
-                    {chatInfo.getType() == 'group' && chatInfo.isAdmin() && <MduiTabFitSize value="NewMemberRequests">加入请求</MduiTabFitSize>}
-                    {chatInfo.getType() == 'group' && <MduiTabFitSize value="GroupMembers">群组成员</MduiTabFitSize>}
-                </>
-                    : <MduiTabFitSize value="RequestJoin">{chatInfo.getTitle()}</MduiTabFitSize>
-            }
-            {chatInfo.getType() == 'group' && <MduiTabFitSize value="Settings">设置</MduiTabFitSize>}
-            <MduiTabFitSize value="None" style={{ display: 'none' }}></MduiTabFitSize>
-            <div style={{
-                flexGrow: '1',
-            }}></div>
-            <mdui-button-icon icon="open_in_new" onClick={() => {
-                window.open('/chat?id=' + chatInfo.getId(), '_blank')
+            }}>
+                {
+                    chatInfo.isMember() ? <>
+                        <MduiTabFitSize value="Chat">{chatInfo.getTitle()}</MduiTabFitSize>
+                        {chatInfo.getType() == 'group' && chatInfo.isAdmin() && <MduiTabFitSize value="NewMemberRequests">加入请求</MduiTabFitSize>}
+                        {chatInfo.getType() == 'group' && <MduiTabFitSize value="GroupMembers">群组成员</MduiTabFitSize>}
+                    </>
+                        : <MduiTabFitSize value="RequestJoin">{chatInfo.getTitle()}</MduiTabFitSize>
+                }
+                {chatInfo.getType() == 'group' && <MduiTabFitSize value="Settings">设置</MduiTabFitSize>}
+                <div style={{
+                    flexGrow: '1',
+                }}></div>
+                <mdui-button-icon icon="open_in_new" onClick={() => {
+                    window.open('/chat?id=' + chatInfo.getId(), '_blank')
 
-            }} style={{
-                alignSelf: 'center',
-                marginLeft: '5px',
-                marginRight: '5px',
-            }}></mdui-button-icon>
-            <mdui-button-icon icon="refresh" onClick={() => {
+                }} style={{
+                    alignSelf: 'center',
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                }}></mdui-button-icon>
+                <mdui-button-icon icon="refresh" onClick={() => {
 
-            }} style={{
-                alignSelf: 'center',
-                marginLeft: '5px',
-                marginRight: '5px',
-            }}></mdui-button-icon>
-            <mdui-button-icon icon="info" onClick={() => gotoChatInfo(nav, chatInfo.getId())} style={{
-                alignSelf: 'center',
-                marginLeft: '5px',
-                marginRight: '5px',
-            }}></mdui-button-icon>
+                }} style={{
+                    alignSelf: 'center',
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                }}></mdui-button-icon>
+                <mdui-button-icon icon="info" onClick={() => gotoChatInfo(nav, chatInfo.getId())} style={{
+                    alignSelf: 'center',
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                }}></mdui-button-icon>
+            </mdui-tabs>
         </mdui-tabs>
         <mdui-tab-panel slot="panel" value="RequestJoin" style={{
             display: tabItemSelected == "RequestJoin" ? "flex" : "none",
@@ -136,17 +137,7 @@ export default function ChatFragment({
             }}>
                 {/* 这里显示一些提示 */}
             </div>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                marginBottom: '20px',
-                paddingTop: "15px",
-                flexGrow: '1',
-            }}>
-                {/* 消息放在这里 */}
-            </div>
+            <ChatMessageContainer chatInfo={chatInfo} />
             {
                 // 输入框
             }
@@ -300,21 +291,6 @@ export default function ChatFragment({
                     </div>
                 )
             }
-        </mdui-tab-panel>
-        <mdui-tab-panel slot="panel" value="None" style={{
-            display: tabItemSelected == "None" ? "flex" : "none",
-            flexDirection: "column",
-            height: "100%",
-        }}>
-            <div style={{
-                display: 'flex',
-                width: '100%',
-                height: '100%',
-                alignItems: "center",
-                justifyContent: "center",
-            }}>
-                <mdui-circular-progress></mdui-circular-progress>
-            </div>
         </mdui-tab-panel>
     </div >
 }

@@ -8,14 +8,22 @@ import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext"
 import * as React from 'react'
 import UserOrChatInfoDialogLoader from "./UserOrChatInfoDialogDataLoader"
-import MainSharedReducer from "../MainSharedReducer"
 import ClientCache from "../../ClientCache"
 import getClient from "../../getClient"
+import gotoChat from "./gotoChat"
+import isMobileUI from "../../utils/isMobileUI"
 
 export default function UserOrChatInfoDialog() {
-    const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
-        state: context.state,
-    }))
+    const favouriteChats = useContextSelector(
+        MainSharedContext,
+        (context: Shared) => context.state.favouriteChats
+    )
+    const setCurrentSelectedChatId = useContextSelector(
+        MainSharedContext,
+        (context: Shared) => context.setCurrentSelectedChatId
+    )
+
+    console.log(setCurrentSelectedChatId, favouriteChats)
 
     const nav = useNavigate()
 
@@ -24,7 +32,7 @@ export default function UserOrChatInfoDialog() {
 
     const isMySelf = mySelf?.getId() == id
 
-    const favourited = React.useMemo(() => shared.state.favouriteChats.map((v) => v.getId()).indexOf(chat.getId() || '') != -1, [chat, shared.state.favouriteChats])
+    const favourited = React.useMemo(() => favouriteChats.map((v) => v.getId()).indexOf(chat.getId() || '') != -1, [chat, favouriteChats])
 
     return (
         <mdui-dialog close-on-overlay-click close-on-esc ref={dialogRef}>
@@ -96,8 +104,15 @@ export default function UserOrChatInfoDialog() {
                         ],
                     })}>{favourited ? '取消收藏' : '收藏对话'}</mdui-list-item>
                 }
-                <mdui-list-item icon="chat" rounded onClick={() => {
-
+                <mdui-list-item icon="chat" rounded onClick={async () => {
+                    await nav(-1)
+                    gotoChat(isMobileUI() ? {
+                        nav: nav,
+                        id: chat.getId(),
+                    } : {
+                        setter: setCurrentSelectedChatId,
+                        id: chat.getId(),
+                    })
                 }}>打开对话</mdui-list-item>
             </mdui-list>
         </mdui-dialog>

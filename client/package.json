@@ -24,6 +24,7 @@
         "@rollup/wasm-node": "4.48.0",
         "@types/react": "18.3.1",
         "@types/react-dom": "18.3.1",
+        "@types/split.js": "^1.4.0",
         "@vitejs/plugin-react": "4.7.0",
         "chalk": "5.4.1",
         "vite": "7.2.6",

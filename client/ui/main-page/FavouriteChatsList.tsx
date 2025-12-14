@@ -69,7 +69,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
             zIndex: '10',
         }}>
             <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
-                paddingTop: '12px',
+                paddingTop: '4px',
             }}></mdui-text-field>
             <mdui-list-item rounded style={{
                 marginTop: '13px',

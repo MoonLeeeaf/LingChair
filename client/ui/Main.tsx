@@ -3,15 +3,15 @@ import useEventListener from "../utils/useEventListener.ts"
 import AvatarMySelf from "./AvatarMySelf.tsx"
 import MainSharedContext from './MainSharedContext.ts'
 import * as React from 'react'
-import { BrowserRouter, createBrowserRouter, Link, LoaderFunction, Outlet, Route, RouterProvider, Routes, useNavigate } from "react-router"
+import { createBrowserRouter, Outlet, RouterProvider, useNavigate, useRouteError } from "react-router"
 import LoginDialog from "./main-page/LoginDialog.tsx"
 import useAsyncEffect from "../utils/useAsyncEffect.ts"
 import performAuth from "../performAuth.ts"
-import { CallbackError, Chat, User, UserMySelf } from "lingchair-client-protocol"
+import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
 import showCircleProgressDialog from "./showCircleProgressDialog.ts"
 import RegisterDialog from "./main-page/RegisterDialog.tsx"
 import sleep from "../utils/sleep.ts"
-import { $, Dialog, NavigationDrawer } from "mdui"
+import { $, dialog, NavigationDrawer } from "mdui"
 import getClient from "../getClient.ts"
 import showSnackbar from "../utils/showSnackbar.ts"
 import AllChatsList from "./main-page/AllChatsList.tsx"
@@ -25,6 +25,10 @@ import EffectOnly from "./EffectOnly.tsx"
 import MainSharedReducer from "./MainSharedReducer.ts"
 import gotoUserInfo from "./routers/gotoUserInfo.ts"
 import EditMyProfileDialog from "./routers/EditMyProfileDialog.tsx"
+import ProgressDialogFallback from "./ProgressDialogFallback.tsx"
+import Split from 'split.js'
+import data from "../data.ts"
+import LazyChatFragment from "./chat-fragment/LazyChatFragment.tsx"
 
 function Root() {
     const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
@@ -100,13 +104,27 @@ function Root() {
         waitingForAuth.open = false
     })
 
+    React.useEffect(() => {
+        if (!isMobileUI()) {
+            const split = Split(['#SideBar', '#ChatFragment'], {
+                sizes: data.split_sizes ? data.split_sizes : [25, 75],
+                minSize: [200, 400],
+                gutterSize: 2,
+                onDragEnd: function () {
+                    data.split_sizes = split.getSizes()
+                    data.apply()
+                }
+            })
+        }
+    }, [])
+
     return (
         <MainSharedContext.Provider value={sharedContext}>
             <div style={{
                 display: "flex",
                 position: 'relative',
                 flexDirection: isMobileUI() ? 'column' : 'row',
-                width: `calc(var(--whitesilk-window-width))${isMobileUI() ? '' : ' - 80px'}`,
+                width: '100%',
                 height: 'var(--whitesilk-window-height)',
             }}>
                 {
@@ -128,7 +146,8 @@ function Root() {
                         <mdui-divider style={{
                             margin: '10px',
                         }}></mdui-divider>
-                        <mdui-list-item rounded icon="person_add">添加收藏对话</mdui-list-item>
+                        <mdui-list-item rounded icon="settings">客户端设置</mdui-list-item>
+                        <mdui-list-item rounded icon="person_add" onClick={() => setShowAddFavourtieChatDialog(true)}>添加收藏对话</mdui-list-item>
                         <mdui-list-item rounded icon="group_add">创建新的群组</mdui-list-item>
                     </mdui-list>
                     <div style={{
@@ -187,7 +206,9 @@ function Root() {
                         display: 'flex',
                         height: 'calc(100% - 80px - 67px)',
                         width: '100%',
-                    } : {}} id="SideBar">
+                    } : {
+                        paddingRight: '8px',
+                    }} id="SideBar">
                         <RecentChatsList style={{
                             display: currentShowPage == 'Recents' ? undefined : 'none'
                         }} />
@@ -197,6 +218,24 @@ function Root() {
                         <AllChatsList style={{
                             display: currentShowPage == 'AllChats' ? undefined : 'none'
                         }} />
+                    </div>
+                }
+                {
+                    <div id="ChatFragment" style={{
+                        display: "flex",
+                        width: '100%'
+                    }}>
+                        {
+                            (state.currentSelectedChatId && state.currentSelectedChatId != '')
+                                ? <LazyChatFragment openedWithRouter={false} chatId={state.currentSelectedChatId!} />
+                                : <div style={{
+                                    width: '100%',
+                                    textAlign: 'center',
+                                    alignSelf: 'center',
+                                }}>
+                                    选择以开始对话......
+                                </div>
+                        }
                     </div>
                 }
                 {
@@ -218,16 +257,27 @@ function Root() {
     )
 }
 
+function SnackbarErrorBoundary() {
+    const error = useRouteError()
+    return <EffectOnly effect={() => {
+        const d = dialog({
+            headline: "错误",
+            description: error instanceof Error ? ('[' + error.name + '] ' + (error.stack || error.message)) : error + '',
+            closeOnEsc: true,
+            closeOnOverlayClick: true,
+        })
+        return () => {
+            d.open = false
+        }
+    }} deps={[]} />
+}
+
 export default function Main() {
     const router = createBrowserRouter([{
         path: "/",
         Component: Root,
-        hydrateFallbackElement: <EffectOnly effect={() => {
-            const wait = showCircleProgressDialog("请稍后...")
-            return () => {
-                wait.open = false
-            }
-        }} deps={[]} />,
+        hydrateFallbackElement: <ProgressDialogFallback text="请稍后..." />,
+        ErrorBoundary: SnackbarErrorBoundary,
         children: [
             {
                 path: 'info/:type',
@@ -243,11 +293,10 @@ export default function Main() {
                     }
                 ],
             },
-            /* {
+            {
                 path: 'chat',
                 Component: ChatFragmentDialog,
-                loader: UserOrChatInfoDialogLoader,
-            }, */
+            },
         ],
     }])
 

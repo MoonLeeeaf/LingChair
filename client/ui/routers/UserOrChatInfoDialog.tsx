@@ -46,7 +46,7 @@ export default function UserOrChatInfoDialog() {
                 }}>
                     <span style={{
                         fontSize: '16.5px'
-                    }}>{chat.getTitle()}</span>
+                    }}>{chat.getTitle() + (isMySelf ? ' (我)' : '')}</span>
                     <span style={{
                         fontSize: '10.5px',
                         marginTop: '3px',

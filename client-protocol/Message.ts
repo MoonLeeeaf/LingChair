@@ -7,9 +7,8 @@ import CallbackError from "./CallbackError.ts"
 import ApiCallbackMessage from "./ApiCallbackMessage.ts"
 
 import * as marked from 'marked'
-import { text } from "node:stream/consumers";
 
-class ChatMention extends BaseClientObject {
+export class ChatMention extends BaseClientObject {
     declare chat_id?: string
     declare user_id?: string
     declare text?: string
@@ -41,7 +40,7 @@ class ChatMention extends BaseClientObject {
 type FileType = 'Video' | 'Image' | 'File'
 type MentionType = 'ChatMention' | 'UserMention'
 
-class ChatAttachment extends BaseClientObject {
+export class ChatAttachment extends BaseClientObject {
     declare file_hash: string
     declare file_name: string
     constructor(client: LingChairClient, {

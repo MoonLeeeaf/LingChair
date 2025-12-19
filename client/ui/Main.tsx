@@ -16,7 +16,6 @@ import getClient from "../getClient.ts"
 import showSnackbar from "../utils/showSnackbar.ts"
 import AllChatsList from "./main-page/AllChatsList.tsx"
 import FavouriteChatsList from "./main-page/FavouriteChatsList.tsx"
-import AddFavourtieChatDialog from "./main-page/AddFavourtieChatDialog.tsx"
 import RecentChatsList from "./main-page/RecentChatsList.tsx"
 import UserOrChatInfoDialog from "./routers/UserOrChatInfoDialog.tsx"
 import UserOrChatInfoDialogLoader from "./routers/UserOrChatInfoDialogDataLoader.ts"
@@ -29,6 +28,7 @@ import ProgressDialogFallback from "./ProgressDialogFallback.tsx"
 import Split from 'split.js'
 import data from "../data.ts"
 import LazyChatFragment from "./chat-fragment/LazyChatFragment.tsx"
+import AddFavourtieChatDialog from "./routers/AddFavourtieChatDialog.tsx"
 
 function Root() {
     const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
@@ -56,7 +56,6 @@ function Root() {
 
     const [showLoginDialog, setShowLoginDialog] = React.useState(false)
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false)
-    const [showAddFavourtieChatDialog, setShowAddFavourtieChatDialog] = React.useState(false)
 
     const nav = useNavigate()
 
@@ -76,7 +75,6 @@ function Root() {
 
         setShowLoginDialog,
         setShowRegisterDialog,
-        setShowAddFavourtieChatDialog,
 
         setCurrentSelectedChatId: (id: string) => dispatch({ type: 'update_selected_chat_id', data: id }),
     }
@@ -133,7 +131,6 @@ function Root() {
                 }
                 <LoginDialog open={showLoginDialog} />
                 <RegisterDialog open={showRegisterDialog} />
-                <AddFavourtieChatDialog open={showAddFavourtieChatDialog} />
                 <mdui-navigation-drawer ref={drawerRef} modal close-on-esc close-on-overlay-click>
                     <mdui-list style={{
                         padding: '10px',
@@ -147,7 +144,7 @@ function Root() {
                             margin: '10px',
                         }}></mdui-divider>
                         <mdui-list-item rounded icon="settings">客户端设置</mdui-list-item>
-                        <mdui-list-item rounded icon="person_add" onClick={() => setShowAddFavourtieChatDialog(true)}>添加收藏对话</mdui-list-item>
+                        <mdui-list-item rounded icon="person_add" onClick={() => nav('/add/favourite_chat')}>添加收藏对话</mdui-list-item>
                         <mdui-list-item rounded icon="group_add">创建新的群组</mdui-list-item>
                     </mdui-list>
                     <div style={{
@@ -283,6 +280,15 @@ export default function Main() {
                 path: 'info/:type',
                 Component: UserOrChatInfoDialog,
                 loader: UserOrChatInfoDialogLoader,
+            },
+            {
+                path: 'add',
+                children: [
+                    {
+                        path: 'favourite_chat',
+                        Component: AddFavourtieChatDialog,
+                    },
+                ],
             },
             {
                 path: 'settings',

@@ -14,7 +14,6 @@ import { useNavigate } from "react-router"
 
 export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
-        setShowAddFavourtieChatDialog: context.setShowAddFavourtieChatDialog,
         state: context.state,
         functions_lazy: context.functions_lazy,
         setFavouriteChats: context.setFavouriteChats,
@@ -74,7 +73,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
             <mdui-list-item rounded style={{
                 marginTop: '13px',
                 width: '100%',
-            }} icon="person_add" onClick={() => shared.setShowAddFavourtieChatDialog(true)}>添加收藏</mdui-list-item>
+            }} icon="person_add" onClick={() => nav('/add/favourite_chat')}>添加收藏</mdui-list-item>
             <mdui-list-item rounded style={{
                 width: '100%',
             }} icon="refresh" onClick={() => shared.functions_lazy.current.updateFavouriteChats()}>刷新列表</mdui-list-item>

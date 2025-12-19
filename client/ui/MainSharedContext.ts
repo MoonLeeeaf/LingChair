@@ -12,7 +12,6 @@ type Shared = {
     
     setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowRegisterDialog: React.Dispatch<React.SetStateAction<boolean>>
-    setShowAddFavourtieChatDialog: React.Dispatch<React.SetStateAction<boolean>>
 
     setCurrentSelectedChatId: (id: string) => void
     setFavouriteChats: (chats: Chat[]) => void

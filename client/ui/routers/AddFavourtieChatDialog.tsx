@@ -1,26 +1,23 @@
 import * as React from 'react'
 import { Button, Dialog, snackbar, TextField } from "mdui"
-import { data } from 'react-router'
+import { data, useNavigate } from 'react-router'
 import { useContextSelector } from 'use-context-selector'
 import MainSharedContext, { Shared } from '../MainSharedContext'
 import showSnackbar from '../../utils/showSnackbar'
 import { CallbackError } from 'lingchair-client-protocol'
 import useEventListener from '../../utils/useEventListener'
+import ClientCache from '../../ClientCache'
+import useRouterDialogRef from './useRouterDialogRef'
 
 export default function AddFavourtieChatDialog({ ...props }: { open: boolean } & React.HTMLAttributes<Dialog>) {
-    const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
-        myProfileCache: context.myProfileCache,
-        setShowAddFavourtieChatDialog: context.setShowAddFavourtieChatDialog,
-    }))
-
-    const dialogRef = React.useRef<Dialog>()
-    useEventListener(dialogRef, 'closed', () => shared.setShowAddFavourtieChatDialog(false))
+    const dialogRef = useRouterDialogRef()
+    const nav = useNavigate()
 
     const inputTargetRef = React.useRef<TextField>(null)
 
     async function addFavouriteChat() {
         try {
-            shared.myProfileCache!.addFavouriteChatsOrThrow([inputTargetRef.current!.value])
+            await (await ClientCache.getMySelf())!.addFavouriteChatsOrThrow([inputTargetRef.current!.value])
             inputTargetRef.current!.value = ''
             showSnackbar({
                 message: '添加成功!'
@@ -39,7 +36,7 @@ export default function AddFavourtieChatDialog({ ...props }: { open: boolean } &
                 if (event.key == 'Enter')
                     addFavouriteChat()
             }}></mdui-text-field>
-            <mdui-button slot="action" variant="text" onClick={() => shared.setShowAddFavourtieChatDialog(false)}>取消</mdui-button>
+            <mdui-button slot="action" variant="text" onClick={() => nav(-1)}>取消</mdui-button>
             <mdui-button slot="action" variant="text" onClick={() => addFavouriteChat()}>添加</mdui-button>
         </mdui-dialog>
     )

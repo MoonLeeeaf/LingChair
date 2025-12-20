@@ -4,7 +4,7 @@ import RouterDialogsContext from './RouterDialogsContext'
 import { BlockerFunction, useBlocker, useNavigate } from "react-router"
 import sleep from "../../utils/sleep"
 
-const routerDialogsList = []
+const routerDialogsList: React.MutableRefObject<Dialog>[] = []
 
 export default function RouterDialogsContextWrapper({ children }: React.HTMLAttributes<HTMLElement>) {
     const proceedRef = React.useRef<() => void>()
@@ -40,6 +40,9 @@ export default function RouterDialogsContextWrapper({ children }: React.HTMLAttr
             proceedRef.current = blocker.proceed
             // 这个让姐姐来就好啦
             routerDialogsList.length != 0 && (routerDialogsList[routerDialogsList.length - 1].current!.open = false)
+        }
+        return () => {
+            blocker.reset?.()
         }
     }, [blocker.state])
 

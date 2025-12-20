@@ -12,9 +12,10 @@ import SwitchPreference from "../preference/SwitchPreference"
 import TextFieldPreference from "../preference/TextFieldPreference"
 import * as React from 'react'
 import ChatMessageContainer from "./ChatMessageContainer"
+import gotoChatInfo from "../routers/gotoChatInfo"
 
-function gotoChatInfo(nav: NavigateFunction, id: string) {
-    nav('/chat/info?id=' + id)
+function gotoChatInfo2(nav: NavigateFunction, id: string, useWithRouterChatFragment?: boolean) {
+    useWithRouterChatFragment ? nav('/chat/info?id=' + id) : gotoChatInfo(nav, id)
 }
 
 interface MduiTabFitSizeArgs extends React.HTMLAttributes<HTMLElement & Tab> {
@@ -100,13 +101,13 @@ export default function ChatFragment({
                     marginRight: '5px',
                 }}></mdui-button-icon>
                 <mdui-button-icon icon="refresh" onClick={() => {
-    
+
                 }} style={{
                     alignSelf: 'center',
                     marginLeft: '5px',
                     marginRight: '5px',
                 }}></mdui-button-icon>
-                <mdui-button-icon icon="info" onClick={() => gotoChatInfo(nav, chatInfo.getId())} style={{
+                <mdui-button-icon icon="info" onClick={() => gotoChatInfo2(nav, chatInfo.getId(), openedWithRouter)} style={{
                     alignSelf: 'center',
                     marginLeft: '5px',
                     marginRight: '5px',

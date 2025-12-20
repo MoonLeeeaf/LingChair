@@ -58,6 +58,7 @@ export default function RecentChatsList({ ...props }: React.HTMLAttributes<HTMLE
         ...props?.style,
     }} {...props}>
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
+            padding: isMobileUI() ? '12px' : undefined,
             paddingTop: '4px',
             marginBottom: '13px',
             position: 'sticky',

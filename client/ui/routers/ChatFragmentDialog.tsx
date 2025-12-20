@@ -1,7 +1,10 @@
-import { useSearchParams } from "react-router"
+import { useSearchParams, Outlet } from "react-router"
 import useRouterDialogRef from "./useRouterDialogRef"
 import * as React from 'react'
 import LazyChatFragment from "../chat-fragment/LazyChatFragment"
+import useEventListener from "../../utils/useEventListener"
+import useAsyncEffect from "../../utils/useAsyncEffect"
+import sleep from "../../utils/sleep"
 
 export default function ChatFragmentDialog() {
     const [searchParams] = useSearchParams()
@@ -9,7 +12,7 @@ export default function ChatFragmentDialog() {
 
     const dialogRef = useRouterDialogRef()
 
-    React.useEffect(() => {
+    useEventListener(dialogRef, 'open', () => {
         const shadow = dialogRef.current!.shadowRoot as ShadowRoot
         const panel = shadow.querySelector(".panel") as HTMLElement
         panel.style.padding = '0'
@@ -21,7 +24,15 @@ export default function ChatFragmentDialog() {
         body.style.display = 'flex'
     }, [])
 
-    return <mdui-dialog fullscreen ref={dialogRef}>
-        <LazyChatFragment chatId={id!} openedWithRouter={true} />
-    </mdui-dialog>
+    return (<>
+        <mdui-dialog fullscreen ref={dialogRef}>
+            <div style={{
+                display: 'flex',
+                width: '100%',
+            }}>
+                <LazyChatFragment chatId={id!} openedWithRouter={true} />
+            </div>
+        </mdui-dialog>
+        <Outlet />
+    </>)
 }

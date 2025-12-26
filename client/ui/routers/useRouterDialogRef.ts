@@ -6,11 +6,9 @@ import * as React from 'react'
 import RouterDialogsContext from './RouterDialogsContext'
 
 export default function useRouterDialogRef() {
-    const dialogRef = React.useRef<Dialog>(RouterDialogsContext)
-    const registerRouterDialog = React.useContext(RouterDialogsContext)
-    
+    const dialogRef = React.useRef<Dialog>()
+
     useAsyncEffect(async () => {
-        registerRouterDialog(dialogRef)
         await sleep(10)
         dialogRef.current!.open = true
     }, [])

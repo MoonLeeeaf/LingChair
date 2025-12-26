@@ -1,5 +1,5 @@
+import data from "../data"
+
 export default function isMobileUI() {
-    const mobile = new URL(location.href).searchParams.get('mobile')
-    if (mobile) return mobile == 'true'
-    return /Mobi|Android|iPhone/i.test(navigator.userAgent)
+    return data.override_use_mobile_ui || /Mobi|Android|iPhone/i.test(navigator.userAgent)
 }

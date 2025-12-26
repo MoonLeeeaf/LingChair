@@ -42,6 +42,7 @@ type IData = {
     apply(): void
     access_token?: string
     device_id: string
+    override_use_mobile_ui?: boolean
 }
 
 declare global {

@@ -23,8 +23,6 @@ export default function UserOrChatInfoDialog() {
         (context: Shared) => context.setCurrentSelectedChatId
     )
 
-    console.log(setCurrentSelectedChatId, favouriteChats)
-
     const nav = useNavigate()
 
     const dialogRef = useRouterDialogRef()

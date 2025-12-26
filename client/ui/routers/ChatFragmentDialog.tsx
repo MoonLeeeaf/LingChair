@@ -22,7 +22,7 @@ export default function ChatFragmentDialog() {
         const body = shadow.querySelector(".body") as HTMLElement
         body.style.height = '100%'
         body.style.display = 'flex'
-    }, [])
+    })
 
     return (<>
         <mdui-dialog fullscreen ref={dialogRef}>

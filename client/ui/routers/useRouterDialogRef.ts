@@ -7,8 +7,12 @@ import RouterDialogsContext from './RouterDialogsContext'
 
 export default function useRouterDialogRef() {
     const dialogRef = React.useRef<Dialog>()
+    const nav = useNavigate()
 
     useAsyncEffect(async () => {
+        dialogRef.current!.addEventListener('closed', async () => {
+            nav(-1)
+        })
         await sleep(10)
         dialogRef.current!.open = true
     }, [])

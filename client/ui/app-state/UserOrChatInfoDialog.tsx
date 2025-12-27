@@ -78,6 +78,8 @@ export default function UserOrChatInfoDialog({ chat, useRef }: { chat?: Chat, us
                     !isMySelf && <mdui-list-item icon={favourited ? "favorite_border" : "favorite"} rounded onClick={() => dialog({
                         headline: favourited ? "取消收藏对话" : "收藏对话",
                         description: favourited ? "确定从收藏对话列表中移除吗? (虽然这不会导致聊天记录丢失)" : "确定要添加到收藏对话列表吗?",
+                        closeOnEsc: true,
+                        closeOnOverlayClick: true,
                         actions: [
                             {
                                 text: "取消",

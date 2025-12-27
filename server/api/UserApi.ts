@@ -371,7 +371,7 @@ export default class UserApi extends BaseApi {
         })
         // 添加聯絡人
         this.registerEvent("User.addFavouriteChats", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'targets'])) return {
+            if (this.checkArgsMissing(args, ['token', 'chat_ids'])) return {
                 msg: "参数缺失",
                 code: 400,
             }
@@ -384,7 +384,7 @@ export default class UserApi extends BaseApi {
 
             let fail = 0
             const user = User.findById(token.author) as User
-            for (const target of (args.targets as string[])) {
+            for (const target of (args.chat_ids as string[])) {
                 const chat = Chat.findById(target) || Chat.findByName(target)
                 const targetUser = User.findByAccount(target) as User
                 if (chat)
@@ -404,7 +404,7 @@ export default class UserApi extends BaseApi {
         })
         // 添加聯絡人
         this.registerEvent("User.removeFavouriteChats", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'targets'])) return {
+            if (this.checkArgsMissing(args, ['token', 'chat_ids'])) return {
                 msg: "参数缺失",
                 code: 400,
             }
@@ -416,7 +416,7 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author) as User
-            user.removeFavouriteChats(args.targets as string[])
+            user.removeFavouriteChats(args.chat_ids as string[])
 
             return {
                 msg: "成功",

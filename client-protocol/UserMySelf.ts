@@ -125,7 +125,7 @@ export default class UserMySelf extends User {
     async addFavouriteChatsOrThrow(chat_ids: string[]) {
         const re = await this.client.invoke("User.addFavouriteChats", {
             token: this.client.access_token,
-            targets: chat_ids,
+            chat_ids,
         })
         if (re.code != 200) throw new CallbackError(re)
     }
@@ -140,7 +140,7 @@ export default class UserMySelf extends User {
     async removeFavouriteChatsOrThrow(chat_ids: string[]) {
         const re = await this.client.invoke("User.removeFavouriteChats", {
             token: this.client.access_token,
-            targets: chat_ids,
+            chat_ids,
         })
         if (re.code != 200) throw new CallbackError(re)
     }
@@ -156,7 +156,7 @@ export default class UserMySelf extends User {
             token: this.client.access_token
         })
         if (re.code == 200)
-            return (re.data!.favourite_chats || re.data!.contacts_list) as ChatBean[]
+            return (re.data!.favourite_chats) as ChatBean[]
         throw new CallbackError(re)
     }
     async getMyFavouriteChats() {

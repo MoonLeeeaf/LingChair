@@ -9,8 +9,7 @@ import isMobileUI from "../../utils/isMobileUI.ts"
 import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext.ts"
 import ClientCache from "../../ClientCache.ts"
-import gotoChatInfo from "../routers/gotoChatInfo.ts"
-import { useNavigate } from "react-router"
+import AppStateContext from "../app-state/AppStateContext.ts"
 
 export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({
@@ -22,7 +21,7 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
     const [searchText, setSearchText] = React.useState('')
     const [allChatsList, setAllChatsList] = React.useState<Chat[]>([])
 
-    const nav = useNavigate()
+    const DialogState = React.useContext(AppStateContext)
 
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
@@ -76,7 +75,7 @@ export default function AllChatsList({ ...props }: React.HTMLAttributes<HTMLElem
                     active={isMobileUI() ? false : shared.state.currentSelectedChatId == v.getId()}
                     key={v.getId()}
                     onClick={() => {
-                        gotoChatInfo(nav, v.getId())
+                        DialogState.openChatInfo(v.getId())
                     }}
                     chat={v} />
             )

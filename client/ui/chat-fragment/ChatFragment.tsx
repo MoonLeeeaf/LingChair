@@ -2,7 +2,6 @@ import { $, Tab, TextField } from "mdui"
 import useEventListener from "../../utils/useEventListener"
 import useEffectRef from "../../utils/useEffectRef"
 import isMobileUI from "../../utils/isMobileUI"
-import { Outlet, useLocation, useNavigate, NavigateFunction } from "react-router"
 import { Chat } from "lingchair-client-protocol"
 import Preference from "../preference/Preference"
 import PreferenceHeader from "../preference/PreferenceHeader"
@@ -12,11 +11,7 @@ import SwitchPreference from "../preference/SwitchPreference"
 import TextFieldPreference from "../preference/TextFieldPreference"
 import * as React from 'react'
 import ChatMessageContainer from "./ChatMessageContainer"
-import gotoChatInfo from "../routers/gotoChatInfo"
-
-function gotoChatInfo2(nav: NavigateFunction, id: string, useWithRouterChatFragment?: boolean) {
-    useWithRouterChatFragment ? nav('/chat/info?id=' + id) : gotoChatInfo(nav, id)
-}
+import AppStateContext from "../app-state/AppStateContext"
 
 interface MduiTabFitSizeArgs extends React.HTMLAttributes<HTMLElement & Tab> {
     value: string
@@ -32,13 +27,12 @@ function MduiTabFitSize({ children, ...props }: MduiTabFitSizeArgs) {
 
 export default function ChatFragment({
     chatInfo,
-    openedWithRouter,
+    openedInDialog,
 }: {
     chatInfo: Chat
-    openedWithRouter: boolean
+    openedInDialog: boolean
 }) {
-    const nav = useNavigate()
-
+    const AppState = React.useContext(AppStateContext)
     const [tabItemSelected, setTabItemSelected] = React.useState('Chat')
     const tabRef = React.useRef<Tab>()
     useEventListener(tabRef, 'change', () => {
@@ -66,7 +60,7 @@ export default function ChatFragment({
                 flexDirection: "column",
             }}>
                 {
-                    openedWithRouter && <mdui-button-icon icon="arrow_back" onClick={() => nav(-1)} style={{
+                    openedInDialog && <mdui-button-icon icon="arrow_back" onClick={() => AppState.closeChat()} style={{
                         alignSelf: 'center',
                         marginLeft: '5px',
                         marginRight: '5px',
@@ -107,7 +101,7 @@ export default function ChatFragment({
                     marginLeft: '5px',
                     marginRight: '5px',
                 }}></mdui-button-icon>
-                <mdui-button-icon icon="info" onClick={() => gotoChatInfo2(nav, chatInfo.getId(), openedWithRouter)} style={{
+                <mdui-button-icon icon="info" onClick={() => AppState.openChatInfo(chatInfo.getId())} style={{
                     alignSelf: 'center',
                     marginLeft: '5px',
                     marginRight: '5px',

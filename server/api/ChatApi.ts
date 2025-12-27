@@ -87,7 +87,11 @@ export default class ChatApi extends BaseApi {
          * @param page 頁面
          */
         this.registerEvent("Chat.getMessageHistory", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'target', 'page'])) return {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+            if (!args.page && !args.offset) return {
                 msg: "参数缺失",
                 code: 400,
             }
@@ -112,7 +116,7 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: "成功",
                 data: {
-                    messages: MessagesManager.getInstanceForChat(chat).getMessagesWithPage(15, args.page as number),
+                    messages: MessagesManager.getInstanceForChat(chat)[args.page ? 'getMessagesWithPage' : 'getMessagesWithOffset'](null, (args.page ? args.page : args.offset) as number),
                 },
             }
         })

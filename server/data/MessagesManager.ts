@@ -59,14 +59,14 @@ export default class MessagesManager {
             text
         })
     }
-    getMessages(limit: number = 15, offset: number = 0) {
-        const ls = MessagesManager.database.prepare(`SELECT * FROM ${this.getTableName()} ORDER BY id DESC LIMIT ? OFFSET ?;`).all(limit, offset) as unknown as MessageBean[]
+    getMessagesWithOffset(limit: number | undefined | null, offset: number = 0) {
+        const ls = MessagesManager.database.prepare(`SELECT * FROM ${this.getTableName()} ORDER BY id DESC LIMIT ? OFFSET ?;`).all(limit || 15, offset) as unknown as MessageBean[]
         return ls.map((v) => ({
             ...v,
             chat_id: this.chat.bean.id,
         }))
     }
-    getMessagesWithPage(limit: number = 15, page: number = 0) {
-        return this.getMessages(limit, limit * page)
+    getMessagesWithPage(limit: number | undefined | null, page: number = 0) {
+        return this.getMessagesWithOffset(limit, (limit || 15) * page)
     }
 }

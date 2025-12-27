@@ -123,7 +123,7 @@ export default class UserMySelf extends User {
         }
     }
     async addFavouriteChatsOrThrow(chat_ids: string[]) {
-        const re = await this.client.invoke("User.addContacts", {
+        const re = await this.client.invoke("User.addFavouriteChats", {
             token: this.client.access_token,
             targets: chat_ids,
         })
@@ -138,7 +138,7 @@ export default class UserMySelf extends User {
         }
     }
     async removeFavouriteChatsOrThrow(chat_ids: string[]) {
-        const re = await this.client.invoke("User.removeContacts", {
+        const re = await this.client.invoke("User.removeFavouriteChats", {
             token: this.client.access_token,
             targets: chat_ids,
         })
@@ -152,7 +152,7 @@ export default class UserMySelf extends User {
         }
     }
     async getMyFavouriteChatBeansOrThrow() {
-        const re = await this.client.invoke("User.getMyContacts", {
+        const re = await this.client.invoke("User.getMyFavouriteChats", {
             token: this.client.access_token
         })
         if (re.code == 200)

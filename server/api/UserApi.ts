@@ -321,7 +321,7 @@ export default class UserApi extends BaseApi {
 
             const user = User.findById(token.author) as User
             const recentChats = user.getRecentChats()
-            const recentChatsList = []
+            const recentChatsList: any[] = []
             for (const [chatId, content] of recentChats) {
                 const chat = Chat.findById(chatId)
                 recentChatsList.push({
@@ -341,7 +341,7 @@ export default class UserApi extends BaseApi {
             }
         })
         // 獲取聯絡人列表
-        this.registerEvent("User.getMyContacts", (args, { deviceId }) => {
+        this.registerEvent("User.getMyFavouriteChats", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token'])) return {
                 msg: "参数缺失",
                 code: 400,
@@ -354,7 +354,7 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author) as User
-            const contacts = user.getContactsList()
+            const contacts = user.getFavouriteChats()
             contacts.push(ChatPrivate.getChatIdByUsersId(token.author, token.author))
 
             return {
@@ -374,7 +374,7 @@ export default class UserApi extends BaseApi {
             }
         })
         // 添加聯絡人
-        this.registerEvent("User.addContacts", (args, { deviceId }) => {
+        this.registerEvent("User.addFavouriteChats", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'targets'])) return {
                 msg: "参数缺失",
                 code: 400,
@@ -392,10 +392,10 @@ export default class UserApi extends BaseApi {
                 const chat = Chat.findById(target) || Chat.findByName(target)
                 const targetUser = User.findByAccount(target) as User
                 if (chat)
-                    user!.addContact(chat.bean.id)
+                    user!.addFavouriteChat(chat.bean.id)
                 else if (targetUser) {
                     const privChat = ChatPrivate.findOrCreateForPrivate(user, targetUser)
-                    user!.addContact(privChat.bean.id)
+                    user!.addFavouriteChat(privChat.bean.id)
                 } else {
                     fail++
                 }
@@ -407,7 +407,7 @@ export default class UserApi extends BaseApi {
             }
         })
         // 添加聯絡人
-        this.registerEvent("User.removeContacts", (args, { deviceId }) => {
+        this.registerEvent("User.removeFavouriteChats", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'targets'])) return {
                 msg: "参数缺失",
                 code: 400,
@@ -420,7 +420,7 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author) as User
-            user.removeContacts(args.targets as string[])
+            user.removeFavouriteChats(args.targets as string[])
 
             return {
                 msg: "成功",

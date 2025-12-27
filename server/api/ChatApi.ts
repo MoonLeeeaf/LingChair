@@ -117,45 +117,6 @@ export default class ChatApi extends BaseApi {
             }
         })
         /**
-         * 上傳文件
-         * @param token 令牌
-         * @param target 目標對話
-         * @param file_name 文件名稱
-         * @param data 文件二進制數據
-         */
-        /* this.registerEvent("Chat.uploadFile", async (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'target', 'data', 'file_name'])) return {
-                msg: "参数缺失",
-                code: 400,
-            }
-
-            const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token, deviceId)) return {
-                code: 401,
-                msg: "令牌无效",
-            }
-
-            const chat = Chat.findById(args.target as string)
-            if (chat == null) return {
-                code: 404,
-                msg: "对话不存在",
-            }
-            if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
-                code: 403,
-                msg: "用户无权访问此对话",
-            }
-
-            const file = await FileManager.uploadFile(args.file_name as string, args.data as Buffer<ArrayBufferLike>, args.target as string)
-
-            return {
-                code: 200,
-                msg: "成功",
-                data: {
-                    file_hash: file.getHash()
-                },
-            }
-        }) */
-        /**
          * ======================================================
          *                          对话成员
          * ======================================================
@@ -388,7 +349,7 @@ export default class ChatApi extends BaseApi {
          * @param token 令牌
          * @param target 目標用户
          */
-        this.registerEvent("Chat.getIdForPrivate", (args, { deviceId }) => {
+        this.registerEvent("Chat.getOrCreatePrivateChat", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
                 msg: "参数缺失",
                 code: 400,
@@ -413,10 +374,6 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: '成功',
                 data: {
-                    // TODO: 移除这个, 将本方法重命名为 getOrCreatePrivateChat
-                    // 并重构原 Web 客户端所引用的内容
-                    chat_id: chat.bean.id,
-
                     id: chat.bean.id,
                     name: chat.bean.name,
                     type: chat.bean.type,
@@ -459,7 +416,7 @@ export default class ChatApi extends BaseApi {
             chat.addAdmin(user.bean.id, [
                 AdminPermissions.OWNER,
             ])
-            user.addContact(chat.bean.id)
+            user.addFavouriteChat(chat.bean.id)
             MessagesManager.getInstanceForChat(chat).addSystemMessage("群组已创建")
 
             return {
@@ -570,10 +527,6 @@ export default class ChatApi extends BaseApi {
                 msg: "参数缺失",
                 code: 400,
             }
-            /* if (!(args.avatar instanceof Buffer)) return {
-                msg: "参数不合法",
-                code: 400,
-            } */
             const token = TokenManager.decode(args.token as string)
 
             const user = User.findById(token.author) as User
@@ -587,9 +540,6 @@ export default class ChatApi extends BaseApi {
             if (chat.bean.type == 'group')
                 if (chat.checkUserIsAdmin(user.bean.id)) {
                     chat.setAvatarFileHash(args.file_hash as string)
-                    /* const avatar: Buffer = args.avatar as Buffer
-                    if (avatar)
-                        chat.setAvatar(avatar) */
                 } else
                     return {
                         code: 403,

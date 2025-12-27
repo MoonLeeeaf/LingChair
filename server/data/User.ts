@@ -138,17 +138,17 @@ export default class User {
             return new Map()
         }
     }
-    addContact(chatId: string) {
-        const ls = this.getContactsList()
+    addFavouriteChat(chatId: string) {
+        const ls = this.getFavouriteChats()
         if (ls.indexOf(chatId) != -1 || ChatPrivate.getChatIdByUsersId(this.bean.id, this.bean.id) == chatId) return
         ls.push(chatId)
         this.setAttr("contacts_list", JSON.stringify(ls))
     }
-    removeContacts(contacts: string[]) {
-        const ls = this.getContactsList().filter((v) => !contacts.includes(v))
+    removeFavouriteChats(contacts: string[]) {
+        const ls = this.getFavouriteChats().filter((v) => !contacts.includes(v))
         this.setAttr("contacts_list", JSON.stringify(ls))
     }
-    getContactsList() {
+    getFavouriteChats() {
         try {
             return JSON.parse(this.bean.contacts_list) as string[]
         } catch (e) {
@@ -159,13 +159,13 @@ export default class User {
     getAllChatsList() {
         return UserChatLinker.getUserChats(this.bean.id)
     }
-    getNickName(): string {
+    getNickName() {
         return this.bean.nickname
     }
     setNickName(nickName: string) {
         this.setAttr("nickname", nickName)
     }
-    getPassword(): string {
+    getPassword() {
         return this.bean.password
     }
     setPassword(password: string) {

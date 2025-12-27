@@ -15,9 +15,9 @@ export type CallMethod =
     "User.getInfo" |
 
     // 收藏对话列表
-    "User.getMyContacts" |
-    "User.addContacts" |
-    "User.removeContacts" |
+    "User.getMyFavouriteChats" |
+    "User.addFavouriteChats" |
+    "User.removeFavouriteChats" |
 
     // 最近对话列表
     "User.getMyRecentChats" | 
@@ -36,7 +36,7 @@ export type CallMethod =
 
     // 对话创建
     "Chat.createGroup" |
-    "Chat.getIdForPrivate" |
+    "Chat.getOrCreatePrivateChat" |
 
     // 入群请求
     "Chat.processJoinRequest" |
@@ -50,9 +50,6 @@ export type CallMethod =
     // 对话消息
     "Chat.sendMessage" |
     "Chat.getMessageHistory"
-
-    // (废弃) 文件上传
-    // "Chat.uploadFile"
 
 export type ClientEvent = 
     // 对话收消息

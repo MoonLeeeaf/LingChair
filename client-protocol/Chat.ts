@@ -53,7 +53,7 @@ export default class Chat extends BaseClientObject {
         }
     }
     static async getOrCreatePrivateChatOrThrow(client: LingChairClient, user_id: string) {
-        const re = await client.invoke("Chat.getIdForPrivate", {
+        const re = await client.invoke("Chat.getOrCreatePrivateChat", {
             token: client.access_token,
             target: user_id,
         })

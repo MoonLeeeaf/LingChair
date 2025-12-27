@@ -2,9 +2,9 @@ import { Chat, Message } from 'lingchair-client-protocol'
 import * as React from 'react'
 
 export default function ChatMessageContainer({
-    chatInfo,
+    chat,
 }: {
-    chatInfo: Chat
+    chat: Chat
 }) {
     const [messages, setMessages] = React.useState<Message[]>()
 

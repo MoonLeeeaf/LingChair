@@ -144,10 +144,6 @@ export default class UserApi extends BaseApi {
                 msg: "参数缺失",
                 code: 400,
             }
-            if (this.checkArgsEmpty(args, ['nickname', 'password'])) return {
-                msg: "参数不得为空",
-                code: 400,
-            }
 
             const username: string | null = args.username as string
             const nickname: string = args.nickname as string

@@ -12,6 +12,7 @@ import TextFieldPreference from "../preference/TextFieldPreference"
 import * as React from 'react'
 import ChatMessageContainer from "./ChatMessageContainer"
 import AppStateContext from "../app-state/AppStateContext"
+import ChatPanel, { ChatPanelRef } from "./ChatPanel"
 
 interface MduiTabFitSizeArgs extends React.HTMLAttributes<HTMLElement & Tab> {
     value: string
@@ -41,6 +42,9 @@ export default function ChatFragment({
 
     const chatPanelRef = React.useRef<HTMLElement>()
     const inputRef = React.useRef<TextField>()
+    const chatPagePanelRef = React.useRef<ChatPanelRef>()
+
+    
 
     return (
         <div style={{
@@ -126,6 +130,7 @@ export default function ChatFragment({
                 const scrollTop = (e.target as HTMLDivElement).scrollTop
                 if (scrollTop == 0) {
                     // 加载更多
+                    chatPagePanelRef.current?.setOffset(chatPagePanelRef.current.getOffset() + 15)
                 }
             }}>
                 <div style={{
@@ -135,7 +140,7 @@ export default function ChatFragment({
                 }}>
                     {/* 这里显示一些提示 */}
                 </div>
-                <ChatMessageContainer chatInfo={chatInfo} />
+                <ChatPanel ref={chatPagePanelRef} chat={chatInfo} />
                 {
                     // 输入框
                 }
@@ -180,8 +185,10 @@ export default function ChatFragment({
                     }}></mdui-button-icon>
                     <mdui-button-icon icon="send" style={{
                         marginRight: '7px',
-                    }} onClick={() => {
+                    }} onClick={async () => {
                         // 发送消息
+                        await chatInfo.sendMessageOrThrow(inputRef.current!.value)
+                        inputRef.current!.value = ''
                     }}></mdui-button-icon>
                     <div style={{
                         display: 'none'

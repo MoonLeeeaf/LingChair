@@ -1,13 +1,7 @@
 import { Chat, Message } from 'lingchair-client-protocol'
 import * as React from 'react'
 
-export default function ChatMessageContainer({
-    chat,
-}: {
-    chat: Chat
-}) {
-    const [messages, setMessages] = React.useState<Message[]>()
-
+export default function ChatMessageContainer({ messages }: { messages: Message[] }) {
     return (
         <div style={{
             display: 'flex',

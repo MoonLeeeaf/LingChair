@@ -91,7 +91,7 @@ export default class ChatApi extends BaseApi {
                 msg: "参数缺失",
                 code: 400,
             }
-            if (!args.page && !args.offset) return {
+            if (args.page == null && args.offset == null) return {
                 msg: "参数缺失",
                 code: 400,
             }

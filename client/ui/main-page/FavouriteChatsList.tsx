@@ -8,7 +8,6 @@ import showSnackbar from "../../utils/showSnackbar.ts"
 import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext.ts"
 import isMobileUI from "../../utils/isMobileUI.ts"
-import gotoChatInfo from "../routers/gotoChatInfo.ts"
 import ClientCache from "../../ClientCache.ts"
 import { useNavigate } from "react-router"
 import AppStateContext from "../app-state/AppStateContext.ts"
@@ -25,7 +24,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
     const [searchText, setSearchText] = React.useState('')
     const [checkedList, setCheckedList] = React.useState<{ [key: string]: boolean }>({})
 
-    const DialogState = React.useContext(AppStateContext)
+    const AppState = React.useContext(AppStateContext)
 
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
@@ -75,7 +74,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
             <mdui-list-item rounded style={{
                 marginTop: '13px',
                 width: '100%',
-            }} icon="person_add" onClick={() => DialogState.openAddFavouriteChat()}>添加收藏</mdui-list-item>
+            }} icon="person_add" onClick={() => AppState.openAddFavouriteChat()}>添加收藏</mdui-list-item>
             <mdui-list-item rounded style={{
                 width: '100%',
             }} icon="refresh" onClick={() => shared.functions_lazy.current.updateFavouriteChats()}>刷新列表</mdui-list-item>
@@ -162,7 +161,7 @@ export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HT
                                 [v.getId()]: !checkedList[v.getId()],
                             })
                         else
-                            DialogState.openChatInfo(v.getId())
+                            AppState.openChatInfo(v.getId())
                     }}
                     key={v.getId()}
                     chat={v} />

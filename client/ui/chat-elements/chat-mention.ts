@@ -1,8 +1,15 @@
 import { $ } from 'mdui'
-import showSnackbar from "../../utils/showSnackbar.ts";
-customElements.define('chat-mention', class extends HTMLElement {
+import showSnackbar from "../../utils/showSnackbar.ts"
+import { Chat, User } from 'lingchair-client-protocol'
+
+export default class ChatMentionElement extends HTMLElement {
     declare link: HTMLAnchorElement
     static observedAttributes = ['user-id']
+
+    // 这两个方法应当在被渲染后由渲染组件主动提供
+    declare openChatInfo?: (chat: Chat | string) => void
+    declare openUserInfo?: (user: Chat | User | string) => void
+
     constructor() {
         super()
 
@@ -57,4 +64,6 @@ customElements.define('chat-mention', class extends HTMLElement {
             }
         }
     }
-})
+}
+
+customElements.define('chat-mention', ChatMentionElement)

@@ -44,7 +44,10 @@ export default function ChatFragment({
     const inputRef = React.useRef<TextField>()
     const chatPagePanelRef = React.useRef<ChatPanelRef>()
 
-    
+    async function performSendMessage() {
+        await chatInfo.sendMessageOrThrow(inputRef.current!.value)
+        inputRef.current!.value = ''
+    }
 
     return (
         <div style={{
@@ -164,6 +167,7 @@ export default function ChatFragment({
                     }} onKeyDown={(event: KeyboardEvent) => {
                         if (event.ctrlKey && event.key == 'Enter') {
                             // 发送消息
+                            performSendMessage()
                         }
                     }} onPaste={(event: ClipboardEvent) => {
                         for (const item of event.clipboardData?.items || []) {
@@ -185,11 +189,7 @@ export default function ChatFragment({
                     }}></mdui-button-icon>
                     <mdui-button-icon icon="send" style={{
                         marginRight: '7px',
-                    }} onClick={async () => {
-                        // 发送消息
-                        await chatInfo.sendMessageOrThrow(inputRef.current!.value)
-                        inputRef.current!.value = ''
-                    }}></mdui-button-icon>
+                    }} onClick={performSendMessage}></mdui-button-icon>
                     <div style={{
                         display: 'none'
                     }}>

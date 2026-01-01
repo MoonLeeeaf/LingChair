@@ -110,7 +110,7 @@ export default function UserOrChatInfoDialog({ chat, useRef }: { chat?: Chat, us
                     })}>{favourited ? '取消收藏' : '收藏对话'}</mdui-list-item>
                 }
                 <mdui-list-item icon="chat" rounded onClick={async () => {
-                    AppState.openChat(chat!)
+                    AppState.openChat(chat!, isMobileUI())
                 }}>打开对话</mdui-list-item>
             </mdui-list>
         </mdui-dialog>

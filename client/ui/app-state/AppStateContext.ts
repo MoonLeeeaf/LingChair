@@ -7,7 +7,7 @@ type AppState = {
     openUserInfo: (user: Chat | User | string) => void,
     openEditMyProfile: () => void,
     openAddFavouriteChat: () => void,
-    openChat: (chat: string | Chat) => void,
+    openChat: (chat: string | Chat, inDialog?: boolean) => void,
     closeChat: () => void,
 }
 

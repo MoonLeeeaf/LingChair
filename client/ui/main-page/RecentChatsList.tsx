@@ -77,7 +77,7 @@ export default function RecentChatsList({ ...props }: React.HTMLAttributes<HTMLE
             ).map((v) =>
                 <RecentsListItem
                     active={isMobileUI() ? false : shared.state.currentSelectedChatId == v.getId()}
-                    onClick={() => AppState.openChat(v.getId())}
+                    onClick={() => AppState.openChat(v.getId(), isMobileUI())}
                     key={v.getId()}
                     recentChat={v} />
             )

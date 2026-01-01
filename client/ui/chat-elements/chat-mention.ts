@@ -37,18 +37,14 @@ export default class ChatMentionElement extends HTMLElement {
         const text = $(this).attr('text')
         this.link.style.fontStyle = ''
         if (chatId) {
-            
             this.link.onclick = (e) => {
                 e.stopPropagation()
-                // deno-lint-ignore no-window
-                
+                this.openChatInfo?.(chatId)
             }
         } else if (userId) {
-           
             this.link.onclick = (e) => {
                 e.stopPropagation()
-                // deno-lint-ignore no-window
-                
+                this.openUserInfo?.(userId)
             }
         }
         

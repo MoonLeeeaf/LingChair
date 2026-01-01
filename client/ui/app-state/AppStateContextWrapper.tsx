@@ -12,6 +12,7 @@ import MainSharedContext, { Shared } from "../MainSharedContext"
 import ChatFragmentDialog from "./ChatFragmentDialog"
 import useAsyncEffect from "../../utils/useAsyncEffect"
 import ClientCache from "../../ClientCache"
+import isMobileUI from "../../utils/isMobileUI"
 
 const config = await fetch('/config.json').then((re) => re.json())
 
@@ -42,7 +43,6 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
         MainSharedContext,
         (context: Shared) => context.state.currentSelectedChatId
     )
-    const [useChatFragmentDialog, setUseChatFragmentDialog] = React.useState(false)
     const chatFragmentDialogRef = React.useRef<Dialog>()
 
     useAsyncEffect(async () => {
@@ -70,11 +70,10 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
         static async openChat(chat: string | Chat, inDialog?: boolean) {
             if (chat instanceof Chat) chat = chat.getId()
 
-            setUseChatFragmentDialog(inDialog || false)
             setUserOrChatInfoDialogState([])
             setCurrentSelectedChatId(chat)
 
-            useChatFragmentDialog && (chatFragmentDialogRef.current!.open = true)
+            inDialog && (chatFragmentDialogRef.current!.open = true)
         }
         static closeChat() {
             if (chatFragmentDialogRef.current!.open) {
@@ -85,10 +84,10 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
                 setCurrentSelectedChatId('')
         }
     }}>
+        {<ChatFragmentDialog chatId={currentSelectedChatId} useRef={chatFragmentDialogRef} />}
         <UserOrChatInfoDialog chat={userOrChatInfoDialogState[userOrChatInfoDialogState.length - 1] || lastUserOrChatInfoDialogStateRef.current} useRef={userOrChatInfoDialogRef} />
         <EditMyProfileDialog useRef={editMyProfileDialogRef} />
         <AddFavourtieChatDialog useRef={addFavouriteChatDialogRef} />
-        {useChatFragmentDialog && currentSelectedChatId && currentSelectedChatId != '' && <ChatFragmentDialog chatId={currentSelectedChatId} useRef={chatFragmentDialogRef} />}
         {children}
     </AppStateContext.Provider>
 }

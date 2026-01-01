@@ -1,9 +1,10 @@
 import { Dialog } from "mdui"
 import * as React from 'react'
 import LazyChatFragment from "../chat-fragment/LazyChatFragment"
+import useEventListener from "../../utils/useEventListener"
 
 export default function ChatFragmentDialog({ chatId, useRef }: { chatId: string, useRef: React.MutableRefObject<Dialog | undefined> }) {
-    React.useEffect(() => {
+    useEventListener(useRef, 'open', () => {
         const shadow = useRef.current!.shadowRoot as ShadowRoot
         const panel = shadow.querySelector(".panel") as HTMLElement
         panel.style.padding = '0'
@@ -13,14 +14,14 @@ export default function ChatFragmentDialog({ chatId, useRef }: { chatId: string,
         const body = shadow.querySelector(".body") as HTMLElement
         body.style.height = '100%'
         body.style.display = 'flex'
-    }, [chatId])
+    })
 
     return <mdui-dialog fullscreen ref={useRef}>
         <div style={{
             display: 'flex',
             width: '100%',
         }}>
-            <LazyChatFragment chatId={chatId} openedInDialog={true} />
+            {chatId != null && chatId != '' && <LazyChatFragment chatId={chatId} openedInDialog={true} />}
         </div>
     </mdui-dialog>
 }

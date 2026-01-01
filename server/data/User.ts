@@ -150,7 +150,7 @@ export default class User {
     }
     getFavouriteChats() {
         try {
-            return JSON.parse(this.bean.favourite_chats) as string[]
+            return [...(JSON.parse(this.bean.favourite_chats) as string[]), ChatPrivate.findOrCreateForPrivate(this, this).bean.id]
         } catch (e) {
             console.log(chalk.yellow(`警告: 收藏对话解析失败: ${(e as Error).message}`))
             return []

@@ -350,14 +350,13 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author) as User
-            const contacts = user.getFavouriteChats()
-            contacts.push(ChatPrivate.getChatIdByUsersId(token.author, token.author))
+            const favourite_chats = user.getFavouriteChats()
 
             return {
                 msg: "成功",
                 code: 200,
                 data: {
-                    contacts_list: contacts.map((id) => {
+                    favourite_chats: favourite_chats.map((id) => {
                         const chat = Chat.findById(id)
                         return {
                             id,

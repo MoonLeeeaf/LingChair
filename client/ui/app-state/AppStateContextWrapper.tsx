@@ -10,6 +10,10 @@ import * as React from 'react'
 import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext"
 import ChatFragmentDialog from "./ChatFragmentDialog"
+import useAsyncEffect from "../../utils/useAsyncEffect"
+import ClientCache from "../../ClientCache"
+
+const config = await fetch('/config.json').then((re) => re.json())
 
 export default function DialogContextWrapper({ children, useRef }: { children: React.ReactNode, useRef: React.MutableRefObject<AppState | undefined> }) {
     const [userOrChatInfoDialogState, setUserOrChatInfoDialogState] = React.useState<Chat[]>([])
@@ -40,6 +44,10 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
     )
     const [useChatFragmentDialog, setUseChatFragmentDialog] = React.useState(false)
     const chatFragmentDialogRef = React.useRef<Dialog>()
+
+    useAsyncEffect(async () => {
+        document.title = (currentSelectedChatId && currentSelectedChatId != '' && await ClientCache.getChat(currentSelectedChatId).then((v) => v?.getTitle()) + ' | ') + (config.title || 'LingChair')
+    }, [currentSelectedChatId])
 
     return <AppStateContext.Provider value={useRef.current = class {
         static async openChatInfo(chat: Chat | string) {

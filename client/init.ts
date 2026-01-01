@@ -36,6 +36,3 @@ const onResize = () => {
 // deno-lint-ignore no-window no-window-prefix
 window.addEventListener('resize', onResize)
 onResize()
-
-const config = await fetch('/config.json').then((re) => re.json())
-config.title && (document.title = config.title)

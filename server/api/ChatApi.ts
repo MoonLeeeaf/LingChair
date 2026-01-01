@@ -116,7 +116,7 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: "成功",
                 data: {
-                    messages: MessagesManager.getInstanceForChat(chat)[args.page ? 'getMessagesWithPage' : 'getMessagesWithOffset'](null, (args.page ? args.page : args.offset) as number),
+                    messages: MessagesManager.getInstanceForChat(chat)[args.page ? 'getMessagesWithPage' : 'getMessagesWithOffset'](args.limit as number | undefined, (args.page ? args.page : args.offset) as number),
                 },
             }
         })

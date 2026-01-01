@@ -6,6 +6,7 @@ import chalk from "chalk"
 import config from "../config.ts"
 import Chat from "./Chat.ts"
 import MessageBean from "./MessageBean.ts"
+import { PageFetchMaxLimit } from "lingchair-internal-shared"
 
 export default class MessagesManager {
     static database: DatabaseSync = this.init()
@@ -60,13 +61,13 @@ export default class MessagesManager {
         })
     }
     getMessagesWithOffset(limit: number | undefined | null, offset: number = 0) {
-        const ls = MessagesManager.database.prepare(`SELECT * FROM ${this.getTableName()} ORDER BY id DESC LIMIT ? OFFSET ?;`).all(limit || 15, offset) as unknown as MessageBean[]
+        const ls = MessagesManager.database.prepare(`SELECT * FROM ${this.getTableName()} ORDER BY id DESC LIMIT ? OFFSET ?;`).all(limit || PageFetchMaxLimit, offset) as unknown as MessageBean[]
         return ls.map((v) => ({
             ...v,
             chat_id: this.chat.bean.id,
         }))
     }
     getMessagesWithPage(limit: number | undefined | null, page: number = 0) {
-        return this.getMessagesWithOffset(limit, (limit || 15) * page)
+        return this.getMessagesWithOffset(limit, (limit || PageFetchMaxLimit) * page)
     }
 }

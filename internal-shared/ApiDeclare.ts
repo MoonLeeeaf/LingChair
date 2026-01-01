@@ -61,3 +61,5 @@ export const CallableMethodBeforeAuth = [
     "User.login",
     "User.refreshAccessToken",
 ]
+
+export const PageFetchMaxLimit = 15

@@ -81,24 +81,25 @@ export default class Chat extends BaseClientObject {
      *                    对话消息
      * ================================================
      */
-    async getMessages(args: { page?: number, offset?: number }) {
+    async getMessages(args: { page?: number, offset?: number, limit?: number }) {
         return (await this.getMessageBeans(args)).map((v) => new Message(this.client, v))
     }
-    async getMessagesOrThrow(args: { page?: number, offset?: number }) {
+    async getMessagesOrThrow(args: { page?: number, offset?: number, limit?: number }) {
         return (await this.getMessageBeansOrThrow(args)).map((v) => new Message(this.client, v))
     }
-    async getMessageBeans(args: { page?: number, offset?: number }) {
+    async getMessageBeans(args: { page?: number, offset?: number, limit?: number }) {
         try {
             return await this.getMessageBeansOrThrow(args)
         } catch (_) {
             return []
         }
     }
-    async getMessageBeansOrThrow({ page, offset }: { page?: number, offset?: number }) {
+    async getMessageBeansOrThrow({ page, offset, limit }: { page?: number, offset?: number, limit?: number }) {
         const re = await this.client.invoke("Chat.getMessageHistory", {
             token: this.client.access_token,
             page,
             offset,
+            limit,
             target: this.bean.id,
         })
         if (re.code == 200) return re.data!.messages as MessageBean[]

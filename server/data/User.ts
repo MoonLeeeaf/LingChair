@@ -38,7 +38,7 @@ export default class User {
                 /* 用户名 */ username TEXT,
                 /* 昵称 */ nickname TEXT NOT NULL,
                 /* 头像, 可选 */ avatar_file_hash TEXT,
-                /* 对话列表 */ contacts_list TEXT NOT NULL,
+                /* 对话列表 */ favourite_chats TEXT NOT NULL,
                 /* 最近对话 */ recent_chats TEXT NOT NULL,
                 /* 设置 */ settings TEXT NOT NULL
             );
@@ -62,7 +62,7 @@ export default class User {
                     username,
                     nickname,
                     avatar_file_hash,
-                    contacts_list,
+                    favourite_chats,
                     recent_chats,
                     settings
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).run(
@@ -142,17 +142,17 @@ export default class User {
         const ls = this.getFavouriteChats()
         if (ls.indexOf(chatId) != -1 || ChatPrivate.getChatIdByUsersId(this.bean.id, this.bean.id) == chatId) return
         ls.push(chatId)
-        this.setAttr("contacts_list", JSON.stringify(ls))
+        this.setAttr("favourite_chats", JSON.stringify(ls))
     }
     removeFavouriteChats(contacts: string[]) {
         const ls = this.getFavouriteChats().filter((v) => !contacts.includes(v))
-        this.setAttr("contacts_list", JSON.stringify(ls))
+        this.setAttr("favourite_chats", JSON.stringify(ls))
     }
     getFavouriteChats() {
         try {
-            return JSON.parse(this.bean.contacts_list) as string[]
+            return JSON.parse(this.bean.favourite_chats) as string[]
         } catch (e) {
-            console.log(chalk.yellow(`警告: 所有对话解析失败: ${(e as Error).message}`))
+            console.log(chalk.yellow(`警告: 收藏对话解析失败: ${(e as Error).message}`))
             return []
         }
     }

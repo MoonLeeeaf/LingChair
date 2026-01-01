@@ -6,7 +6,7 @@ export default class UserBean {
     declare registered_time: number
     declare nickname: string
     declare avatar_file_hash?: string
-    declare contacts_list: string
+    declare favourite_chats: string
     declare recent_chats: string
     declare settings: string
 

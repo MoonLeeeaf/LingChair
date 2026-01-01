@@ -398,9 +398,9 @@ let TextField = class TextField extends FocusableMixin(MduiElement) {
             'is-firefox': navigator.userAgent.includes('Firefox'),
             ...invalidClassNameObj,
         });
-        return html `<div part="container" class="${className}">${this.renderPrefix()}<div class="input-container">${this.renderLabel()} ${this.isTextarea
+        return html `<div part="container" class="${className}">${this.renderPrefix()}<div class="input-container">${this.renderLabel()} ${!hasInputSlot ? (this.isTextarea
             ? this.renderTextArea(hasInputSlot)
-            : this.renderInput(hasInputSlot)} ${when(hasInputSlot, () => html `<slot name="input" class="input"></slot>`)}</div>${this.renderSuffix()}${this.renderClearButton(hasClearButton)} ${this.renderTogglePasswordButton(hasTogglePasswordButton)} ${this.renderRightIcon(hasErrorIcon)}</div>${when(hasError || hasHelper || hasCounter, () => html `<div part="supporting" class="${classMap({ supporting: true, ...invalidClassNameObj })}">${this.renderHelper(hasError, hasHelper)} ${this.renderCounter(hasCounter)}</div>`)}`;
+            : this.renderInput(hasInputSlot)) : ''} ${when(hasInputSlot, () => html `<slot name="input" class="input"></slot>`)}</div>${this.renderSuffix()}${this.renderClearButton(hasClearButton)} ${this.renderTogglePasswordButton(hasTogglePasswordButton)} ${this.renderRightIcon(hasErrorIcon)}</div>${when(hasError || hasHelper || hasCounter, () => html `<div part="supporting" class="${classMap({ supporting: true, ...invalidClassNameObj })}">${this.renderHelper(hasError, hasHelper)} ${this.renderCounter(hasCounter)}</div>`)}`;
     }
     setCustomValidityInternal(message) {
         this.inputRef.value.setCustomValidity(message);

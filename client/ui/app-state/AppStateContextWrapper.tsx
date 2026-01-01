@@ -73,7 +73,8 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
             setUseChatFragmentDialog(inDialog || false)
             setUserOrChatInfoDialogState([])
             setCurrentSelectedChatId(chat)
-            chatFragmentDialogRef.current!.open = true
+
+            useChatFragmentDialog && (chatFragmentDialogRef.current!.open = true)
         }
         static closeChat() {
             if (chatFragmentDialogRef.current!.open) {

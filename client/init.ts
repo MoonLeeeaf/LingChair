@@ -14,7 +14,7 @@ import './ui/chat-elements/chat-text.ts'
 import './ui/chat-elements/chat-mention.ts'
 import './ui/chat-elements/chat-text-container.ts'
 import './ui/chat-elements/chat-quote.ts'
-import './ui/InputElement.ts'
+import './ui/MduiPatchedTextAreaElement.ts'
 import './ui/InnerTextContainerElement.ts'
 import Main from "./ui/Main.tsx"
 

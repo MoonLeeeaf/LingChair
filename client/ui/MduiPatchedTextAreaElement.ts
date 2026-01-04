@@ -1,6 +1,6 @@
 import { $ } from "mdui"
 
-export default class InputElement extends HTMLElement {
+export default class MduiPatchedTextAreaElement extends HTMLElement {
     static observedAttributes = ['user-id']
     declare inputDiv: HTMLDivElement
     constructor() {
@@ -55,4 +55,4 @@ export default class InputElement extends HTMLElement {
     }
 }
 
-customElements.define('input-element', InputElement)
+customElements.define('mdui-patched-textarea', MduiPatchedTextAreaElement)

@@ -528,6 +528,11 @@ let TextField = class TextField extends FocusableMixin(MduiElement) {
             ? this.placeholder
             : undefined)}" ?readonly="${this.readonly}" ?disabled="${this.disabled}" ?required="${this.required}" minlength="${ifDefined(this.minlength)}" maxlength="${ifDefined(this.maxlength)}" rows="${this.rows ?? 1}" autocapitalize="${ifDefined(this.autocapitalize)}" autocorrect="${ifDefined(this.autocorrect)}" spellcheck="${ifDefined(this.spellcheck)}" enterkeyhint="${ifDefined(this.enterkeyhint)}" inputmode="${ifDefined(this.inputmode)}" @change="${this.onChange}" @input="${this.onInput}" @invalid="${this.onInvalid}" @keydown="${this.onKeyDown}" @keyup="${this.onTextAreaKeyUp}"></textarea>`;
     }
+    renderPatchedTextArea(hasInputSlot) {
+        return html `<mdui-patched-textarea ${ref(this.inputRef)} part="input" class="input ${classMap({ 'hide-input': hasInputSlot })}" name="${ifDefined(this.name)}" .value="${live(this.value)}" placeholder="${ifDefined(!this.label || this.isFocusedStyle || this.hasValue
+            ? this.placeholder
+            : undefined)}" ?readonly="${this.readonly}" ?disabled="${this.disabled}" ?required="${this.required}" minlength="${ifDefined(this.minlength)}" maxlength="${ifDefined(this.maxlength)}" rows="${this.rows ?? 1}" autocapitalize="${ifDefined(this.autocapitalize)}" autocorrect="${ifDefined(this.autocorrect)}" spellcheck="${ifDefined(this.spellcheck)}" enterkeyhint="${ifDefined(this.enterkeyhint)}" inputmode="${ifDefined(this.inputmode)}" @change="${this.onChange}" @input="${this.onInput}" @invalid="${this.onInvalid}" @keydown="${this.onKeyDown}" @keyup="${this.onTextAreaKeyUp}"></textarea>`;
+    }
     /**
      * @param hasError 是否包含错误提示
      * @param hasHelper 是否含 helper 属性或 helper slot

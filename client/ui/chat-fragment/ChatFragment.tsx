@@ -160,7 +160,7 @@ export default function ChatFragment({
                 }} onDrop={(e) => {
                     // 文件拽入
                 }}>
-                    <mdui-text-field variant="outlined" placeholder="(｡･ω･｡)" autosize ref={inputRef} /* max-rows={6} */ onChange={() => {
+                    <mdui-text-field variant="outlined" use-patched-textarea placeholder="(｡･ω･｡)" autosize ref={inputRef} /* max-rows={6} */ onChange={() => {
                         if (inputRef.current?.value.trim() == '') {
                             // 清空缓存的文件
                         }
@@ -182,10 +182,6 @@ export default function ChatFragment({
                         marginTop: '3px',
                         marginBottom: '3px',
                     }}>
-                        {
-                            // @ts-ignore
-                            <input-element slot="input" />
-                        }
                     </mdui-text-field>
                     <mdui-button-icon slot="end-icon" icon="attach_file" style={{
                         marginRight: '6px',

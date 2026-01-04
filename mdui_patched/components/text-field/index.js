@@ -398,9 +398,15 @@ let TextField = class TextField extends FocusableMixin(MduiElement) {
             'is-firefox': navigator.userAgent.includes('Firefox'),
             ...invalidClassNameObj,
         });
-        return html `<div part="container" class="${className}">${this.renderPrefix()}<div class="input-container">${this.renderLabel()} ${!hasInputSlot ? (this.isTextarea
-            ? this.renderTextArea(hasInputSlot)
-            : this.renderInput(hasInputSlot)) : ''} ${when(hasInputSlot, () => html `<slot name="input" class="input"></slot>`)}</div>${this.renderSuffix()}${this.renderClearButton(hasClearButton)} ${this.renderTogglePasswordButton(hasTogglePasswordButton)} ${this.renderRightIcon(hasErrorIcon)}</div>${when(hasError || hasHelper || hasCounter, () => html `<div part="supporting" class="${classMap({ supporting: true, ...invalidClassNameObj })}">${this.renderHelper(hasError, hasHelper)} ${this.renderCounter(hasCounter)}</div>`)}`;
+        return html`<div part="container" class="${className}">${this.renderPrefix()}<div class="input-container">${this.renderLabel()} ${!hasInputSlot ? (
+            this.getAttribute("use-patched-textarea")
+                ? this.renderPatchedTextArea(hasInputSlot)
+                : (
+                    this.isTextarea
+                        ? this.renderTextArea(hasInputSlot)
+                        : this.renderInput(hasInputSlot)
+                )
+        ) : ''} ${when(hasInputSlot, () => html`<slot name="input" class="input"></slot>`)}</div>${this.renderSuffix()}${this.renderClearButton(hasClearButton)} ${this.renderTogglePasswordButton(hasTogglePasswordButton)} ${this.renderRightIcon(hasErrorIcon)}</div>${when(hasError || hasHelper || hasCounter, () => html`<div part="supporting" class="${classMap({ supporting: true, ...invalidClassNameObj })}">${this.renderHelper(hasError, hasHelper)} ${this.renderCounter(hasCounter)}</div>`)}`;
     }
     setCustomValidityInternal(message) {
         this.inputRef.value.setCustomValidity(message);
@@ -482,54 +488,54 @@ let TextField = class TextField extends FocusableMixin(MduiElement) {
     }
     renderLabel() {
         return this.label
-            ? html `<label part="label" class="label">${this.label}</label>`
+            ? html`<label part="label" class="label">${this.label}</label>`
             : nothingTemplate;
     }
     renderPrefix() {
-        return html `<slot name="icon" part="icon" class="icon">${this.icon
-            ? html `<mdui-icon name="${this.icon}" class="i"></mdui-icon>`
+        return html`<slot name="icon" part="icon" class="icon">${this.icon
+            ? html`<mdui-icon name="${this.icon}" class="i"></mdui-icon>`
             : nothingTemplate}</slot><slot name="prefix" part="prefix" class="prefix">${this.prefix}</slot>`;
     }
     renderSuffix() {
-        return html `<slot name="suffix" part="suffix" class="suffix">${this.suffix}</slot>`;
+        return html`<slot name="suffix" part="suffix" class="suffix">${this.suffix}</slot>`;
     }
     renderRightIcon(hasErrorIcon) {
         return hasErrorIcon
-            ? html `<slot name="error-icon" part="error-icon" class="right-icon">${this.errorIcon
-                ? html `<mdui-icon name="${this.errorIcon}" class="i"></mdui-icon>`
-                : html `<mdui-icon-error class="i"></mdui-icon-error>`}</slot>`
-            : html `<slot name="end-icon" part="end-icon" class="end-icon right-icon">${this.endIcon
-                ? html `<mdui-icon name="${this.endIcon}" class="i"></mdui-icon>`
+            ? html`<slot name="error-icon" part="error-icon" class="right-icon">${this.errorIcon
+                ? html`<mdui-icon name="${this.errorIcon}" class="i"></mdui-icon>`
+                : html`<mdui-icon-error class="i"></mdui-icon-error>`}</slot>`
+            : html`<slot name="end-icon" part="end-icon" class="end-icon right-icon">${this.endIcon
+                ? html`<mdui-icon name="${this.endIcon}" class="i"></mdui-icon>`
                 : nothingTemplate}</slot>`;
     }
     renderClearButton(hasClearButton) {
-        return when(hasClearButton, () => html `<slot name="clear-button" part="clear-button" class="action" @click="${this.onClear}"><mdui-button-icon tabindex="-1"><slot name="clear-icon" part="clear-icon">${this.clearIcon
-            ? html `<mdui-icon name="${this.clearIcon}" class="i"></mdui-icon>`
-            : html `<mdui-icon-cancel--outlined class="i"></mdui-icon-cancel--outlined>`}</slot></mdui-button-icon></slot>`);
+        return when(hasClearButton, () => html`<slot name="clear-button" part="clear-button" class="action" @click="${this.onClear}"><mdui-button-icon tabindex="-1"><slot name="clear-icon" part="clear-icon">${this.clearIcon
+            ? html`<mdui-icon name="${this.clearIcon}" class="i"></mdui-icon>`
+            : html`<mdui-icon-cancel--outlined class="i"></mdui-icon-cancel--outlined>`}</slot></mdui-button-icon></slot>`);
     }
     renderTogglePasswordButton(hasTogglePasswordButton) {
-        return when(hasTogglePasswordButton, () => html `<slot name="toggle-password-button" part="toggle-password-button" class="action" @click="${this.onTogglePassword}"><mdui-button-icon tabindex="-1">${this.isPasswordVisible
-            ? html `<slot name="show-password-icon" part="show-password-icon">${this.showPasswordIcon
-                ? html `<mdui-icon name="${this.showPasswordIcon}" class="i"></mdui-icon>`
-                : html `<mdui-icon-visibility-off class="i"></mdui-icon-visibility-off>`}</slot>`
-            : html `<slot name="hide-password-icon" part="hide-password-icon">${this.hidePasswordIcon
-                ? html `<mdui-icon name="${this.hidePasswordIcon}" class="i"></mdui-icon>`
-                : html `<mdui-icon-visibility class="i"></mdui-icon-visibility>`}</slot>`}</mdui-button-icon></slot>`);
+        return when(hasTogglePasswordButton, () => html`<slot name="toggle-password-button" part="toggle-password-button" class="action" @click="${this.onTogglePassword}"><mdui-button-icon tabindex="-1">${this.isPasswordVisible
+            ? html`<slot name="show-password-icon" part="show-password-icon">${this.showPasswordIcon
+                ? html`<mdui-icon name="${this.showPasswordIcon}" class="i"></mdui-icon>`
+                : html`<mdui-icon-visibility-off class="i"></mdui-icon-visibility-off>`}</slot>`
+            : html`<slot name="hide-password-icon" part="hide-password-icon">${this.hidePasswordIcon
+                ? html`<mdui-icon name="${this.hidePasswordIcon}" class="i"></mdui-icon>`
+                : html`<mdui-icon-visibility class="i"></mdui-icon-visibility>`}</slot>`}</mdui-button-icon></slot>`);
     }
     renderInput(hasInputSlot) {
-        return html `<input ${ref(this.inputRef)} part="input" class="input ${classMap({ 'hide-input': hasInputSlot })}" type="${this.type === 'password' && this.isPasswordVisible
+        return html`<input ${ref(this.inputRef)} part="input" class="input ${classMap({ 'hide-input': hasInputSlot })}" type="${this.type === 'password' && this.isPasswordVisible
             ? 'text'
             : this.type}" name="${ifDefined(this.name)}" .value="${live(this.value)}" placeholder="${ifDefined(!this.label || this.isFocusedStyle || this.hasValue
-            ? this.placeholder
-            : undefined)}" ?readonly="${this.readonly}" ?disabled="${this.disabled}" ?required="${this.required}" minlength="${ifDefined(this.minlength)}" maxlength="${ifDefined(this.maxlength)}" min="${ifDefined(this.min)}" max="${ifDefined(this.max)}" step="${ifDefined(this.step)}" autocapitalize="${ifDefined(this.type === 'password' ? 'off' : this.autocapitalize)}" autocomplete="${this.autocomplete}" autocorrect="${ifDefined(this.type === 'password' ? 'off' : this.autocorrect)}" spellcheck="${ifDefined(this.spellcheck)}" pattern="${ifDefined(this.pattern)}" enterkeyhint="${ifDefined(this.enterkeyhint)}" inputmode="${ifDefined(this.inputmode)}" @change="${this.onChange}" @input="${this.onInput}" @invalid="${this.onInvalid}" @keydown="${this.onKeyDown}">`;
+                ? this.placeholder
+                : undefined)}" ?readonly="${this.readonly}" ?disabled="${this.disabled}" ?required="${this.required}" minlength="${ifDefined(this.minlength)}" maxlength="${ifDefined(this.maxlength)}" min="${ifDefined(this.min)}" max="${ifDefined(this.max)}" step="${ifDefined(this.step)}" autocapitalize="${ifDefined(this.type === 'password' ? 'off' : this.autocapitalize)}" autocomplete="${this.autocomplete}" autocorrect="${ifDefined(this.type === 'password' ? 'off' : this.autocorrect)}" spellcheck="${ifDefined(this.spellcheck)}" pattern="${ifDefined(this.pattern)}" enterkeyhint="${ifDefined(this.enterkeyhint)}" inputmode="${ifDefined(this.inputmode)}" @change="${this.onChange}" @input="${this.onInput}" @invalid="${this.onInvalid}" @keydown="${this.onKeyDown}">`;
     }
     renderTextArea(hasInputSlot) {
-        return html `<textarea ${ref(this.inputRef)} part="input" class="input ${classMap({ 'hide-input': hasInputSlot })}" name="${ifDefined(this.name)}" .value="${live(this.value)}" placeholder="${ifDefined(!this.label || this.isFocusedStyle || this.hasValue
+        return html`<textarea ${ref(this.inputRef)} part="input" class="input ${classMap({ 'hide-input': hasInputSlot })}" name="${ifDefined(this.name)}" .value="${live(this.value)}" placeholder="${ifDefined(!this.label || this.isFocusedStyle || this.hasValue
             ? this.placeholder
             : undefined)}" ?readonly="${this.readonly}" ?disabled="${this.disabled}" ?required="${this.required}" minlength="${ifDefined(this.minlength)}" maxlength="${ifDefined(this.maxlength)}" rows="${this.rows ?? 1}" autocapitalize="${ifDefined(this.autocapitalize)}" autocorrect="${ifDefined(this.autocorrect)}" spellcheck="${ifDefined(this.spellcheck)}" enterkeyhint="${ifDefined(this.enterkeyhint)}" inputmode="${ifDefined(this.inputmode)}" @change="${this.onChange}" @input="${this.onInput}" @invalid="${this.onInvalid}" @keydown="${this.onKeyDown}" @keyup="${this.onTextAreaKeyUp}"></textarea>`;
     }
     renderPatchedTextArea(hasInputSlot) {
-        return html `<mdui-patched-textarea ${ref(this.inputRef)} part="input" class="input ${classMap({ 'hide-input': hasInputSlot })}" name="${ifDefined(this.name)}" .value="${live(this.value)}" placeholder="${ifDefined(!this.label || this.isFocusedStyle || this.hasValue
+        return html`<mdui-patched-textarea ${ref(this.inputRef)} part="input" class="input ${classMap({ 'hide-input': hasInputSlot })}" name="${ifDefined(this.name)}" .value="${live(this.value)}" placeholder="${ifDefined(!this.label || this.isFocusedStyle || this.hasValue
             ? this.placeholder
             : undefined)}" ?readonly="${this.readonly}" ?disabled="${this.disabled}" ?required="${this.required}" minlength="${ifDefined(this.minlength)}" maxlength="${ifDefined(this.maxlength)}" rows="${this.rows ?? 1}" autocapitalize="${ifDefined(this.autocapitalize)}" autocorrect="${ifDefined(this.autocorrect)}" spellcheck="${ifDefined(this.spellcheck)}" enterkeyhint="${ifDefined(this.enterkeyhint)}" inputmode="${ifDefined(this.inputmode)}" @change="${this.onChange}" @input="${this.onInput}" @invalid="${this.onInvalid}" @keydown="${this.onKeyDown}" @keyup="${this.onTextAreaKeyUp}"></textarea>`;
     }
@@ -539,15 +545,15 @@ let TextField = class TextField extends FocusableMixin(MduiElement) {
      */
     renderHelper(hasError, hasHelper) {
         return hasError
-            ? html `<div part="error" class="error">${this.error || this.inputRef.value.validationMessage}</div>`
+            ? html`<div part="error" class="error">${this.error || this.inputRef.value.validationMessage}</div>`
             : hasHelper
-                ? html `<slot name="helper" part="helper" class="helper">${this.helper}</slot>`
+                ? html`<slot name="helper" part="helper" class="helper">${this.helper}</slot>`
                 : // 右边有 counter，需要占位
-                    html `<span></span>`;
+                html`<span></span>`;
     }
     renderCounter(hasCounter) {
         return hasCounter
-            ? html `<div part="counter" class="counter">${this.value.length}/${this.maxlength}</div>`
+            ? html`<div part="counter" class="counter">${this.value.length}/${this.maxlength}</div>`
             : nothingTemplate;
     }
 };

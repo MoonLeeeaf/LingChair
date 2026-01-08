@@ -3,8 +3,8 @@ import { $ } from "mdui"
 export default class MduiPatchedTextAreaElement extends HTMLElement {
     static observedAttributes = ['value', 'placeholder']
     declare inputDiv?: HTMLDivElement
-    declare inputPlaceHolderDiv?: HTMLDivElement
     declare inputContainerDiv?: HTMLDivElement
+    declare placeholder?: string | number | null
     constructor() {
         super()
 
@@ -18,8 +18,10 @@ export default class MduiPatchedTextAreaElement extends HTMLElement {
         this.inputContainerDiv = new DOMParser().parseFromString(`
             <div style="overflow-y: auto; height: 100%;">
                 <div role="textbox" aria-multiline="true" aria-labelledby="txtboxMultilineLabel" contentEditable="true" style="outline: none !important; color: rgb(var(--mdui-color-on-surface-variant)); display: inline-block; word-break: break-word; white-space: pre-wrap;"></div>
-                <div style="display: none;"></div>
                 <style>
+                    [contenteditable="true"]:empty:before {
+                        content: attr(data-placeholder);
+                    }
                     *::-webkit-scrollbar {
                         width: 7px;
                         height: 10px;
@@ -51,15 +53,8 @@ export default class MduiPatchedTextAreaElement extends HTMLElement {
             </div>
         `, 'text/html').body.firstChild as HTMLDivElement
 
-        console.log(this.inputContainerDiv.children)
         this.inputDiv = this.inputContainerDiv.children[0] as HTMLDivElement
-        this.inputPlaceHolderDiv = this.inputContainerDiv.children[1] as HTMLDivElement
 
-        this.inputDiv.addEventListener('input', () => {
-            // TODO: 修复 placeholder
-            this.inputPlaceHolderDiv!.style.display = this.value == '' ? '' : 'none'
-            this.inputDiv!.style.display = this.value == '' ? 'none' : ''
-        })
         this.inputDiv.addEventListener('blur', () => {
             if (this._lastValue !== this.value) {
                 this._lastValue = this.value || ''
@@ -73,16 +68,19 @@ export default class MduiPatchedTextAreaElement extends HTMLElement {
 
         this.inputDiv.style.width = '100%'
 
+        $(this.inputDiv).attr('data-placeholder', $(this).attr('placeholder'))
+
         shadow.appendChild(this.inputContainerDiv)
     }
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+        console.log(this.inputDiv, name, oldValue, newValue)
         switch (name) {
             case 'value': {
                 this.value = newValue || ''
                 break
             }
             case 'placeholder': {
-                this.inputPlaceHolderDiv && (this.inputPlaceHolderDiv.innerText = newValue || '')
+                this.inputDiv && $(this.inputDiv).attr('data-placeholder', newValue)
                 break
             }
         }

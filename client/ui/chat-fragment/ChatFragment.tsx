@@ -44,9 +44,20 @@ export default function ChatFragment({
     const inputRef = React.useRef<TextField>()
     const chatPagePanelRef = React.useRef<ChatPanelRef>()
 
+    /**
+     * 发送消息, 成功则清空文本
+     */
     async function performSendMessage() {
         await chatInfo.sendMessageOrThrow(inputRef.current!.value)
         inputRef.current!.value = ''
+    }
+    /**
+     * 拉取更多消息
+     * 本质是修改获取的偏移?
+     * WIP
+     */
+    async function pullMoreMessages() {
+        
     }
 
     return (

@@ -66,13 +66,13 @@ export default function ChatFragment({
                 display: "flex",
                 flexDirection: "column",
             }}>
-                {
+                {/* {
                     openedInDialog && <mdui-button-icon icon="arrow_back" onClick={() => AppState.closeChat()} style={{
                         alignSelf: 'center',
                         marginLeft: '5px',
                         marginRight: '5px',
                     }}></mdui-button-icon>
-                }
+                } */}
                 <mdui-tabs ref={tabRef} value={tabItemSelected} style={{
                     position: 'sticky',
                     display: "flex",

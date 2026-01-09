@@ -77,13 +77,13 @@ export default function ChatFragment({
                 display: "flex",
                 flexDirection: "column",
             }}>
-                {/* {
+                {
                     openedInDialog && <mdui-button-icon icon="arrow_back" onClick={() => AppState.closeChat()} style={{
                         alignSelf: 'center',
                         marginLeft: '5px',
                         marginRight: '5px',
                     }}></mdui-button-icon>
-                } */}
+                }
                 <mdui-tabs ref={tabRef} value={tabItemSelected} style={{
                     position: 'sticky',
                     display: "flex",
@@ -105,6 +105,8 @@ export default function ChatFragment({
                 <div style={{
                     flexGrow: '1',
                 }}></div>
+                {
+                /*
                 <mdui-button-icon icon="open_in_new" onClick={() => {
                     window.open('/chat?id=' + chatInfo.getId(), '_blank')
                 }} style={{
@@ -112,6 +114,8 @@ export default function ChatFragment({
                     marginLeft: '5px',
                     marginRight: '5px',
                 }}></mdui-button-icon>
+                */
+                }
                 <mdui-button-icon icon="refresh" onClick={() => {
 
                 }} style={{

@@ -84,7 +84,7 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
                 setCurrentSelectedChatId('')
         }
     }}>
-        {<ChatFragmentDialog chatId={currentSelectedChatId} useRef={chatFragmentDialogRef} />}
+        <ChatFragmentDialog chatId={currentSelectedChatId} useRef={chatFragmentDialogRef} />
         <UserOrChatInfoDialog chat={userOrChatInfoDialogState[userOrChatInfoDialogState.length - 1] || lastUserOrChatInfoDialogStateRef.current} useRef={userOrChatInfoDialogRef} />
         <EditMyProfileDialog useRef={editMyProfileDialogRef} />
         <AddFavourtieChatDialog useRef={addFavouriteChatDialogRef} />

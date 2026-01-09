@@ -170,10 +170,9 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
                 flexDirection: "column"
             }}>
             {
-                !noUserDisplay &&
-                <div
+            	<div
                     style={{
-                        display: "flex",
+                        display: noUserDisplay ? "none" : "flex",
                         justifyContent: isAtRight ? "flex-end" : "flex-start",
                     }}>
                     {

@@ -16,6 +16,10 @@ export default class MessagesManager {
         return db
     }
 
+    /**
+     * 为对话获取实例
+     * @param chat 对话
+     */
     static getInstanceForChat(chat: Chat) {
         return new MessagesManager(chat)
     }

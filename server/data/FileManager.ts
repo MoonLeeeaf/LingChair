@@ -36,6 +36,9 @@ class File {
     getName() {
         return this.bean.name
     }
+    /**
+     * 获取文件的相对路径
+     */
     getFilePath() {
         const hash = this.bean.hash
         return path.join(
@@ -90,6 +93,12 @@ export default class FileManager {
         return db
     }
 
+    /**
+     * 上传文件 (与 HTTP API 对接)
+     * @param fileName 文件名
+     * @param data 文件二进制数据
+     * @param chatId 所属的对话
+     */
     static async uploadFile(fileName: string, data: Buffer, chatId?: string) {
         const hash = crypto.createHash('sha256').update(data).digest('hex')
         const file = FileManager.findByHash(hash)

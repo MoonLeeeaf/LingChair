@@ -21,8 +21,7 @@ export default class UserChatLinker {
     }
 
     /**
-     * 對用戶和對話建立關聯
-     * 自動檢測是否已關聯, 保證不會重複
+     * 若用户和对话未关联, 则进行关联
      */
     static linkUserAndChat(userId: string, chatId: string) {
         if (!this.checkUserIsLinkedToChat(userId, chatId))
@@ -34,15 +33,27 @@ export default class UserChatLinker {
                 chatId
             )
     }
+    /**
+     * 解除用户和对话的关联
+     */
     static unlinkUserAndChat(userId: string, chatId: string) {
         this.database.prepare(`DELETE FROM UserChatLinker WHERE user_id = ? AND chat_id = ?`).run(userId, chatId)
     }
+    /**
+     * 检测用户和对话的关联
+     */
     static checkUserIsLinkedToChat(userId: string, chatId: string) {
         return this.findAllByCondition('user_id = ? AND chat_id = ?', userId, chatId).length != 0
     }
+    /**
+     * 获取用户所有关联的对话
+     */
     static getUserChats(userId: string) {
         return this.findAllByCondition('user_id = ?', userId).map((v) => v.chat_id) as string[]
     }
+    /**
+     * 获取对话所有关联的用户
+     */
     static getChatMembers(chatId: string) {
         return this.findAllByCondition('chat_id = ?', chatId).map((v) => v.user_id) as string[]
     }

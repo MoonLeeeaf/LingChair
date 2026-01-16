@@ -49,6 +49,13 @@ export default class User {
         return db
     }
 
+    /**
+     * 检查用户名是否存在, 不存在则创建用户, 否则报错
+     * @param userName 
+     * @param password 
+     * @param nickName 
+     * @param avatar 
+     */
     static create(userName: string | null, password: string, nickName: string, avatar: Buffer | null) {
         if (userName && User.findAllBeansByCondition('username = ?', userName).length > 0)
             throw new DataWrongError(`用户名 ${userName} 已存在`)
@@ -102,6 +109,10 @@ export default class User {
             console.error(chalk.red(`警告: 查询 username = ${userName} 时, 查询到多个相同用户名的用户`))
         return new User(beans[0])
     }
+    /**
+     * 通过用户名或 ID 获取某个用户, 用户名优先
+     * @param account 用户名或用户 ID 
+     */
     static findByAccount(account: string) {
         return User.findByUserName(account) || User.findById(account)
     }

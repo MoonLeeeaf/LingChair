@@ -59,8 +59,13 @@ export default class Chat {
         return new Chat(beans[0])
     }
 
+    /**
+     * 对话创建基本方法
+     * @param chatName 对话别名, 供查询
+     * @param type 对话类型
+     */
     static create(chatName: string | undefined, type: ChatType) {
-        if (this.findAllChatBeansByCondition('id = ?', chatName || null).length > 0)
+        if (this.findAllChatBeansByCondition('name = ?', chatName || null).length > 0)
             throw new DataWrongError(`对话名称 ${chatName} 已被使用`)
         const chat = new Chat(
             Chat.findAllChatBeansByCondition(
@@ -123,6 +128,11 @@ export default class Chat {
      * ======================================================
      */
 
+    /**
+     * 添加加入请求
+     * @param userId 
+     * @param reason 
+     */
     addJoinRequest(userId: string, reason?: string) {
         if (this.findAllJoinRequestsByCondition('user_id = ?', userId).length == 0)
             Chat.database.prepare(`INSERT INTO ${this.getJoinRequestsTableName()} (
@@ -149,6 +159,11 @@ export default class Chat {
      * ======================================================
      */
 
+    /**
+     * 添加对话管理员
+     * @param userId 
+     * @param permission 
+     */
     addAdmin(userId: string, permission: string[] | string) {
         if (!this.checkUserIsAdmin(userId))
             Chat.database.prepare(`INSERT INTO ${this.getAdminsTableName()} (
@@ -185,6 +200,9 @@ export default class Chat {
      * ======================================================
      */
 
+    /**
+     * 获取对话成员
+     */
     getMembersList() {
         return UserChatLinker.getChatMembers(this.bean.id)
     }
@@ -201,6 +219,10 @@ export default class Chat {
      * ======================================================
      */
 
+    /**
+     * 从**私聊**中获取对方用户
+     * @param userMySelf 
+     */
     getAnotherUserForPrivate(userMySelf: User) {
         const members = this.getMembersList()
         const user_a_id = members[0]

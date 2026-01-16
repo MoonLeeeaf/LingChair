@@ -36,6 +36,9 @@ export default class MessagesManager {
     protected getTableName() {
         return `messages_${this.chat.bean.id}`.replaceAll('-', '_')
     }
+    /**
+     * 添加一条消息
+     */
     addMessage({
         text,
         user_id,
@@ -55,19 +58,58 @@ export default class MessagesManager {
             time || Date.now()
         ).lastInsertRowid
     }
+    /**
+     * 添加一条无用户信息的系统消息
+     */
     addSystemMessage(text: string) {
         this.addMessage({
             text
         })
     }
-    getMessagesWithOffset(limit: number | undefined | null, offset: number = 0) {
+    /**
+     * 从最新消息开始偏移某些量向**前**获取 n 条消息 (顺序: 从新到旧)
+     * @param limit 获取消息的数量
+     * @param offset 偏移量
+     */
+    getMessagesWithOffset(limit: number | undefined | null, offset: number = 0): MessageBean[] {
         const ls = MessagesManager.database.prepare(`SELECT * FROM ${this.getTableName()} ORDER BY id DESC LIMIT ? OFFSET ?;`).all(limit || PageFetchMaxLimit, offset) as unknown as MessageBean[]
         return ls.map((v) => ({
             ...v,
             chat_id: this.chat.bean.id,
-        }))
+        })).reverse()
     }
+    /**
+     * 从最新消息开始偏移某些量向**前**获取第 n 页消息 (顺序: 从新到旧)
+     * @param limit 获取消息的数量
+     * @param page 页数
+     */
     getMessagesWithPage(limit: number | undefined | null, page: number = 0) {
         return this.getMessagesWithOffset(limit, (limit || PageFetchMaxLimit) * page)
+    }
+    /**
+     * 获取最新的消息的 ID
+     */
+    getNewestMessageId() {
+        return MessagesManager.database.prepare(`SELECT id FROM ${this.getTableName()} ORDER BY id DESC LIMIT 1;`).all()[0].id as number | undefined
+    }
+    /**
+     * 从某消息开始获取包括其在内往**前**的 n 条消息 (顺序: 从新到旧)
+     * @param limit 获取消息的数量
+     * @param msg_id 从哪条开始? (-1 = 最新)
+     */
+    getMessagesEndWith(limit: number | undefined | null, msg_id: number) {
+        const newestMessageId = this.getNewestMessageId()
+        const offset = (msg_id == -1 || newestMessageId == null) ? 0 : (newestMessageId - msg_id)
+        return this.getMessagesWithOffset(limit, offset)
+    }
+    /**
+     * 从某消息开始获取包括其在内往**后**的 n 条消息 (顺序: 从新到旧)
+     * @param limit 获取消息的数量
+     * @param msg_id 从哪条开始? (-1 = 最新)
+     */
+    getMessagesBeginWith(limit: number | undefined | null, msg_id: number) {
+        const newestMessageId = this.getNewestMessageId()
+        const offset = (msg_id == -1 || newestMessageId == null) ? 0 : (newestMessageId - msg_id)
+        return this.getMessagesWithOffset(limit, offset)
     }
 }

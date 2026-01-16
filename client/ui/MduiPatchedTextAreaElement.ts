@@ -73,7 +73,7 @@ export default class MduiPatchedTextAreaElement extends HTMLElement {
         shadow.appendChild(this.inputContainerDiv)
     }
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-        console.log(this.inputDiv, name, oldValue, newValue)
+        // console.log(this.inputDiv, name, oldValue, newValue)
         switch (name) {
             case 'value': {
                 this.value = newValue || ''

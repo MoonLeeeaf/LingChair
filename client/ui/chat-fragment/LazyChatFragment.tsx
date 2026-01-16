@@ -1,14 +1,18 @@
 import { Chat } from "lingchair-client-protocol"
-import { Await } from "react-router"
 import getClient from "../../getClient"
 import ChatFragment from "./ChatFragment"
 import * as React from 'react'
-import EffectOnly from "../EffectOnly"
+import useAsyncEffect from "../../utils/useAsyncEffect"
 
 export default function LazyChatFragment({ chatId, openedInDialog }: { chatId: string, openedInDialog: boolean }) {
-    return <React.Suspense fallback={<EffectOnly effect={() => {}} deps={[]} />}>
-        <Await
-            resolve={React.useMemo(() => Chat.getByIdOrThrow(getClient(), chatId), [chatId])}
-            children={(chatInfo: Chat) => <ChatFragment chatInfo={chatInfo} openedInDialog={openedInDialog} />} />
+    const [child, setChild] = React.useState<React.ReactNode>()
+    const chatInfoPromise = React.useMemo(() => Chat.getByIdOrThrow(getClient(), chatId), [chatId])
+
+    useAsyncEffect(async () => {
+        setChild(<ChatFragment chatInfo={await chatInfoPromise} openedInDialog={openedInDialog} />)
+    }, [chatId])
+
+    return <React.Suspense fallback={null}>
+        {child}
     </React.Suspense>
 }

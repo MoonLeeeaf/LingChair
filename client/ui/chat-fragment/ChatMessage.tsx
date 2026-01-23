@@ -116,6 +116,8 @@ const transformers: ChatParserTransformers = {
 export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, messageMenuItems }: { message: Message, noUserDisplay?: boolean, avatarMenuItems?: globalThis.React.JSX.IntrinsicElements['mdui-menu-item'][], messageMenuItems?: globalThis.React.JSX.IntrinsicElements['mdui-menu-item'][] }) {
     const AppState = React.useContext(AppStateContext)
 
+    const [show, setShown] = React.useState(false)
+
     const [isAtRight, setAtRight] = React.useState(false)
 
     const messageDropDownRef = React.useRef<Dropdown>()
@@ -130,13 +132,14 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
         setAvatarDropDownOpen(false)
     })
 
-    const [nickName, setNickName] = React.useState('')
+    const [nickName, setNickName] = React.useState(message.getUserId()! || 'System')
     const [avatarUrl, setAvatarUrl] = React.useState('')
     useAsyncEffect(async () => {
         const user = await ClientCache.getUser(message.getUserId()!)
         setAtRight(await ClientCache.getMySelf().then((re) => re?.getId()) == user?.getId())
         setNickName(user?.getNickName() || '')
         setAvatarUrl(getClient().getUrlForFileByHash(user?.getAvatarFileHash() || '') || '')
+        setShown(true)
     }, [message])
 
     const messageInnerRef = React.useRef<HTMLSpanElement>(null)
@@ -152,7 +155,11 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
         })
     }, [message])
 
-    return (
+    return <>
+        <div style={{
+            display: show ? 'none' : undefined,
+            padding: '5px',
+        }}>加载中...</div>
         <div
             slot="trigger"
             onContextMenu={(e) => {
@@ -167,7 +174,7 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
             }}
             style={{
                 width: "100%",
-                display: "flex",
+                display: show ? 'flex' : 'none',
                 justifyContent: isAtRight ? "flex-end" : "flex-start",
                 flexDirection: "column"
             }}>
@@ -260,5 +267,5 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
             </mdui-card>
 
         </div>
-    )
+    </>
 }

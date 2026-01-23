@@ -1,4 +1,4 @@
-import { Message } from "lingchair-client-protocol"
+import { ChatParserTransformers, Message } from "lingchair-client-protocol"
 import isMobileUI from "../../utils/isMobileUI"
 import useAsyncEffect from "../../utils/useAsyncEffect"
 import ClientCache from "../../ClientCache"
@@ -94,6 +94,25 @@ const sanitizeConfig = {
     ],
 }
 
+const transformers: ChatParserTransformers = {
+    attachment({ fileType, attachment }) {
+        const url = getClient().getUrlForFileByHash(attachment.getFileHash())
+        return ({
+            Image: `<chat-image src="${url}" alt="${attachment.getFileName()}"></chat-image>`,
+            Video: `<chat-video src="${url}"></chat-video>`,
+            File: `<chat-file href="${url}" name="${attachment.getFileName()}"></chat-file>`,
+        })?.[fileType]
+    },
+    mention({ mentionType, mention }) {
+        switch (mentionType) {
+            case "UserMention":
+                return `<chat-mention user-id="${mention.user_id}" text="${mention.text}">[对话提及]</chat-mention>`
+            case "ChatMention":
+                return `<chat-mention chat-id="${mention.chat_id}" text="${mention.text}">[对话提及]</chat-mention>`
+        }
+    },
+}
+
 export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, messageMenuItems }: { message: Message, noUserDisplay?: boolean, avatarMenuItems?: globalThis.React.JSX.IntrinsicElements['mdui-menu-item'][], messageMenuItems?: globalThis.React.JSX.IntrinsicElements['mdui-menu-item'][] }) {
     const AppState = React.useContext(AppStateContext)
 
@@ -122,24 +141,7 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
 
     const messageInnerRef = React.useRef<HTMLSpanElement>(null)
     React.useEffect(() => {
-        messageInnerRef.current!.innerHTML = prettyFlatParsedMessage(DOMPurify.sanitize(message.parseWithTransformers({
-            attachment({ fileType, attachment }) {
-                const url = getClient().getUrlForFileByHash(attachment.getFileHash())
-                return ({
-                    Image: `<chat-image src="${url}" alt="${attachment.getFileName()}"></chat-image>`,
-                    Video: `<chat-video src="${url}"></chat-video>`,
-                    File: `<chat-file href="${url}" name="${attachment.getFileName()}"></chat-file>`,
-                })?.[fileType]
-            },
-            mention({ mentionType, mention }) {
-                switch (mentionType) {
-                    case "UserMention":
-                        return `<chat-mention user-id="${mention.user_id}" text="${mention.text}">[对话提及]</chat-mention>`
-                    case "ChatMention":
-                        return `<chat-mention chat-id="${mention.chat_id}" text="${mention.text}">[对话提及]</chat-mention>`
-                }
-            },
-        }), sanitizeConfig))
+        messageInnerRef.current!.innerHTML = prettyFlatParsedMessage(DOMPurify.sanitize(message.parseWithTransformers(transformers), sanitizeConfig))
 
         // 没有办法的办法 （笑）
         // 姐姐, 谁让您不是 React 组件呢
@@ -170,7 +172,7 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
                 flexDirection: "column"
             }}>
             {
-            	<div
+                <div
                     style={{
                         display: noUserDisplay ? "none" : "flex",
                         justifyContent: isAtRight ? "flex-end" : "flex-start",

@@ -7,10 +7,16 @@ import GroupSettingsBean from "./bean/GroupSettingsBean.ts"
 import JoinRequestBean from "./bean/JoinRequestBean.ts"
 import MessageBean from "./bean/MessageBean.ts"
 import RecentChatBean from "./bean/RecentChatBean.ts"
-import Message, { ChatAttachment, ChatMention } from "./Message.ts"
+import Message, {
+    ChatMention,
+    ChatParserTransformers,
+    ChatMentionType,
+    ChatFileType,
+} from "./Message.ts"
 
 import LingChairClient from "./LingChairClient.ts"
 import CallbackError from "./CallbackError.ts"
+import ChatAttachment from "./ChatAttachment.ts"
 
 export {
     LingChairClient,
@@ -19,6 +25,7 @@ export {
     Chat,
     User,
     UserMySelf,
+
     Message,
     ChatAttachment,
     ChatMention,
@@ -29,4 +36,10 @@ export {
     RecentChatBean,
     JoinRequestBean,
 }
-export type { GroupSettingsBean }
+export type {
+    ChatParserTransformers,
+    ChatMentionType,
+    ChatFileType,
+
+    GroupSettingsBean,
+}

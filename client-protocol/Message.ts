@@ -3,8 +3,7 @@ import MessageBean from "./bean/MessageBean.ts"
 import LingChairClient from "./LingChairClient.ts"
 import Chat from "./Chat.ts"
 import User from "./User.ts"
-import CallbackError from "./CallbackError.ts"
-import ApiCallbackMessage from "./ApiCallbackMessage.ts"
+import ChatAttachment from "./ChatAttachment.ts"
 
 import * as marked from 'marked'
 
@@ -37,93 +36,18 @@ export class ChatMention extends BaseClientObject {
     }
 }
 
-type FileType = 'Video' | 'Image' | 'File'
-type MentionType = 'ChatMention' | 'UserMention'
+type ChatMentionType = 'ChatMention' | 'UserMention'
+type ChatFileType = 'Video' | 'Image' | 'File'
 
-export class ChatAttachment extends BaseClientObject {
-    declare file_hash: string
-    declare file_name: string
-    constructor(client: LingChairClient, {
-        file_hash,
-        file_name
-    }: {
-        file_hash: string,
-        file_name: string
-    }) {
-        super(client)
-        this.file_name = file_name
-        this.file_hash = file_hash
-    }
-    async blob() {
-        try {
-            return await this.blobOrThrow()
-        } catch (_) {
-            return null
-        }
-    }
-    fetch(init?: RequestInit) {
-        const url = this.client.getUrlForFileByHash(this.file_hash)
-        return fetch(url!, init)
-    }
-    async blobOrThrow() {
-        const re = await this.fetch()
-        const blob = await re.blob()
-        if (!re.ok) throw new CallbackError({
-            msg: await blob.text(),
-            code: re.status,
-        } as ApiCallbackMessage)
-        return blob
-    }
-    async getMimeType() {
-        try {
-            return await this.getMimeTypeOrThrow()
-        } catch (_) {
-            return null
-        }
-    }
-    async getMimeTypeOrThrow() {
-        const re = await this.fetch({
-            method: 'HEAD'
-        })
-        if (re.ok) {
-            const t = re.headers.get('content-type')
-            if (t)
-                return t
-            throw new Error("Unable to get Content-Type")
-        }
-        throw new CallbackError({
-            msg: await re.text(),
-            code: re.status,
-        } as ApiCallbackMessage)
-    }
-    async getLength() {
-        try {
-            return await this.getLengthOrThrow()
-        } catch (_) {
-            return null
-        }
-    }
-    async getLengthOrThrow() {
-        const re = await this.fetch({
-            method: 'HEAD'
-        })
-        if (re.ok) {
-            const contentLength = re.headers.get('content-length')
-            if (contentLength)
-                return parseInt(contentLength)
-            throw new Error("Unable to get Content-Length")
-        }
-        throw new CallbackError({
-            msg: await re.text(),
-            code: re.status,
-        } as ApiCallbackMessage)
-    }
-    getFileHash() {
-        return this.file_hash
-    }
-    getFileName() {
-        return this.file_name
-    }
+type ChatParserTransformers = {
+    attachment?: ({ text, fileType, attachment }: { text: string, fileType: ChatFileType, attachment: ChatAttachment }) => string,
+    mention?: ({ text, mentionType, mention }: { text: string, mentionType: ChatMentionType, mention: ChatMention }) => string,
+}
+
+export type {
+    ChatMentionType,
+    ChatFileType,
+    ChatParserTransformers,
 }
 
 export default class Message extends BaseClientObject {
@@ -152,10 +76,7 @@ export default class Message extends BaseClientObject {
     parseWithTransformers({
         attachment,
         mention,
-    }: {
-        attachment?: ({ text, fileType, attachment }: { text: string, fileType: FileType, attachment: ChatAttachment }) => string,
-        mention?: ({ text, mentionType, mention }: { text: string, mentionType: MentionType, mention: ChatMention }) => string,
-    }) {
+    }: ChatParserTransformers) {
         return new marked.Marked({
             async: false,
             extensions: [
@@ -178,8 +99,8 @@ export default class Message extends BaseClientObject {
                 {
                     name: 'image',
                     renderer: ({ text, href }) => {
-                        const mentionType = /^(UserMention|ChatMention)=.*/.exec(text)?.[1] as MentionType
-                        const fileType = (/^(Video|File|Image)=.*/.exec(text)?.[1] || 'Image') as FileType
+                        const mentionType = /^(UserMention|ChatMention)=.*/.exec(text)?.[1] as ChatMentionType
+                        const fileType = (/^(Video|File|Image)=.*/.exec(text)?.[1] || 'Image') as ChatFileType
 
                         if (fileType != null && /tws:\/\/file\?hash=[A-Za-z0-9]+$/.test(href)) {
                             const file_hash = /^tws:\/\/file\?hash=(.*)/.exec(href)?.[1]!

@@ -60,6 +60,9 @@ export default class MduiPatchedTextAreaElement extends HTMLElement {
                 this._lastValue = this.value || ''
                 this.dispatchEvent(new Event('change', { bubbles: true }))
             }
+            // 消除 <br> 对 placeholder 的影响
+            if (this.value == '')
+                this.value = ''
         })
         this.inputDiv.addEventListener('paste', (e: ClipboardEvent) => {
             e.preventDefault()
@@ -100,6 +103,11 @@ export default class MduiPatchedTextAreaElement extends HTMLElement {
     }
     set value(v) {
         this.inputDiv && (this.inputDiv.textContent = v)
+    }
+    insertHtml(html: string) {
+        this.inputDiv?.focus()
+
+        document.execCommand('insertHTML', false, html)
     }
 }
 

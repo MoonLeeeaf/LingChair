@@ -6,8 +6,9 @@ declare global {
     namespace React {
         namespace JSX {
             interface IntrinsicElements {
-                'input-element': {
+                'mdui-patched-textarea': {
                     'value'?: string
+                    insertHtml: (html: string) => void
                 } & React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
             }
         }

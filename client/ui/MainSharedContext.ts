@@ -1,6 +1,6 @@
-import { Chat, UserMySelf } from "lingchair-client-protocol"
+import { Chat } from "lingchair-client-protocol"
 import { createContext } from "use-context-selector"
-import { SharedState } from "./MainSharedReducer"
+import { SharedState } from "./MainSharedReducer.ts"
 
 type Shared = {
     functions_lazy: React.MutableRefObject<{

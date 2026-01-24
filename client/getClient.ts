@@ -2,7 +2,6 @@ import { LingChairClient } from 'lingchair-client-protocol'
 import data from "./data.ts"
 import { UAParser } from 'ua-parser-js'
 import { randomUUID } from 'lingchair-internal-shared'
-import performAuth from './performAuth.ts'
 
 if (!data.device_id) {
     const ua = new UAParser(navigator.userAgent)

@@ -1,11 +1,10 @@
 import { CallbackError, UserMySelf } from "lingchair-client-protocol"
-import ClientCache from "../../ClientCache"
-import AvatarMySelf from "../AvatarMySelf"
-import useAsyncEffect from "../../utils/useAsyncEffect"
-import getClient from "../../getClient"
-import { useNavigate } from "react-router"
-import showSnackbar from "../../utils/showSnackbar"
-import useEventListener from "../../utils/useEventListener"
+import ClientCache from "../../ClientCache.ts"
+import AvatarMySelf from "../AvatarMySelf.tsx"
+import useAsyncEffect from "../../utils/useAsyncEffect.ts"
+import getClient from "../../getClient.ts"
+import showSnackbar from "../../utils/showSnackbar.ts"
+import useEventListener from "../../utils/useEventListener.ts"
 import { Dialog, TextField } from "mdui"
 import * as React from 'react'
 

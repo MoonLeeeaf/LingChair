@@ -1,6 +1,6 @@
-import { Chat, Message } from 'lingchair-client-protocol'
+import { Message } from 'lingchair-client-protocol'
 import * as React from 'react'
-import ChatMessage from './ChatMessage'
+import ChatMessage from './ChatMessage.tsx'
 
 export default function ChatMessageContainer({ messages }: { messages: Message[] }) {
     return (

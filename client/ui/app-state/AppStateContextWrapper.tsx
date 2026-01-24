@@ -1,18 +1,17 @@
 import { $, Dialog } from "mdui"
-import AppStateContext, { AppState } from "./AppStateContext"
+import AppStateContext, { AppState } from "./AppStateContext.ts"
 import { Chat, User } from "lingchair-client-protocol"
-import getClient from "../../getClient"
-import UserOrChatInfoDialog from "./UserOrChatInfoDialog"
-import useEffectRef from "../../utils/useEffectRef"
-import EditMyProfileDialog from "./EditMyProfileDialog"
-import AddFavourtieChatDialog from "./AddFavourtieChatDialog"
+import getClient from "../../getClient.ts"
+import UserOrChatInfoDialog from "./UserOrChatInfoDialog.tsx"
+import useEffectRef from "../../utils/useEffectRef.ts"
+import EditMyProfileDialog from "./EditMyProfileDialog.tsx"
+import AddFavourtieChatDialog from "./AddFavourtieChatDialog.tsx"
 import * as React from 'react'
 import { useContextSelector } from "use-context-selector"
-import MainSharedContext, { Shared } from "../MainSharedContext"
-import ChatFragmentDialog from "./ChatFragmentDialog"
-import useAsyncEffect from "../../utils/useAsyncEffect"
-import ClientCache from "../../ClientCache"
-import isMobileUI from "../../utils/isMobileUI"
+import MainSharedContext, { Shared } from "../MainSharedContext.ts"
+import ChatFragmentDialog from "./ChatFragmentDialog.tsx"
+import useAsyncEffect from "../../utils/useAsyncEffect.ts"
+import ClientCache from "../../ClientCache.ts"
 
 const config = await fetch('/config.json').then((re) => re.json())
 

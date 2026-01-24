@@ -1,6 +1,6 @@
 import { Chat, Message } from "lingchair-client-protocol"
-import ChatMessageContainer from "./ChatMessageContainer"
-import useAsyncEffect from "../../utils/useAsyncEffect"
+import ChatMessageContainer from "./ChatMessageContainer.tsx"
+import useAsyncEffect from "../../utils/useAsyncEffect.ts"
 import * as React from 'react'
 
 function ChatPanelInner({ chat }: { chat: Chat }, ref: React.ForwardedRef<any>) {

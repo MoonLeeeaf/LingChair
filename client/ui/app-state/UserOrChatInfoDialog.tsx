@@ -1,28 +1,22 @@
 import { Dialog, dialog } from "mdui"
-import { useLoaderData, useNavigate } from "react-router"
 import { CallbackError, Chat } from "lingchair-client-protocol"
-import showSnackbar from "../../utils/showSnackbar"
-import Avatar from "../Avatar"
+import showSnackbar from "../../utils/showSnackbar.ts"
+import Avatar from "../Avatar.tsx"
 import { useContextSelector } from "use-context-selector"
-import MainSharedContext, { Shared } from "../MainSharedContext"
+import MainSharedContext, { Shared } from "../MainSharedContext.ts"
 import * as React from 'react'
-import ClientCache from "../../ClientCache"
-import getClient from "../../getClient"
-import isMobileUI from "../../utils/isMobileUI"
-import useEffectRef from "../../utils/useEffectRef"
-import useAsyncEffect from "../../utils/useAsyncEffect"
-import AppStateContext from "./AppStateContext"
+import ClientCache from "../../ClientCache.ts"
+import getClient from "../../getClient.ts"
+import isMobileUI from "../../utils/isMobileUI.ts"
+import useAsyncEffect from "../../utils/useAsyncEffect.ts"
+import AppStateContext from "./AppStateContext.ts"
 
 export default function UserOrChatInfoDialog({ chat, useRef }: { chat?: Chat, useRef: React.MutableRefObject<Dialog | undefined> }) {
     const favouriteChats = useContextSelector(
         MainSharedContext,
         (context: Shared) => context.state.favouriteChats
     )
-    const setCurrentSelectedChatId = useContextSelector(
-        MainSharedContext,
-        (context: Shared) => context.setCurrentSelectedChatId
-    )
-
+    
     const AppState = React.useContext(AppStateContext)
 
     const [isMySelf, setIsMySelf] = React.useState(false)

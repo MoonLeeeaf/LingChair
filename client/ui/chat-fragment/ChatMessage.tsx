@@ -1,15 +1,15 @@
 import { ChatParserTransformers, Message } from "lingchair-client-protocol"
-import isMobileUI from "../../utils/isMobileUI"
-import useAsyncEffect from "../../utils/useAsyncEffect"
-import ClientCache from "../../ClientCache"
-import getClient from "../../getClient"
-import Avatar from "../Avatar"
-import AppStateContext from "../app-state/AppStateContext"
-import { $, dialog, Dropdown } from "mdui"
-import useEventListener from "../../utils/useEventListener"
+import isMobileUI from "../../utils/isMobileUI.ts"
+import useAsyncEffect from "../../utils/useAsyncEffect.ts"
+import ClientCache from "../../ClientCache.ts"
+import getClient from "../../getClient.ts"
+import Avatar from "../Avatar.tsx"
+import AppStateContext from "../app-state/AppStateContext.ts"
+import { Dropdown } from "mdui"
+import useEventListener from "../../utils/useEventListener.ts"
 import DOMPurify from 'dompurify'
 import * as React from 'react'
-import ChatMentionElement from "../chat-elements/chat-mention"
+import ChatMentionElement from "../chat-elements/chat-mention.ts"
 
 function escapeHTML(str: string) {
     const div = document.createElement('div')

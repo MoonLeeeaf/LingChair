@@ -1,12 +1,12 @@
 import * as React from 'react'
-import { Button, Dialog, TextField } from "mdui"
-import MainSharedContext, { Shared } from '../MainSharedContext'
-import showSnackbar from '../../utils/showSnackbar'
-import showCircleProgressDialog from '../showCircleProgressDialog'
-import getClient from '../../getClient'
-import performAuth from '../../performAuth'
+import {  Dialog, TextField } from "mdui"
+import MainSharedContext, { Shared } from '../MainSharedContext.ts'
+import showSnackbar from '../../utils/showSnackbar.ts'
+import showCircleProgressDialog from '../showCircleProgressDialog.ts'
+import getClient from '../../getClient.ts'
+import performAuth from '../../performAuth.ts'
 import { useContextSelector } from 'use-context-selector'
-import useEventListener from '../../utils/useEventListener'
+import useEventListener from '../../utils/useEventListener.ts'
 
 export default function RegisterDialog({ ...props }: { open: boolean } & React.HTMLAttributes<Dialog>) {
     const shared = useContextSelector(MainSharedContext, (context: Shared) => ({

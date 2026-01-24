@@ -1,7 +1,7 @@
 import { Dialog } from "mdui"
 import * as React from 'react'
-import LazyChatFragment from "../chat-fragment/LazyChatFragment"
-import useEventListener from "../../utils/useEventListener"
+import LazyChatFragment from "../chat-fragment/LazyChatFragment.tsx"
+import useEventListener from "../../utils/useEventListener.ts"
 
 export default function ChatFragmentDialog({ chatId, useRef }: { chatId: string, useRef: React.MutableRefObject<Dialog | undefined> }) {
     useEventListener(useRef, 'open', () => {

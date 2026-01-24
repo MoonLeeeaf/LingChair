@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { Dialog, TextField } from "mdui"
-import showSnackbar from '../../utils/showSnackbar.ts'
+import showSnackbar from '../../utils/showSnackbar'
 import { CallbackError } from 'lingchair-client-protocol'
 import useEventListener from '../../utils/useEventListener.ts'
 import ClientCache from '../../ClientCache.ts'
 
-export default function AddFavourtieChatDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | undefined> }) {
+export default function CreateGroupDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | undefined> }) {
     const inputTargetRef = React.useRef<TextField>(null)
 
     useEventListener(useRef, 'closed', () => {

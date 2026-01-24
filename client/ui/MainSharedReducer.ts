@@ -1,4 +1,4 @@
-import { Chat, UserMySelf } from "lingchair-client-protocol"
+import { Chat } from "lingchair-client-protocol"
 
 export interface SharedState {
     favouriteChats: Chat[]

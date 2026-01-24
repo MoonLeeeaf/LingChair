@@ -1,5 +1,4 @@
 import { Chat, User } from 'lingchair-client-protocol'
-import { Dialog } from 'mdui'
 import * as React from 'react'
 
 type AppState = {

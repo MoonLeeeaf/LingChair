@@ -1,4 +1,4 @@
-import data from "../data"
+import data from "../data.ts"
 
 const searchParams = new URL(location.href).searchParams
 

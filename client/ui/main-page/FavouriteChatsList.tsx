@@ -9,7 +9,6 @@ import { useContextSelector } from "use-context-selector"
 import MainSharedContext, { Shared } from "../MainSharedContext.ts"
 import isMobileUI from "../../utils/isMobileUI.ts"
 import ClientCache from "../../ClientCache.ts"
-import { useNavigate } from "react-router"
 import AppStateContext from "../app-state/AppStateContext.ts"
 
 export default function FavouriteChatsList({ ...props }: React.HTMLAttributes<HTMLElement>) {

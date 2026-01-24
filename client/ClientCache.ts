@@ -1,5 +1,5 @@
 import { Chat, User, UserMySelf } from "lingchair-client-protocol"
-import getClient from "./getClient"
+import getClient from "./getClient.ts"
 
 type CouldCached = User | Chat | null
 export default class ClientCache {

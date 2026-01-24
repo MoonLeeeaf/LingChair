@@ -6,31 +6,27 @@
 
 铃之椅, 一个普通的即时通讯项目——简单, 轻量, 纯粹, 时而天真
 
-*目前还没有发布正式版本, 仍在积极开发中*
+***仍在开发阶段, 随时都可能有破坏性变更!***
 
-项目代号: TheWhiteSilk
-
-### 基本功能
+### 目前的功能
 
 <details>
-  <summary>客户端</summary>
+  <summary>新客户端</summary>
+
+*: 重构中
 
 - 消息
-  - [x] 收发消息
-  - [x] 富文本 (based on Marked)
-    - [x] 图片
-    - [x] 视频
-    - [x] 文件
-    - [ ] 测试其他 Markdown 语法的可用性
+  - [ ] *收发消息 
+  - [x] 富文本
   - [ ] 撤回消息
   - [ ] 修改消息
 
 - 对话
   - [x] 最近对话
-  - [x] 添加对话
+  - [x] 添加收藏对话
     - [x] 添加用户
     - [x] 添加群组
-  - [ ] 群组管理
+  - [ ] *群组管理
 
 - 帐号
   - [x] 登录注册
@@ -64,46 +60,48 @@
   - [x] 登录注册
   - [x] 资料编辑
   - [ ] 帐号管理
-    - [ ] 重设密码
+    - [x] 重设密码 (不够好!)
     - [ ] 绑定邮箱
 
 </details>
 
-### 快速上手
+### 部署
 
 ```bash
 git clone https://codeberg.org/CrescentLeaf/LingChair
 cd LingChair
-# 编译前端
-deno task build
-# 运行服务
-deno task server
+npm run install-dependencies
+npm run build-client
+npm run server
 ```
 
 #### 配置
 
-[thewhitesilk_config.json 是什么?](./server/config.ts)
+thewhitesilk_config.json [请见此处](./server/config.ts)
 
-### 使用的项目 / 技术栈
+### 使用到的项目 / 库
 
-本项目由 Deno 强力驱动 
+由于 Deno 存在的严重问题, 已重新迁移到 Node.js
 
-*当然, 由于没有使用 Deno Api, 只有 Node Api, 因此理论上 Node.js 也能运行, 但需要另外安装依赖*
+- 客户端协议
+  - crypto-browserify
 
 - 前端
   - 编译
     - vite
-    - vite-plugin-babel
   - react
   - socket.io-client
   - mdui
   - split.js
-  - react-json-view
+  - ua-parser-js
+  - pinch-zoom
+  - use-context-selector
   - dompurify
   - marked
 
 - 后端
   - express
+  - express-fileupload
   - socket.io
   - chalk
   - file-type

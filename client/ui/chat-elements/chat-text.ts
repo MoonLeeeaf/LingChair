@@ -29,9 +29,9 @@ customElements.define('chat-text', class extends HTMLElement {
 
         // 避免不同的消息类型之间的换行符导致显示异常
         if (isFirstElementInParent)
-            this.span.textContent = this.textContent.trimStart()
+            this.span.textContent = (this.textContent || '').trimStart()
         else if (isLastElementInParent)
-            this.span.textContent = this.textContent.trimEnd()
+            this.span.textContent = (this.textContent || '').trimEnd()
         else
             this.span.textContent = this.textContent
         this.span.style.textDecoration = $(this).attr('underline') ? 'underline' : ''

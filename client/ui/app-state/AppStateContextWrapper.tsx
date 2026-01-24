@@ -12,6 +12,7 @@ import MainSharedContext, { Shared } from "../MainSharedContext.ts"
 import ChatFragmentDialog from "./ChatFragmentDialog.tsx"
 import useAsyncEffect from "../../utils/useAsyncEffect.ts"
 import ClientCache from "../../ClientCache.ts"
+import CreateGroupDialog from "./CreateGroupDialog.tsx"
 
 const config = await fetch('/config.json').then((re) => re.json())
 
@@ -33,6 +34,7 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
 
     const editMyProfileDialogRef = React.useRef<Dialog>()
     const addFavouriteChatDialogRef = React.useRef<Dialog>()
+    const createGroupDialogRef = React.useRef<Dialog>()
 
     const setCurrentSelectedChatId = useContextSelector(
         MainSharedContext,
@@ -66,6 +68,9 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
         static openAddFavouriteChat() {
             addFavouriteChatDialogRef.current!.open = true
         }
+        static openCreateGroup() {
+            createGroupDialogRef.current!.open = true
+        }
         static async openChat(chat: string | Chat, inDialog?: boolean) {
             if (chat instanceof Chat) chat = chat.getId()
 
@@ -87,6 +92,7 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
         <UserOrChatInfoDialog chat={userOrChatInfoDialogState[userOrChatInfoDialogState.length - 1] || lastUserOrChatInfoDialogStateRef.current} useRef={userOrChatInfoDialogRef} />
         <EditMyProfileDialog useRef={editMyProfileDialogRef} />
         <AddFavourtieChatDialog useRef={addFavouriteChatDialogRef} />
+        <CreateGroupDialog useRef={createGroupDialogRef} />
         {children}
     </AppStateContext.Provider>
 }

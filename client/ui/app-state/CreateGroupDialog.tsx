@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Dialog, TextField } from "mdui"
 import showSnackbar from '../../utils/showSnackbar'
-import { CallbackError } from 'lingchair-client-protocol'
+import { CallbackError, Chat } from 'lingchair-client-protocol'
 import useEventListener from '../../utils/useEventListener.ts'
-import ClientCache from '../../ClientCache.ts'
+import getClient from '../../getClient.ts'
 
 export default function CreateGroupDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | undefined> }) {
     const inputTargetRef = React.useRef<TextField>(null)
@@ -12,29 +12,30 @@ export default function CreateGroupDialog({ useRef }: { useRef: React.MutableRef
         inputTargetRef.current!.value = ''
     })
 
-    async function addFavouriteChat() {
+    async function createGroup() {
         try {
-            await (await ClientCache.getMySelf())!.addFavouriteChatsOrThrow([inputTargetRef.current!.value])
+            await Chat.createGroupOrThrow(getClient(), inputTargetRef.current!.value)
             inputTargetRef.current!.value = ''
             showSnackbar({
-                message: '添加成功!'
+                message: '创建成功!'
             })
+            useRef.current!.open = false
         } catch (e) {
             if (e instanceof CallbackError)
                 showSnackbar({
-                    message: '添加收藏对话失败: ' + e.message
+                    message: '创建群组失败: ' + e.message
                 })
         }
     }
 
     return (
-        <mdui-dialog close-on-overlay-click close-on-esc headline="添加收藏对话" ref={useRef}>
-            <mdui-text-field clearable label="对话 / 用户 (ID 或 别名)" ref={inputTargetRef} onKeyDown={(event: KeyboardEvent) => {
+        <mdui-dialog close-on-overlay-click close-on-esc headline="创建群组" ref={useRef}>
+            <mdui-text-field clearable label="群组标题" ref={inputTargetRef} onKeyDown={(event: KeyboardEvent) => {
                 if (event.key == 'Enter')
-                    addFavouriteChat()
+                    createGroup()
             }}></mdui-text-field>
             <mdui-button slot="action" variant="text" onClick={() => useRef.current!.open = false}>取消</mdui-button>
-            <mdui-button slot="action" variant="text" onClick={() => addFavouriteChat()}>添加</mdui-button>
+            <mdui-button slot="action" variant="text" onClick={() => createGroup()}>创建</mdui-button>
         </mdui-dialog>
     )
 }

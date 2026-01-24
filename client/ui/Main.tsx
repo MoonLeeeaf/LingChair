@@ -10,7 +10,7 @@ import { CallbackError, Chat, UserMySelf } from "lingchair-client-protocol"
 import showCircleProgressDialog from "./showCircleProgressDialog.ts"
 import RegisterDialog from "./main-page/RegisterDialog.tsx"
 import sleep from "../utils/sleep.ts"
-import { $, dialog, NavigationDrawer } from "mdui"
+import { $, NavigationDrawer } from "mdui"
 import getClient from "../getClient.ts"
 import showSnackbar from "../utils/showSnackbar.ts"
 import AllChatsList from "./main-page/AllChatsList.tsx"
@@ -135,7 +135,7 @@ function Root() {
                             }}></mdui-divider>
                             <mdui-list-item rounded icon="settings">客户端设置</mdui-list-item>
                             <mdui-list-item rounded icon="person_add" onClick={() => AppStateRef.current!.openAddFavouriteChat()}>添加收藏对话</mdui-list-item>
-                            <mdui-list-item rounded icon="group_add">创建新的群组</mdui-list-item>
+                            <mdui-list-item rounded icon="group_add" onClick={() => AppStateRef.current!.openCreateGroup()}>创建新的群组</mdui-list-item>
                         </mdui-list>
                         <div style={{
                             flexGrow: 1,

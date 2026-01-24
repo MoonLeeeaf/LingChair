@@ -318,11 +318,11 @@ export default class UserApi extends BaseApi {
             const user = User.findById(token.author) as User
             const recentChats = user.getRecentChats()
             const recentChatsList: any[] = []
-            for (const [chatId, content] of recentChats) {
-                const chat = Chat.findById(chatId)
+            for (const {chat_id, content} of recentChats) {
+                const chat = Chat.findById(chat_id)
                 recentChatsList.push({
                     content,
-                    id: chatId,
+                    id: chat_id,
                     title: chat?.getTitle(user) || "未知",
                     avatar_file_hash: chat?.getAvatarFileHash(user) ? chat?.getAvatarFileHash(user) : undefined
                 })

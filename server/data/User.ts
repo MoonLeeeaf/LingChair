@@ -11,11 +11,10 @@ import UserBean from './UserBean.ts'
 import FileManager from './FileManager.ts'
 import { SQLInputValue } from "node:sqlite"
 import ChatPrivate from "./ChatPrivate.ts"
-import Chat from "./Chat.ts"
-import ChatBean from "./ChatBean.ts"
-import MapJson from "../MapJson.ts"
 import DataWrongError from '../api/DataWrongError.ts'
-import UserChatLinker from "./UserChatLinker.ts";
+import UserChatLinker from "./UserChatLinker.ts"
+import UserFavouriteChatLinker from "./UserFavouriteChatLinker.ts"
+import UserRecentChatLinker from "./UserRecentChatLinker.ts"
 
 type UserBeanKey = keyof UserBean
 
@@ -38,8 +37,6 @@ export default class User {
                 /* 用户名 */ username TEXT,
                 /* 昵称 */ nickname TEXT NOT NULL,
                 /* 头像, 可选 */ avatar_file_hash TEXT,
-                /* 对话列表 */ favourite_chats TEXT NOT NULL,
-                /* 最近对话 */ recent_chats TEXT NOT NULL,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -69,18 +66,14 @@ export default class User {
                     username,
                     nickname,
                     avatar_file_hash,
-                    favourite_chats,
-                    recent_chats,
                     settings
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).run(
+                ) VALUES (?, ?, ?, ?, ?, ?, ?);`).run(
                     crypto.randomUUID(),
                     password,
                     Date.now(),
                     userName,
                     nickName,
                     null,
-                    '[]',
-                    JSON.stringify(new Map(), MapJson.replacer),
                     "{}"
                 ).lastInsertRowid
             )[0]
@@ -136,37 +129,25 @@ export default class User {
         this.setAttr("username", userName)
     }
     updateRecentChat(chatId: string, content: string) {
-        const map = JSON.parse(this.bean.recent_chats, MapJson.reviver) as Map<string, string>
-        map.delete(chatId)
-        map.set(chatId, content)
-        this.setAttr("recent_chats", JSON.stringify(map, MapJson.replacer))
+        UserRecentChatLinker.updateOrAddRecentChat(this.bean.id, chatId, content)
     }
-    getRecentChats(): Map<string, string> {
-        try {
-            return JSON.parse(this.bean.recent_chats, MapJson.reviver)
-        } catch (e) {
-            console.log(chalk.yellow(`警告: 最近对话列表解析失敗: ${(e as Error).message}`))
-            return new Map()
-        }
+    getRecentChats() {
+        return UserRecentChatLinker.getUserRecentChatBeans(this.bean.id)
+    }
+
+    getFavouriteChats() {
+        return UserFavouriteChatLinker.getUserFavouriteChats(this.bean.id)
+    }
+    addFavouriteChats(chatIds: string[]) {
+        chatIds.forEach((v) => UserFavouriteChatLinker.linkUserAndChat(this.bean.id, v))
+    }
+    removeFavouriteChats(chatIds: string[]) {
+        chatIds.forEach((v) => UserFavouriteChatLinker.unlinkUserAndChat(this.bean.id, v))
     }
     addFavouriteChat(chatId: string) {
-        const ls = this.getFavouriteChats()
-        if (ls.indexOf(chatId) != -1 || ChatPrivate.getChatIdByUsersId(this.bean.id, this.bean.id) == chatId) return
-        ls.push(chatId)
-        this.setAttr("favourite_chats", JSON.stringify(ls))
+        this.addFavouriteChats([chatId])
     }
-    removeFavouriteChats(contacts: string[]) {
-        const ls = this.getFavouriteChats().filter((v) => !contacts.includes(v))
-        this.setAttr("favourite_chats", JSON.stringify(ls))
-    }
-    getFavouriteChats() {
-        try {
-            return [...(JSON.parse(this.bean.favourite_chats) as string[]), ChatPrivate.findOrCreateForPrivate(this, this).bean.id]
-        } catch (e) {
-            console.log(chalk.yellow(`警告: 收藏对话解析失败: ${(e as Error).message}`))
-            return []
-        }
-    }
+
     getAllChatsList() {
         return UserChatLinker.getUserChats(this.bean.id)
     }

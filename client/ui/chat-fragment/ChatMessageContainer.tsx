@@ -1,6 +1,7 @@
 import { Message } from 'lingchair-client-protocol'
 import * as React from 'react'
 import ChatMessage from './ChatMessage.tsx'
+import { dialog } from 'mdui'
 
 export default function ChatMessageContainer({ messages }: { messages: Message[] }) {
     return (
@@ -53,7 +54,51 @@ export default function ChatMessageContainer({ messages }: { messages: Message[]
                                     </div>
                                 </mdui-tooltip>
                             }
-                            <ChatMessage message={msg} noUserDisplay={lastUser == user && !shouldShowTime} />
+                            <ChatMessage
+                                message={msg}
+                                noUserDisplay={lastUser == user && !shouldShowTime}
+                                avatarMenuItems={[
+                                    <mdui-menu-item icon="info" onClick={async () => {
+                                        const user = await msg.getUser().then((re) => re?.bean) || {}
+                                        dialog({
+                                            headline: "Info",
+                                            body: `<span style="word-break: break-word;">${Object.keys(user)
+                                                // @ts-ignore 懒
+                                                .map((k) => `${k} = ${user[k]}`)
+                                                .join('<br><br>')}<span>`,
+                                            closeOnEsc: true,
+                                            closeOnOverlayClick: true,
+                                            actions: [
+                                                {
+                                                    text: "关闭",
+                                                    onClick: () => {
+                                                        return true
+                                                    },
+                                                }
+                                            ]
+                                        }).addEventListener('click', (e) => e.stopPropagation())
+                                    }}>JSON</mdui-menu-item>
+                                ]}
+                                messageMenuItems={[
+                                    <mdui-menu-item icon="info" onClick={() => dialog({
+                                        headline: "Info",
+                                        body: `<span style="word-break: break-word;">${Object.keys(msg.bean)
+                                            // @ts-ignore 懒
+                                            .map((k) => `${k} = ${msg.bean[k]}`)
+                                            .join('<br><br>')}<span>`,
+                                        closeOnEsc: true,
+                                        closeOnOverlayClick: true,
+                                        actions: [
+                                            {
+                                                text: "关闭",
+                                                onClick: () => {
+                                                    return true
+                                                },
+                                            }
+                                        ]
+                                    }).addEventListener('click', (e) => e.stopPropagation())}>Info</mdui-menu-item>
+                                ]}
+                            />
                         </>
                     })
                 })()

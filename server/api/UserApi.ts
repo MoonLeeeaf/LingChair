@@ -140,7 +140,12 @@ export default class UserApi extends BaseApi {
         })
         // 注冊
         this.registerEvent("User.register", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['nickname', 'password'])) return {
+            // 判断密码是否为空已经没有意义
+            // 因为空字符的哈希值不为空
+            // 后续会修缮关于注册的机制
+            // 比如限制 IP, 需要邮箱
+            // 虽然我知道这没有什么意义
+            if (this.checkArgsEmpty(args, ['nickname'])) return {
                 msg: "参数缺失",
                 code: 400,
             }

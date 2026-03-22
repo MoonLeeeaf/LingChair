@@ -3,5 +3,5 @@ export default class MessageBean {
     declare text: string
     declare user_id?: string
     declare chat_id?: string
-    declare time: string
+    declare time: number
 }

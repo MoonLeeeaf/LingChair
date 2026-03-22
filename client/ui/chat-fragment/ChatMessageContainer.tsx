@@ -3,9 +3,10 @@ import * as React from 'react'
 import ChatMessage from './ChatMessage.tsx'
 import { dialog } from 'mdui'
 
-export default function ChatMessageContainer({ messages }: { messages: Message[] }) {
+export default function ChatMessageContainer({ messages, useRef }: { messages: Message[], useRef: React.MutableRefObject<any>}) {
+    console.log(messages)
     return (
-        <div style={{
+        <div ref={useRef} style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-end',

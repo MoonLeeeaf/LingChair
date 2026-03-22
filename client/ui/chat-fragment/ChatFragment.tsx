@@ -2,7 +2,7 @@ import { $, Tab, TextField } from "mdui"
 import useEventListener from "../../utils/useEventListener.ts"
 import useEffectRef from "../../utils/useEffectRef.ts"
 import isMobileUI from "../../utils/isMobileUI.ts"
-import { Chat } from "lingchair-client-protocol"
+import { Chat, Message, UserMySelf } from "lingchair-client-protocol"
 import Preference from "../preference/Preference.tsx"
 import PreferenceHeader from "../preference/PreferenceHeader.tsx"
 import PreferenceLayout from "../preference/PreferenceLayout.tsx"
@@ -13,6 +13,7 @@ import * as React from 'react'
 import ChatMessageContainer from "./ChatMessageContainer"
 import AppStateContext from "../app-state/AppStateContext.ts"
 import ChatPanel, { ChatPanelRef } from "./ChatPanel.tsx"
+import getClient from "../../getClient.ts"
 
 interface MduiTabFitSizeArgs extends React.HTMLAttributes<HTMLElement & Tab> {
     value: string
@@ -44,12 +45,22 @@ export default function ChatFragment({
     const inputRef = React.useRef<TextField>(null)
     const chatPagePanelRef = React.useRef<ChatPanelRef>(null)
 
+    const [sendingMessages, setSendingMessages] = React.useState<Message[]>([])
     /**
      * 发送消息, 成功则清空文本
      */
     async function performSendMessage() {
-        await chatInfo.sendMessageOrThrow(inputRef.current!.value)
+        const text = inputRef.current!.value
         inputRef.current!.value = ''
+        const msg = new Message(getClient(), {
+            id: -1,
+            text,
+            time: Date.now(),
+            user_id: await UserMySelf.getMySelf(getClient()).then((re) => re?.getId())
+        })
+        setSendingMessages([msg, ...sendingMessages])
+        await chatInfo.sendMessageOrThrow(text)
+        setSendingMessages([])
     }
     /**
      * 拉取更多消息
@@ -57,7 +68,7 @@ export default function ChatFragment({
      * WIP
      */
     async function pullMoreMessages() {
-        
+
     }
 
     return (
@@ -106,15 +117,15 @@ export default function ChatFragment({
                     flexGrow: '1',
                 }}></div>
                 {
-                /*
-                <mdui-button-icon icon="open_in_new" onClick={() => {
-                    window.open('/chat?id=' + chatInfo.getId(), '_blank')
-                }} style={{
-                    alignSelf: 'center',
-                    marginLeft: '5px',
-                    marginRight: '5px',
-                }}></mdui-button-icon>
-                */
+                    /*
+                    <mdui-button-icon icon="open_in_new" onClick={() => {
+                        window.open('/chat?id=' + chatInfo.getId(), '_blank')
+                    }} style={{
+                        alignSelf: 'center',
+                        marginLeft: '5px',
+                        marginRight: '5px',
+                    }}></mdui-button-icon>
+                    */
                 }
                 <mdui-button-icon icon="refresh" onClick={() => {
 

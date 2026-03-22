@@ -116,8 +116,6 @@ const transformers: ChatParserTransformers = {
 export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, messageMenuItems }: { message: Message, noUserDisplay?: boolean, avatarMenuItems?: React.ReactNode, messageMenuItems?: React.ReactNode }) {
     const AppState = React.useContext(AppStateContext)
 
-    const [show, setShown] = React.useState(false)
-
     const [isAtRight, setAtRight] = React.useState(false)
 
     const messageDropDownRef = React.useRef<Dropdown>(null)
@@ -139,7 +137,6 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
         setAtRight(await ClientCache.getMySelf().then((re) => re?.getId()) == user?.getId())
         setNickName(user?.getNickName() || '')
         setAvatarUrl(getClient().getUrlForFileByHash(user?.getAvatarFileHash() || '') || '')
-        setShown(true)
     }, [message])
 
     const messageInnerRef = React.useRef<HTMLSpanElement>(null)
@@ -155,117 +152,111 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
         })
     }, [message])
 
-    return <>
-        <div style={{
-            display: show ? 'none' : undefined,
-            padding: '5px',
-        }}>加载中...</div>
-        <div
-            slot="trigger"
-            onContextMenu={(e) => {
-                if (isMobileUI()) return
-                e.preventDefault()
-                setMessageDropDownOpen(!isMessageDropDownOpen)
-            }}
-            onClick={(e) => {
-                if (!isMobileUI()) return
-                e.preventDefault()
-                setMessageDropDownOpen(!isMessageDropDownOpen)
-            }}
-            style={{
-                width: "100%",
-                display: show ? 'flex' : 'none',
-                justifyContent: isAtRight ? "flex-end" : "flex-start",
-                flexDirection: "column"
-            }}>
-            {
-                <div
-                    style={{
-                        display: noUserDisplay ? "none" : "flex",
-                        justifyContent: isAtRight ? "flex-end" : "flex-start",
-                    }}>
-                    {
-                        // 发送者昵称(左)
-                        isAtRight && <span
-                            style={{
-                                alignSelf: "center",
-                                fontSize: "90%"
-                            }}>
-                            {nickName}
-                        </span>
-                    }
-                    {
-                        // 发送者头像
-                    }
-                    <mdui-dropdown trigger="manual" ref={avatarDropDownRef} open={isAvatarDropDownOpen}>
-                        <Avatar
-                            slot="trigger"
-                            src={avatarUrl}
-                            text={nickName}
-                            style={{
-                                width: "43px",
-                                height: "43px",
-                                margin: "11px"
-                            }}
-                            onContextMenu={(e) => {
-                                if (isMobileUI()) return
-                                e.preventDefault()
-                                e.stopPropagation()
-                                setAvatarDropDownOpen(!isAvatarDropDownOpen)
-                            }}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                AppState.openUserInfo(message.getUserId()!)
-                            }} />
-                        <mdui-menu>
-                            {avatarMenuItems}
-                        </mdui-menu>
-                    </mdui-dropdown>
-                    {
-                        // 发送者昵称(右)
-                        !isAtRight && <span
-                            style={{
-                                alignSelf: "center",
-                                fontSize: "90%"
-                            }}>
-                            {nickName}
-                        </span>
-                    }
-                </div>
-            }
-            <mdui-card
-                variant="elevated"
+    return <div
+        slot="trigger"
+        onContextMenu={(e) => {
+            if (isMobileUI()) return
+            e.preventDefault()
+            setMessageDropDownOpen(!isMessageDropDownOpen)
+        }}
+        onClick={(e) => {
+            if (!isMobileUI()) return
+            e.preventDefault()
+            setMessageDropDownOpen(!isMessageDropDownOpen)
+        }}
+        style={{
+            width: "100%",
+            display: 'flex',
+            justifyContent: isAtRight ? "flex-end" : "flex-start",
+            flexDirection: "column"
+        }}>
+        {
+            <div
                 style={{
-                    maxWidth: 'var(--whitesilk-widget-message-maxwidth)', // (window.matchMedia('(pointer: fine)') && "50%") || (window.matchMedia('(pointer: coarse)') && "77%"),
-                    minWidth: "0%",
-                    [isAtRight ? "marginRight" : "marginLeft"]: "55px",
-                    marginTop: noUserDisplay ? '5px' : "-5px",
-                    alignSelf: isAtRight ? "flex-end" : "flex-start",
-                    // boxShadow: isUsingFullDisplay ? 'inherit' : 'var(--mdui-elevation-level1)',
-                    // padding: isUsingFullDisplay ?  undefined : "13px",
-                    // paddingTop: isUsingFullDisplay ?  undefined : "14px",
-                    // backgroundColor: isUsingFullDisplay ? "inherit" : undefined
+                    display: noUserDisplay ? "none" : "flex",
+                    justifyContent: isAtRight ? "flex-end" : "flex-start",
                 }}>
-                <mdui-dropdown trigger="manual" ref={messageDropDownRef} open={isMessageDropDownOpen}>
-                    <span
-                        slot="trigger"
-                        id="msg"
+                {
+                    // 发送者昵称(左)
+                    isAtRight && <span
                         style={{
-                            fontSize: "94%",
-                            wordBreak: 'break-word',
-                            display: 'flex',
-                            flexDirection: 'column',
+                            alignSelf: "center",
+                            fontSize: "90%"
+                        }}>
+                        {nickName}
+                    </span>
+                }
+                {
+                    // 发送者头像
+                }
+                <mdui-dropdown trigger="manual" ref={avatarDropDownRef} open={isAvatarDropDownOpen}>
+                    <Avatar
+                        slot="trigger"
+                        src={avatarUrl}
+                        text={nickName}
+                        style={{
+                            width: "43px",
+                            height: "43px",
+                            margin: "11px"
                         }}
-                        ref={messageInnerRef} />
-                    <mdui-menu onClick={(e) => {
-                        e.stopPropagation()
-                        setMessageDropDownOpen(false)
-                    }}>
-                        {messageMenuItems}
+                        onContextMenu={(e) => {
+                            if (isMobileUI()) return
+                            e.preventDefault()
+                            e.stopPropagation()
+                            setAvatarDropDownOpen(!isAvatarDropDownOpen)
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            AppState.openUserInfo(message.getUserId()!)
+                        }} />
+                    <mdui-menu>
+                        {avatarMenuItems}
                     </mdui-menu>
                 </mdui-dropdown>
-            </mdui-card>
+                {
+                    // 发送者昵称(右)
+                    !isAtRight && <span
+                        style={{
+                            alignSelf: "center",
+                            fontSize: "90%"
+                        }}>
+                        {nickName}
+                    </span>
+                }
+            </div>
+        }
+        <mdui-card
+            variant="elevated"
+            style={{
+                maxWidth: 'var(--whitesilk-widget-message-maxwidth)', // (window.matchMedia('(pointer: fine)') && "50%") || (window.matchMedia('(pointer: coarse)') && "77%"),
+                minWidth: "0%",
+                [isAtRight ? "marginRight" : "marginLeft"]: "55px",
+                marginTop: noUserDisplay ? '5px' : "-5px",
+                alignSelf: isAtRight ? "flex-end" : "flex-start",
+                // boxShadow: isUsingFullDisplay ? 'inherit' : 'var(--mdui-elevation-level1)',
+                // padding: isUsingFullDisplay ?  undefined : "13px",
+                // paddingTop: isUsingFullDisplay ?  undefined : "14px",
+                // backgroundColor: isUsingFullDisplay ? "inherit" : undefined
+            }}>
+            <mdui-dropdown trigger="manual" ref={messageDropDownRef} open={isMessageDropDownOpen}>
+                <span
+                    slot="trigger"
+                    id="msg"
+                    style={{
+                        fontSize: "94%",
+                        wordBreak: 'break-word',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                    ref={messageInnerRef} />
+                <mdui-menu onClick={(e) => {
+                    e.stopPropagation()
+                    setMessageDropDownOpen(false)
+                }}>
+                    {messageMenuItems}
+                </mdui-menu>
+            </mdui-dropdown>
+        </mdui-card>
 
-        </div>
-    </>
+    </div>
 }

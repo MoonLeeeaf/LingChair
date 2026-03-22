@@ -8,7 +8,7 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     active?: boolean
 }
 
-export default function FavouriteChatsListItem({ chat, active }: Args) {
+export default function FavouriteChatsListItem({ chat, active, ...props }: Args) {
     const title = chat.getTitle()
 
     const ref = React.useRef<HTMLElement>(null)
@@ -18,7 +18,7 @@ export default function FavouriteChatsListItem({ chat, active }: Args) {
             marginTop: '3px',
             marginBottom: '3px',
             width: '100%',
-        }}>
+        }} {...props as any}>
             <span style={{
                 width: "100%",
             }}>{title}</span>

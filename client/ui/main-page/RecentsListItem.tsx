@@ -9,7 +9,7 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     active?: boolean
 }
 
-export default function RecentsListItem({ recentChat, active }: Args) {
+export default function RecentsListItem({ recentChat, active, ...props }: Args) {
     const { id, title, avatar_file_hash, content } = recentChat.bean
 
     const itemRef = React.useRef<HTMLElement>(null)
@@ -20,7 +20,7 @@ export default function RecentsListItem({ recentChat, active }: Args) {
         <mdui-list-item rounded style={{
             marginTop: '3px',
             marginBottom: '3px',
-        }} active={active} ref={itemRef} >
+        }} active={active} ref={itemRef} {...props as any}>
             {title}
             <Avatar src={getClient().getUrlForFileByHash(avatar_file_hash!)} text={title} slot="icon" />
             <span slot="description"

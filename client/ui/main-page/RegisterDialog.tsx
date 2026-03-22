@@ -13,7 +13,7 @@ export default function RegisterDialog({ ...props }: { open: boolean } & React.H
         setShowRegisterDialog: context.setShowRegisterDialog
     }))
 
-    const dialogRef = React.useRef<Dialog>()
+    const dialogRef = React.useRef<Dialog>(null)
     useEventListener(dialogRef, 'closed', () => shared.setShowRegisterDialog(false))
 
     const registerInputUserNameRef = React.useRef<TextField>(null)

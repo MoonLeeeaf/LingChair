@@ -8,7 +8,7 @@ import useEventListener from "../../utils/useEventListener.ts"
 import { Dialog, TextField } from "mdui"
 import * as React from 'react'
 
-export default function EditMyProfileDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | undefined> }) {
+export default function EditMyProfileDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | null> }) {
     const [mySelf, setMySelf] = React.useState<UserMySelf>()
     useAsyncEffect(async () => setMySelf(await ClientCache.getMySelf() as UserMySelf))
 
@@ -70,7 +70,7 @@ export default function EditMyProfileDialog({ useRef }: { useRef: React.MutableR
                 marginTop: "10px",
             }}></mdui-divider>
 
-            <mdui-text-field style={{ marginTop: "10px", }} variant="outlined" label="用户 ID" value={mySelf?.getId() || ''} readonly onClick={(e: MouseEvent) => {
+            <mdui-text-field style={{ marginTop: "10px", }} variant="outlined" label="用户 ID" value={mySelf?.getId() || ''} readonly onClick={(e) => {
                 const input = e.target as HTMLInputElement
                 input.select()
                 input.setSelectionRange(0, 1145141919810)

@@ -16,7 +16,7 @@ import CreateGroupDialog from "./CreateGroupDialog.tsx"
 
 const config = await fetch('/config.json').then((re) => re.json())
 
-export default function DialogContextWrapper({ children, useRef }: { children: React.ReactNode, useRef: React.MutableRefObject<AppState | undefined> }) {
+export default function DialogContextWrapper({ children, useRef }: { children: React.ReactNode, useRef: React.MutableRefObject<AppState | null> }) {
     const [userOrChatInfoDialogState, setUserOrChatInfoDialogState] = React.useState<Chat[]>([])
     const lastUserOrChatInfoDialogStateRef = React.useRef<Chat>()
     const userOrChatInfoDialogRef = useEffectRef<Dialog>((ref) => {
@@ -32,9 +32,9 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
         userOrChatInfoDialogRef.current!.open = userOrChatInfoDialogState.length != 0
     }, [userOrChatInfoDialogState])
 
-    const editMyProfileDialogRef = React.useRef<Dialog>()
-    const addFavouriteChatDialogRef = React.useRef<Dialog>()
-    const createGroupDialogRef = React.useRef<Dialog>()
+    const editMyProfileDialogRef = React.useRef<Dialog>(null)
+    const addFavouriteChatDialogRef = React.useRef<Dialog>(null)
+    const createGroupDialogRef = React.useRef<Dialog>(null)
 
     const setCurrentSelectedChatId = useContextSelector(
         MainSharedContext,
@@ -44,7 +44,7 @@ export default function DialogContextWrapper({ children, useRef }: { children: R
         MainSharedContext,
         (context: Shared) => context.state.currentSelectedChatId
     )
-    const chatFragmentDialogRef = React.useRef<Dialog>()
+    const chatFragmentDialogRef = React.useRef<Dialog>(null)
 
     useAsyncEffect(async () => {
         document.title = (currentSelectedChatId && currentSelectedChatId != '' && await ClientCache.getChat(currentSelectedChatId).then((v) => v?.getTitle()) + ' | ') + (config.title || 'LingChair')

@@ -113,20 +113,20 @@ const transformers: ChatParserTransformers = {
     },
 }
 
-export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, messageMenuItems }: { message: Message, noUserDisplay?: boolean, avatarMenuItems?: globalThis.React.JSX.IntrinsicElements['mdui-menu-item'][], messageMenuItems?: globalThis.React.JSX.IntrinsicElements['mdui-menu-item'][] }) {
+export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, messageMenuItems }: { message: Message, noUserDisplay?: boolean, avatarMenuItems?: React.ReactNode, messageMenuItems?: React.ReactNode }) {
     const AppState = React.useContext(AppStateContext)
 
     const [show, setShown] = React.useState(false)
 
     const [isAtRight, setAtRight] = React.useState(false)
 
-    const messageDropDownRef = React.useRef<Dropdown>()
+    const messageDropDownRef = React.useRef<Dropdown>(null)
     const [isMessageDropDownOpen, setMessageDropDownOpen] = React.useState(false)
     useEventListener(messageDropDownRef, 'closed', () => {
         setMessageDropDownOpen(false)
     })
 
-    const avatarDropDownRef = React.useRef<Dropdown>()
+    const avatarDropDownRef = React.useRef<Dropdown>(null)
     const [isAvatarDropDownOpen, setAvatarDropDownOpen] = React.useState(false)
     useEventListener(avatarDropDownRef, 'closed', () => {
         setAvatarDropDownOpen(false)
@@ -257,7 +257,7 @@ export default function ChatMessage({ message, noUserDisplay, avatarMenuItems, m
                             flexDirection: 'column',
                         }}
                         ref={messageInnerRef} />
-                    <mdui-menu onClick={(e: MouseEvent) => {
+                    <mdui-menu onClick={(e) => {
                         e.stopPropagation()
                         setMessageDropDownOpen(false)
                     }}>

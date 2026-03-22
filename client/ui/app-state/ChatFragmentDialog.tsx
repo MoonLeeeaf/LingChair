@@ -3,7 +3,7 @@ import * as React from 'react'
 import LazyChatFragment from "../chat-fragment/LazyChatFragment.tsx"
 import useEventListener from "../../utils/useEventListener.ts"
 
-export default function ChatFragmentDialog({ chatId, useRef }: { chatId: string, useRef: React.MutableRefObject<Dialog | undefined> }) {
+export default function ChatFragmentDialog({ chatId, useRef }: { chatId: string, useRef: React.MutableRefObject<Dialog | null> }) {
     useEventListener(useRef, 'open', () => {
         const shadow = useRef.current!.shadowRoot as ShadowRoot
         const panel = shadow.querySelector(".panel") as HTMLElement

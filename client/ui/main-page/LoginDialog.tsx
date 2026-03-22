@@ -13,37 +13,45 @@ export default function LoginDialog({ ...props }: { open: boolean } & React.HTML
         setShowLoginDialog: context.setShowLoginDialog
     }))
 
-    const dialogRef = React.useRef<Dialog>()
+    const dialogRef = React.useRef<Dialog>(null)
     useEventListener(dialogRef, 'closed', () => shared.setShowLoginDialog(false))
 
     const loginInputAccountRef = React.useRef<TextField>(null)
     const loginInputPasswordRef = React.useRef<TextField>(null)
 
+    async function login() {
+        const account = loginInputAccountRef.current!.value
+        const password = loginInputPasswordRef.current!.value
+
+        try {
+            await performAuth({
+                account: account,
+                password: password,
+            })
+            location.reload()
+        } catch (e) {
+            if (e instanceof Error)
+                showSnackbar({ message: '登录失败: ' + e.message })
+        }
+    }
+
     return (
         <mdui-dialog {...props} headline="登录" ref={dialogRef}>
 
-            <mdui-text-field label="用户 ID / 用户名" ref={loginInputAccountRef}></mdui-text-field>
+            <mdui-text-field label="用户 ID / 用户名" ref={loginInputAccountRef} onKeyDown={(event) => {
+                if (event.key == 'Enter')
+                    loginInputPasswordRef.current?.blur()
+            }}></mdui-text-field>
             <div style={{
                 height: "10px",
             }}></div>
-            <mdui-text-field label="密码" type="password" toggle-password ref={loginInputPasswordRef}></mdui-text-field>
+            <mdui-text-field label="密码" type="password" toggle-password ref={loginInputPasswordRef} onKeyDown={(event) => {
+                if (event.key == 'Enter')
+                    login()
+            }}></mdui-text-field>
 
             <mdui-button slot="action" variant="text" onClick={() => shared.setShowRegisterDialog(true)}>注册</mdui-button>
-            <mdui-button slot="action" variant="text" onClick={async () => {
-                const account = loginInputAccountRef.current!.value
-                const password = loginInputPasswordRef.current!.value
-
-                try {
-                    await performAuth({
-                        account: account,
-                        password: password,
-                    })
-                    location.reload()
-                } catch (e) {
-                    if (e instanceof Error)
-                        showSnackbar({ message: '登录失败: ' + e.message })
-                }
-            }}>登录</mdui-button>
+            <mdui-button slot="action" variant="text" onClick={login}>登录</mdui-button>
         </mdui-dialog>
     )
 }

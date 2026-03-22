@@ -35,14 +35,14 @@ export default function ChatFragment({
 }) {
     const AppState = React.useContext(AppStateContext)
     const [tabItemSelected, setTabItemSelected] = React.useState('Chat')
-    const tabRef = React.useRef<Tab>()
+    const tabRef = React.useRef<Tab>(null)
     useEventListener(tabRef, 'change', () => {
         tabRef.current != null && setTabItemSelected(tabRef.current!.value as string)
     })
 
-    const chatPanelRef = React.useRef<HTMLElement>()
-    const inputRef = React.useRef<TextField>()
-    const chatPagePanelRef = React.useRef<ChatPanelRef>()
+    const chatPanelRef = React.useRef<HTMLElement>(null)
+    const inputRef = React.useRef<TextField>(null)
+    const chatPagePanelRef = React.useRef<ChatPanelRef>(null)
 
     /**
      * 发送消息, 成功则清空文本
@@ -144,7 +144,7 @@ export default function ChatFragment({
                 display: tabItemSelected == "Chat" ? "flex" : "none",
                 flexDirection: "column",
                 height: "100%",
-            }} onScroll={async (e: WheelEvent) => {
+            }} onScroll={async (e) => {
                 const scrollTop = (e.target as HTMLDivElement).scrollTop
                 if (scrollTop == 0) {
                     // 加载更多
@@ -179,12 +179,12 @@ export default function ChatFragment({
                         if (inputRef.current?.value.trim() == '') {
                             // 清空缓存的文件
                         }
-                    }} onKeyDown={(event: KeyboardEvent) => {
+                    }} onKeyDown={(event) => {
                         if (event.ctrlKey && event.key == 'Enter') {
                             // 发送消息
                             performSendMessage()
                         }
-                    }} onPaste={(event: ClipboardEvent) => {
+                    }} onPaste={(event) => {
                         for (const item of event.clipboardData?.items || []) {
                             if (item.kind == 'file') {
                                 event.preventDefault()

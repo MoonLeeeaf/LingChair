@@ -11,7 +11,7 @@ import isMobileUI from "../../utils/isMobileUI.ts"
 import useAsyncEffect from "../../utils/useAsyncEffect.ts"
 import AppStateContext from "./AppStateContext.ts"
 
-export default function UserOrChatInfoDialog({ chat, useRef }: { chat?: Chat, useRef: React.MutableRefObject<Dialog | undefined> }) {
+export default function UserOrChatInfoDialog({ chat, useRef }: { chat?: Chat, useRef: React.MutableRefObject<Dialog | null> }) {
     const favouriteChats = useContextSelector(
         MainSharedContext,
         (context: Shared) => context.state.favouriteChats

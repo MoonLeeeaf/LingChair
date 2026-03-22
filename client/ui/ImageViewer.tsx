@@ -3,7 +3,7 @@ import 'pinch-zoom-element'
 import React from "react"
 
 export default function ImageViewer({ ...props }: React.ImgHTMLAttributes<HTMLImageElement>) {
-    const dialogRef = React.useRef<Dialog>()
+    const dialogRef = React.useRef<Dialog>(null)
 
     return <mdui-dialog ref={dialogRef} fullscreen="fullscreen">
         <mdui-button-icon icon="open_in_new" onClick={() => window.open(props.src, '_blank')}>

@@ -5,7 +5,7 @@ import { CallbackError } from 'lingchair-client-protocol'
 import useEventListener from '../../utils/useEventListener.ts'
 import ClientCache from '../../ClientCache.ts'
 
-export default function AddFavourtieChatDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | undefined> }) {
+export default function AddFavourtieChatDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | null> }) {
     const inputTargetRef = React.useRef<TextField>(null)
 
     useEventListener(useRef, 'closed', () => {
@@ -29,7 +29,7 @@ export default function AddFavourtieChatDialog({ useRef }: { useRef: React.Mutab
 
     return (
         <mdui-dialog close-on-overlay-click close-on-esc headline="添加收藏对话" ref={useRef}>
-            <mdui-text-field clearable label="对话 / 用户 (ID 或 别名)" ref={inputTargetRef} onKeyDown={(event: KeyboardEvent) => {
+            <mdui-text-field clearable label="对话 / 用户 (ID 或 别名)" ref={inputTargetRef} onKeyDown={(event) => {
                 if (event.key == 'Enter')
                     addFavouriteChat()
             }}></mdui-text-field>

@@ -27,14 +27,14 @@ function Root() {
     const [myProfileCache, setMyProfileCache] = React.useState<UserMySelf>()
 
     // 多页面切换
-    const navigationRef = React.useRef<HTMLElement>()
+    const navigationRef = React.useRef<HTMLElement>(null)
     const [currentShowPage, setCurrentShowPage] = React.useState('Recents')
     type HTMLElementWithValue = HTMLElement & { value: string }
     useEventListener(navigationRef, 'change', (event) => {
         setCurrentShowPage((event.target as HTMLElementWithValue).value)
     })
 
-    const drawerRef = React.useRef<NavigationDrawer>()
+    const drawerRef = React.useRef<NavigationDrawer>(null)
     React.useEffect(() => {
         $(drawerRef.current!.shadowRoot).append(`
             <style>
@@ -107,7 +107,7 @@ function Root() {
         }
     }, [])
 
-    const AppStateRef = React.useRef<AppState>()
+    const AppStateRef = React.useRef<AppState>(null)
 
     return (
         <MainSharedContext.Provider value={sharedContext}>

@@ -5,7 +5,7 @@ import { CallbackError, Chat } from 'lingchair-client-protocol'
 import useEventListener from '../../utils/useEventListener.ts'
 import getClient from '../../getClient.ts'
 
-export default function CreateGroupDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | undefined> }) {
+export default function CreateGroupDialog({ useRef }: { useRef: React.MutableRefObject<Dialog | null> }) {
     const inputTargetRef = React.useRef<TextField>(null)
 
     useEventListener(useRef, 'closed', () => {
@@ -30,7 +30,7 @@ export default function CreateGroupDialog({ useRef }: { useRef: React.MutableRef
 
     return (
         <mdui-dialog close-on-overlay-click close-on-esc headline="创建群组" ref={useRef}>
-            <mdui-text-field clearable label="群组标题" ref={inputTargetRef} onKeyDown={(event: KeyboardEvent) => {
+            <mdui-text-field clearable label="群组标题" ref={inputTargetRef} onKeyDown={(event) => {
                 if (event.key == 'Enter')
                     createGroup()
             }}></mdui-text-field>
